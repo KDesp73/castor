@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -Iinclude -fPIC
-LDFLAGS = -lSDL2 -lm
+LDFLAGS = -lSDL2 -lSDL2_ttf -lm
 
 # Directories
 SRC_DIR = src
@@ -25,7 +25,7 @@ VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 ifeq ($(type), RELEASE)
 	CFLAGS += -O3
 else
-	SANITIZERS = # -fsanitize=address,undefined
+	SANITIZERS = -fsanitize=address,undefined
 	CFLAGS  += -DDEBUG -ggdb
 	CFLAGS  += $(SANITIZERS)
 	LDFLAGS += $(SANITIZERS)

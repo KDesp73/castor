@@ -1,14 +1,25 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_ttf.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
+#include "text.h"
 
 void loop(Context* ctx)
 {
+    if (!ctx || !ctx->player) {
+        fprintf(stderr, "Error: Context or Player is NULL!\n");
+        return;
+    }
+
+    Player stored_player = PlayerStore(ctx->player);
+
     SDL_Event event;
+    TTF_Font *font = TTF_OpenFont("assets/fonts/OpenSans-Regular.ttf", 18);
 
     while (ctx->running) {
         while (SDL_PollEvent(&event)) {
@@ -17,29 +28,34 @@ void loop(Context* ctx)
             }
         }
 
+
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         if (keys[SDL_SCANCODE_W]) {
-            ctx->player->X += cos(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
-            ctx->player->Y += sin(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
+            PlayerMoveFront(ctx->player);
         }
         if (keys[SDL_SCANCODE_S]) {
-            ctx->player->X -= cos(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
-            ctx->player->Y -= sin(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
+            PlayerMoveBack(ctx->player);
         }
         if (keys[SDL_SCANCODE_A]) {
-            ctx->player->angle -= 1;
+            PlayerRotateLeft(ctx->player);
         }
         if (keys[SDL_SCANCODE_D]) {
-            ctx->player->angle += 1;
+            PlayerRotateRight(ctx->player);
+        }
+        if(keys[SDL_SCANCODE_R]) {
+            PlayerLoad(ctx->player, stored_player);
         }
 
-        SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
         SDL_RenderClear(ctx->renderer);
 
         CastRays(ctx->renderer, ctx);
+        RenderText(ctx->renderer, font, COLOR_BLACK, 10, 10, "(%lf, %lf)", ctx->player->X, ctx->player->Y);
+        RenderText(ctx->renderer, font, COLOR_BLACK, 11, 50, "angle: %lf", ctx->player->angle);
 
         SDL_RenderPresent(ctx->renderer);
     }
+    TTF_CloseFont(font);
 }
 
 int main(int argc, char** argv)
@@ -47,30 +63,41 @@ int main(int argc, char** argv)
     Context ctx = {.game_name = "3d-game",
         .running = true,
         .map = {
-            {1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 1, 1, 1, 1, 0, 1},
-            {1, 0, 1, 0, 0, 1, 0, 1},
-            {1, 0, 1, 0, 0, 1, 0, 1},
-            {1, 0, 1, 1, 1, 1, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1}
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
         },
         .screen_width = 800,
         .screen_height = 600,
-        .map_width = 8,
-        .map_height = 8,
+        .map_width = 16,
+        .map_height = 16,
         .fov = 60,
         .player = PlayerNew(0.02, 0.0, 3.5, 3.5)};
 
     SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
     ConstructRenderer(&ctx);
 
     loop(&ctx);
+    printf("Closing...\n");
 
     ContextFree(&ctx);
 
     SDL_Quit();
+    TTF_Quit();
 
     return 0;
 }

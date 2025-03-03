@@ -5,6 +5,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
+
 #define MAX_MAP_WIDTH  64
 #define MAX_MAP_HEIGHT 64
 typedef struct {
