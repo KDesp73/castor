@@ -17,3 +17,59 @@ void ContextFree(Context* ctx)
     SDL_DestroyRenderer(ctx->renderer);
     SDL_DestroyWindow(ctx->window);
 }
+
+bool CheckCollision(float newX, float newY, const Context* ctx)
+{
+    int mapX = (int)newX;
+    int mapY = (int)newY;
+
+    if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
+        return true;
+    }
+
+    int tile = ctx->map[mapY][mapX];
+    if (tile > 0) {
+        return true;
+    }
+
+    return false;
+}
+
+void PlayerMoveFront(Context* ctx)
+{
+    // Calculate the player's intended movement
+    float moveX = cos(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
+    float moveY = sin(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
+
+    // Check if the new position collides with a wall
+    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
+        ctx->player->X += moveX;
+        ctx->player->Y += moveY;
+    }
+}
+
+void PlayerMoveBack(Context* ctx)
+{
+    // Calculate the player's intended movement
+    float moveX = cos(ctx->player->angle * M_PI / 180.0) * -ctx->player->speed;
+    float moveY = sin(ctx->player->angle * M_PI / 180.0) * -ctx->player->speed;
+
+    // Check if the new position collides with a wall
+    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
+        ctx->player->X += moveX;
+        ctx->player->Y += moveY;
+    }
+}
+
+#define ANGLE_DELTA 0.5
+void PlayerRotateLeft(Context* ctx)
+{
+    ctx->player->angle -= ANGLE_DELTA;
+    if (ctx->player->angle < 0) ctx->player->angle += 360;
+
+}
+void PlayerRotateRight(Context* ctx)
+{
+    ctx->player->angle += ANGLE_DELTA;
+    if (ctx->player->angle >= 360) ctx->player->angle -= 360;
+}

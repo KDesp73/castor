@@ -30,28 +30,21 @@ void loop(Context* ctx)
 
 
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        if (keys[SDL_SCANCODE_W]) {
-            PlayerMoveFront(ctx->player);
-        }
-        if (keys[SDL_SCANCODE_S]) {
-            PlayerMoveBack(ctx->player);
-        }
-        if (keys[SDL_SCANCODE_A]) {
-            PlayerRotateLeft(ctx->player);
-        }
-        if (keys[SDL_SCANCODE_D]) {
-            PlayerRotateRight(ctx->player);
-        }
-        if(keys[SDL_SCANCODE_R]) {
+        if (keys[SDL_SCANCODE_W])
+            PlayerMoveFront(ctx);
+        if (keys[SDL_SCANCODE_S])
+            PlayerMoveBack(ctx);
+        if (keys[SDL_SCANCODE_A])
+            PlayerRotateLeft(ctx);
+        if (keys[SDL_SCANCODE_D])
+            PlayerRotateRight(ctx);
+        if(keys[SDL_SCANCODE_R])
             PlayerLoad(ctx->player, stored_player);
-        }
 
         SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
         SDL_RenderClear(ctx->renderer);
 
         CastRays(ctx->renderer, ctx);
-        RenderText(ctx->renderer, font, COLOR_BLACK, 10, 10, "(%lf, %lf)", ctx->player->X, ctx->player->Y);
-        RenderText(ctx->renderer, font, COLOR_BLACK, 11, 50, "angle: %lf", ctx->player->angle);
 
         SDL_RenderPresent(ctx->renderer);
     }
@@ -63,22 +56,22 @@ int main(int argc, char** argv)
     Context ctx = {.game_name = "3d-game",
         .running = true,
         .map = {
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2},
+            {2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+            {1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1},
         },
         .screen_width = 800,
         .screen_height = 600,

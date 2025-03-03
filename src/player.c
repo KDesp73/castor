@@ -1,4 +1,5 @@
 #include "player.h"
+#include "context.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -22,32 +23,10 @@ Player* PlayerNew(double speed, double angle, double x, double y)
 
 void PlayerFree(Player** player)
 {
-    free(*player);
-    *player = NULL;
-}
-
-void PlayerMoveFront(Player* player)
-{
-    player->X += cos(player->angle * M_PI / 180.0) * player->speed;
-    player->Y += sin(player->angle * M_PI / 180.0) * player->speed;
-    
-}
-void PlayerMoveBack(Player* player)
-{
-    player->X -= cos(player->angle * M_PI / 180.0) * player->speed;
-    player->Y -= sin(player->angle * M_PI / 180.0) * player->speed;
-    
-}
-void PlayerRotateLeft(Player* player)
-{
-    player->angle -= 1;
-    if (player->angle < 0) player->angle += 360;
-
-}
-void PlayerRotateRight(Player* player)
-{
-    player->angle += 1;
-    if (player->angle >= 360) player->angle -= 360;
+    if(*player){
+        free(*player);
+        *player = NULL;
+    }
 }
 
 Player PlayerStore(const Player* player)

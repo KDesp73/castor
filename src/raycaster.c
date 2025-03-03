@@ -28,9 +28,27 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 break;
             }
 
-            if (ctx->map[mapY][mapX] == 1) {
+            Tile tile = (Tile) ctx->map[mapY][mapX];
+            if (tile > 0) {
                 hitWall = true;
-                break;
+
+                switch (tile) {
+                case TILE_WHITE:
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    break;
+                case TILE_BLACK:
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                    break;
+                case TILE_RED:
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    break;
+                case TILE_BLUE:
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                    break;
+                case TILE_EMPTY:
+                default:
+                    break;
+                }
             }
 
             distance += stepSize;
@@ -44,7 +62,7 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
 
         int wallHeight = (int)(ctx->screen_height / correctedDistance);
 
-        SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+        // Draw the line with the chosen color
         SDL_RenderDrawLine(renderer, x, (ctx->screen_height / 2) - wallHeight, x, (ctx->screen_height / 2) + wallHeight);
     }
 }

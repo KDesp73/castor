@@ -15,7 +15,7 @@ void RenderText(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, int x, 
 
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
     if (!surface) {
-        printf("Failed to create text surface: %s\n", TTF_GetError());
+        fprintf(stderr, "Failed to create text surface: %s\n", TTF_GetError());
         return;
     }
 
@@ -24,7 +24,7 @@ void RenderText(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, int x, 
     SDL_FreeSurface(surface);
 
     if (!texture) {
-        printf("Failed to create text texture: %s\n", SDL_GetError());
+        fprintf(stderr, "Failed to create text texture: %s\n", SDL_GetError());
         return;
     }
 
