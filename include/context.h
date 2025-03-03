@@ -26,18 +26,10 @@ typedef struct {
 } Context;
 
 
-void ConstructRenderer(Context* ctx);
+bool ConstructRenderer(Context* ctx);
 
 void ContextFree(Context* ctx);
 
-void PlayerMoveFront(Context* context);
-void PlayerMoveBack(Context* context);
-void PlayerRotateLeft(Context* context);
-void PlayerRotateRight(Context* context);
-void PlayerLookUp(Context* context);
-void PlayerLookDown(Context* context);
-
-bool CheckCollision(float newX, float newY, const Context* ctx);
 
 
 #endif // CONTEXT_H

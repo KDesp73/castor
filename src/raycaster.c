@@ -45,6 +45,9 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 case TILE_BLUE:
                     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
                     break;
+                case TILE_GREEN:
+                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                    break;
                 case TILE_EMPTY:
                 default:
                     break;

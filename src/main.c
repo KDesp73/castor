@@ -1,13 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
-#include "text.h"
+#include "movement.h"
 
 void loop(Context* ctx)
 {
@@ -31,17 +30,17 @@ void loop(Context* ctx)
 
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         if (keys[SDL_SCANCODE_W])
-            PlayerMoveFront(ctx);
+            MoveFront(ctx);
         if (keys[SDL_SCANCODE_S])
-            PlayerMoveBack(ctx);
+            MoveBack(ctx);
         if (keys[SDL_SCANCODE_A])
-            PlayerRotateLeft(ctx);
+            RotateLeft(ctx);
         if (keys[SDL_SCANCODE_D])
-            PlayerRotateRight(ctx);
+            RotateRight(ctx);
         if (keys[SDL_SCANCODE_UP])
-            PlayerLookUp(ctx);
+            LookUp(ctx);
         if (keys[SDL_SCANCODE_DOWN])
-            PlayerLookDown(ctx);
+            LookDown(ctx);
         if(keys[SDL_SCANCODE_R])
             PlayerLoad(ctx->player, stored_player);
 
@@ -57,7 +56,8 @@ void loop(Context* ctx)
 
 int main(int argc, char** argv)
 {
-    Context ctx = {.game_name = "3d-game",
+    Context ctx = {
+        .game_name = "3d-game",
         .running = true,
         .map = {
             {1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 2},
@@ -65,11 +65,11 @@ int main(int argc, char** argv)
             {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
             {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-            {2, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1},
-            {1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2},
-            {2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 2},
-            {2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+            {2, 0, 0, 1, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 1},
+            {1, 1, 1, 1, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 2},
+            {2, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
             {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
@@ -84,17 +84,29 @@ int main(int argc, char** argv)
         .fov = 60,
         .player = PlayerNew(0.02, 0.0, 3.5, 3.5)};
 
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-    ConstructRenderer(&ctx);
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if (TTF_Init() == -1) {
+        fprintf(stderr, "TTF_Init Error: %s\n", TTF_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
+    if (!ConstructRenderer(&ctx)) {
+        fprintf(stderr, "Renderer initialization failed\n");
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
 
     loop(&ctx);
-    printf("Closing...\n");
 
     ContextFree(&ctx);
-
-    SDL_Quit();
     TTF_Quit();
+    SDL_Quit();
 
     return 0;
 }
