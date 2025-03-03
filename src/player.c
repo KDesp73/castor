@@ -6,7 +6,7 @@
 void PlayerInit(Player* player, double speed, double angle, double x, double y)
 {
     player->speed = speed;
-    player->angle = angle;
+    player->angleX = angle;
     player->X = x;
     player->Y = y;
 }
@@ -34,7 +34,7 @@ Player PlayerStore(const Player* player)
     return (Player) {
         .X = player->X,
         .Y = player->Y,
-        .angle = player->angle,
+        .angleX = player->angleX,
         .speed = player->speed
     };
 }
@@ -42,6 +42,6 @@ void PlayerLoad(Player* player, Player stored)
 {
     player->X = stored.X;
     player->Y = stored.Y;
-    player->angle = stored.angle;
+    player->angleX = stored.angleX;
     player->speed = stored.speed;
 }

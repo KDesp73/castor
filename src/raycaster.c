@@ -7,7 +7,7 @@
 void CastRays(SDL_Renderer *renderer, const Context* ctx)
 {
     for (int x = 0; x < ctx->screen_width; x++) {
-        float rayAngle = (ctx->player->angle - ctx->fov / 2.0) + ((float)x / ctx->screen_width) * ctx->fov;
+        float rayAngle = (ctx->player->angleX - ctx->fov / 2.0) + ((float)x / ctx->screen_width) * ctx->fov;
         float rayX = cos(rayAngle * M_PI / 180.0);
         float rayY = sin(rayAngle * M_PI / 180.0);
 
@@ -54,7 +54,7 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
             distance += stepSize;
         }
 
-        float correctedDistance = distance * cos((rayAngle - ctx->player->angle) * M_PI / 180.0);
+        float correctedDistance = distance * cos((rayAngle - ctx->player->angleX) * M_PI / 180.0);
         if (correctedDistance < 0.1) correctedDistance = 0.1;
 
         int color = 255 - (correctedDistance * 10);
@@ -62,8 +62,12 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
 
         int wallHeight = (int)(ctx->screen_height / correctedDistance);
 
+        // Apply vertical look adjustment using angleY
+        int verticalOffset = (int)(ctx->player->angleY * 5.0); // Adjust scaling factor if needed
+        int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
+        int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
+
         // Draw the line with the chosen color
-        SDL_RenderDrawLine(renderer, x, (ctx->screen_height / 2) - wallHeight, x, (ctx->screen_height / 2) + wallHeight);
+        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 }
-

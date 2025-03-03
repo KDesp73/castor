@@ -3,7 +3,7 @@
 
 typedef struct {
     double speed;
-    double angle;
+    double angleX, angleY;
     double X, Y;
 } Player;
 

@@ -38,6 +38,10 @@ void loop(Context* ctx)
             PlayerRotateLeft(ctx);
         if (keys[SDL_SCANCODE_D])
             PlayerRotateRight(ctx);
+        if (keys[SDL_SCANCODE_UP])
+            PlayerLookUp(ctx);
+        if (keys[SDL_SCANCODE_DOWN])
+            PlayerLookDown(ctx);
         if(keys[SDL_SCANCODE_R])
             PlayerLoad(ctx->player, stored_player);
 
@@ -73,8 +77,8 @@ int main(int argc, char** argv)
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
             {1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1},
         },
-        .screen_width = 800,
-        .screen_height = 600,
+        .screen_width = 1080,
+        .screen_height = 720,
         .map_width = 16,
         .map_height = 16,
         .fov = 60,

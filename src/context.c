@@ -38,8 +38,8 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
 void PlayerMoveFront(Context* ctx)
 {
     // Calculate the player's intended movement
-    float moveX = cos(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
-    float moveY = sin(ctx->player->angle * M_PI / 180.0) * ctx->player->speed;
+    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * ctx->player->speed;
+    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * ctx->player->speed;
 
     // Check if the new position collides with a wall
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
@@ -51,8 +51,8 @@ void PlayerMoveFront(Context* ctx)
 void PlayerMoveBack(Context* ctx)
 {
     // Calculate the player's intended movement
-    float moveX = cos(ctx->player->angle * M_PI / 180.0) * -ctx->player->speed;
-    float moveY = sin(ctx->player->angle * M_PI / 180.0) * -ctx->player->speed;
+    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * -ctx->player->speed;
+    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * -ctx->player->speed;
 
     // Check if the new position collides with a wall
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
@@ -64,12 +64,20 @@ void PlayerMoveBack(Context* ctx)
 #define ANGLE_DELTA 0.5
 void PlayerRotateLeft(Context* ctx)
 {
-    ctx->player->angle -= ANGLE_DELTA;
-    if (ctx->player->angle < 0) ctx->player->angle += 360;
+    ctx->player->angleX -= ANGLE_DELTA;
+    if (ctx->player->angleX < 0) ctx->player->angleX += 360;
 
 }
 void PlayerRotateRight(Context* ctx)
 {
-    ctx->player->angle += ANGLE_DELTA;
-    if (ctx->player->angle >= 360) ctx->player->angle -= 360;
+    ctx->player->angleX += ANGLE_DELTA;
+    if (ctx->player->angleX >= 360) ctx->player->angleX -= 360;
+}
+void PlayerLookUp(Context *ctx)
+{
+    ctx->player->angleY -= ANGLE_DELTA;
+}
+void PlayerLookDown(Context *ctx)
+{
+    ctx->player->angleY += ANGLE_DELTA;
 }
