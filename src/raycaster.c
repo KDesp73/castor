@@ -15,6 +15,8 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
         float stepSize = 0.05;
         float hitX = ctx->player->X, hitY = ctx->player->Y;
         bool hitWall = false;
+        Tile tile = TILE_EMPTY;
+        float textureOffset = 0.0f;
 
         while (!hitWall && distance < 20.0) {
             hitX = ctx->player->X + rayX * distance;
@@ -28,29 +30,15 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 break;
             }
 
-            Tile tile = (Tile) ctx->map[mapY][mapX];
+            tile = (Tile) ctx->map[mapY][mapX];
             if (tile > 0) {
                 hitWall = true;
 
-                switch (tile) {
-                case TILE_WHITE:
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                    break;
-                case TILE_BLACK:
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-                    break;
-                case TILE_RED:
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                    break;
-                case TILE_BLUE:
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-                    break;
-                case TILE_GREEN:
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                    break;
-                case TILE_EMPTY:
-                default:
-                    break;
+                // Calculate texture coordinate (0 to 1)
+                if (fmod(hitX, 1.0) < fmod(hitY, 1.0)) {
+                    textureOffset = fmod(hitX, 1.0);
+                } else {
+                    textureOffset = fmod(hitY, 1.0);
                 }
             }
 
@@ -60,17 +48,28 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
         float correctedDistance = distance * cos((rayAngle - ctx->player->angleX) * M_PI / 180.0);
         if (correctedDistance < 0.1) correctedDistance = 0.1;
 
-        int color = 255 - (correctedDistance * 10);
-        if (color < 0) color = 0;
-
         int wallHeight = (int)(ctx->screen_height / correctedDistance);
-
-        // Apply vertical look adjustment using angleY
-        int verticalOffset = (int)(ctx->player->angleY * 5.0); // Adjust scaling factor if needed
+        int verticalOffset = (int)(ctx->player->angleY * 5.0); // Adjust based on angleY
         int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
         int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
 
-        // Draw the line with the chosen color
-        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
+        if (ctx->textures[tile] != NULL) {
+            // Render texture slice
+            SDL_Rect srcRect = { (int)(textureOffset * ctx->texture_width), 0, 1, ctx->texture_height };
+            SDL_Rect dstRect = { x, wallTop, 1, wallBottom - wallTop };
+
+            SDL_RenderCopy(renderer, ctx->textures[tile], &srcRect, &dstRect);
+        } else {
+            // Fallback to solid colors if texture is missing
+            switch (tile) {
+                case TILE_WHITE: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
+                case TILE_BLACK: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
+                case TILE_RED: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
+                case TILE_BLUE: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
+                case TILE_GREEN: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+                default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
+            }
+            SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
+        }
     }
 }

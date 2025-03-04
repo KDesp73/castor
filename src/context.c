@@ -1,4 +1,6 @@
 #include "context.h"
+#include "raycaster.h"
+#include "textures.h"
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 
@@ -26,6 +28,7 @@ bool ConstructRenderer(Context* ctx)
 void ContextFree(Context* ctx)
 {
     PlayerFree(&ctx->player);
+    FreeTextures(ctx);
 
     SDL_DestroyRenderer(ctx->renderer);
     SDL_DestroyWindow(ctx->window);
@@ -46,5 +49,15 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     }
 
     return false;
+}
+
+void LoadTextures(Context* ctx)
+{
+    ctx->textures[TILE_WHITE] = LoadTexture(ctx->renderer, "./assets/textures/wall-white.jpg");
+    
+}
+void FreeTextures(Context* ctx)
+{
+    SDL_DestroyTexture(ctx->textures[TILE_WHITE]); 
 }
 

@@ -23,6 +23,9 @@ typedef struct {
 
     SDL_Window* window;
     SDL_Renderer* renderer;
+    SDL_Texture* textures[MAX_MAP_WIDTH];
+    size_t texture_width;
+    size_t texture_height;
 } Context;
 
 
@@ -30,6 +33,8 @@ bool ConstructRenderer(Context* ctx);
 
 void ContextFree(Context* ctx);
 
+void LoadTextures(Context* ctx);
+void FreeTextures(Context* ctx);
 
 
 #endif // CONTEXT_H

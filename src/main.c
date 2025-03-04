@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "player.h"
@@ -82,10 +83,15 @@ int main(int argc, char** argv)
         .map_width = 16,
         .map_height = 16,
         .fov = 60,
-        .player = PlayerNew(0.02, 0.0, 3.5, 3.5)};
+        .player = PlayerNew(0.02, 0.0, 3.5, 3.5),
+        .texture_width = 2048,
+        .texture_height = 2048
+    };
+
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
+        ContextFree(&ctx);
         return 1;
     }
 
@@ -95,17 +101,30 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (!ConstructRenderer(&ctx)) {
-        fprintf(stderr, "Renderer initialization failed\n");
+    if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) & (IMG_INIT_JPG | IMG_INIT_PNG))) {
+        fprintf(stderr, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        ContextFree(&ctx);
         TTF_Quit();
         SDL_Quit();
         return 1;
     }
 
+    if (!ConstructRenderer(&ctx)) {
+        fprintf(stderr, "Renderer initialization failed\n");
+        ContextFree(&ctx);
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    LoadTextures(&ctx);
+
     loop(&ctx);
 
     ContextFree(&ctx);
     TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
