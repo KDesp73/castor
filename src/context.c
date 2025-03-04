@@ -36,8 +36,8 @@ void ContextFree(Context* ctx)
 
 void LoadTextures(Context* ctx)
 {
-    ctx->textures[TILE_WHITE] = LoadTexture(ctx->renderer, "./assets/textures/wall-white.jpg");
-    ctx->textures[TILE_GREEN] = LoadTexture(ctx->renderer, "./assets/textures/wall-black.jpg");
+    ctx->textures[TILE_WHITE] = LoadTexture(ctx->renderer, "./assets/textures/wall-rock.jpg");
+    ctx->textures[TILE_GREEN] = LoadTexture(ctx->renderer, "./assets/textures/wall-brick.jpg");
     
 }
 void FreeTextures(Context* ctx)
