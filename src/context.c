@@ -34,30 +34,17 @@ void ContextFree(Context* ctx)
     SDL_DestroyWindow(ctx->window);
 }
 
-bool CheckCollision(float newX, float newY, const Context* ctx)
-{
-    int mapX = (int)newX;
-    int mapY = (int)newY;
-
-    if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
-        return true;
-    }
-
-    int tile = ctx->map[mapY][mapX];
-    if (tile > 0) {
-        return true;
-    }
-
-    return false;
-}
-
 void LoadTextures(Context* ctx)
 {
     ctx->textures[TILE_WHITE] = LoadTexture(ctx->renderer, "./assets/textures/wall-white.jpg");
+    ctx->textures[TILE_GREEN] = LoadTexture(ctx->renderer, "./assets/textures/wall-black.jpg");
     
 }
 void FreeTextures(Context* ctx)
 {
-    SDL_DestroyTexture(ctx->textures[TILE_WHITE]); 
+    for(size_t i = 0; i < MAX_MAP_WIDTH; i++) {
+        if(ctx->textures[i] != NULL)
+            SDL_DestroyTexture(ctx->textures[i]); 
+    }
 }
 

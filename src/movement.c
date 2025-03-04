@@ -52,3 +52,20 @@ void LookDown(Context *ctx)
     else
         ctx->player->angleY += ANGLE_DELTA;
 }
+
+bool CheckCollision(float newX, float newY, const Context* ctx)
+{
+    int mapX = (int)newX;
+    int mapY = (int)newY;
+
+    if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
+        return true;
+    }
+
+    int tile = ctx->map[mapY][mapX];
+    if (tile > 0) {
+        return true;
+    }
+
+    return false;
+}
