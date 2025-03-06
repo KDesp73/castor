@@ -12,47 +12,35 @@ static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, floa
     float fracY = hitY - floor(hitY);
     float texCoord;
     
-    // Determine if we hit a vertical or horizontal wall
     bool hitVerticalWall = false;
     
-    // Check if very close to a vertical grid line
     if (fracX < 0.01f || fracX > 0.99f) {
         hitVerticalWall = true;
     }
-    // Check if very close to a horizontal grid line
     else if (fracY < 0.01f || fracY > 0.99f) {
         hitVerticalWall = false;
     }
-    // If neither is definitive, use ray direction to determine
     else {
-        // Determine based on which direction the ray travels more
         hitVerticalWall = (fabs(rayX) >= fabs(rayY));
     }
     
-    // Calculate texture coordinate based on wall type
     if (hitVerticalWall) {
-        // For vertical walls (running north-south)
         texCoord = fracY;
         
-        // Flip texture based on which side of wall we hit
         if (rayX > 0) {
             texCoord = 1.0f - texCoord;
         }
     } else {
-        // For horizontal walls (running east-west)
         texCoord = fracX;
         
-        // Flip texture based on which side of wall we hit
         if (rayY < 0) {
             texCoord = 1.0f - texCoord;
         }
     }
     
-    // Ensure texture coordinate is within valid range
     return fmaxf(0.0f, fminf(0.999f, texCoord));
 }
 
-// In your main rendering function
 void CastRays(SDL_Renderer *renderer, const Context* ctx)
 {
     for (int x = 0; x < ctx->screen_width; x++) {

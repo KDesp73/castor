@@ -34,6 +34,7 @@ void ContextInit(Context* ctx)
     ctx->texture_width = 64;
     ctx->texture_height = 64;
     ctx->mouse_sensitivity = 0.25;
+    ctx->mouse_inverted = true;
 }
 
 void ContextFree(Context* ctx)

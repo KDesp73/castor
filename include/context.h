@@ -23,6 +23,7 @@ typedef struct {
     size_t map_height;
 
     double mouse_sensitivity;
+    bool mouse_inverted;
 
     SDL_Window* window;
     SDL_Renderer* renderer;

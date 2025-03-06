@@ -6,9 +6,19 @@
 
 void MoveFront(Context* ctx)
 {
-    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * ctx->player->speed;
-    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * ctx->player->speed;
+    float moveX = cos(ctx->player->angleX * M_PI / 180.0);
+    float moveY = sin(ctx->player->angleX * M_PI / 180.0);
+    
+    // Normalize the vector
+    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
+    moveX /= length;  // Normalize
+    moveY /= length;  // Normalize
 
+    // Scale by speed
+    moveX *= ctx->player->speed;
+    moveY *= ctx->player->speed;
+
+    // Check for collision and move if no collision
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
         ctx->player->X += moveX;
         ctx->player->Y += moveY;
@@ -17,9 +27,19 @@ void MoveFront(Context* ctx)
 
 void MoveBack(Context* ctx)
 {
-    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * -ctx->player->speed;
-    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * -ctx->player->speed;
+    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * -1;
+    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * -1;
 
+    // Normalize the vector
+    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
+    moveX /= length;  // Normalize
+    moveY /= length;  // Normalize
+
+    // Scale by speed
+    moveX *= ctx->player->speed;
+    moveY *= ctx->player->speed;
+
+    // Check for collision and move if no collision
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
         ctx->player->X += moveX;
         ctx->player->Y += moveY;
@@ -28,9 +48,18 @@ void MoveBack(Context* ctx)
 
 void MoveLeft(Context* ctx)
 {
-    // Calculate the direction perpendicular to the player's forward direction
-    float moveX = cos((ctx->player->angleX - 90) * M_PI / 180.0) * ctx->player->speed;
-    float moveY = sin((ctx->player->angleX - 90) * M_PI / 180.0) * ctx->player->speed;
+    // Calculate the perpendicular direction (90 degrees counterclockwise)
+    float moveX = cos((ctx->player->angleX - 90) * M_PI / 180.0);
+    float moveY = sin((ctx->player->angleX - 90) * M_PI / 180.0);
+
+    // Normalize the vector
+    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
+    moveX /= length;  // Normalize
+    moveY /= length;  // Normalize
+
+    // Scale by speed
+    moveX *= ctx->player->speed;
+    moveY *= ctx->player->speed;
 
     // Check for collision and move if no collision
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
@@ -41,9 +70,18 @@ void MoveLeft(Context* ctx)
 
 void MoveRight(Context* ctx)
 {
-    // Calculate the direction perpendicular to the player's forward direction
-    float moveX = cos((ctx->player->angleX + 90) * M_PI / 180.0) * ctx->player->speed;
-    float moveY = sin((ctx->player->angleX + 90) * M_PI / 180.0) * ctx->player->speed;
+    // Calculate the perpendicular direction (90 degrees clockwise)
+    float moveX = cos((ctx->player->angleX + 90) * M_PI / 180.0);
+    float moveY = sin((ctx->player->angleX + 90) * M_PI / 180.0);
+
+    // Normalize the vector
+    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
+    moveX /= length;  // Normalize
+    moveY /= length;  // Normalize
+
+    // Scale by speed
+    moveX *= ctx->player->speed;
+    moveY *= ctx->player->speed;
 
     // Check for collision and move if no collision
     if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
@@ -106,22 +144,17 @@ Uint8 HandleInput(Context* ctx)
     SDL_ShowCursor(SDL_FALSE); // Hide the cursor
     SDL_SetRelativeMouseMode(SDL_TRUE); // Make the mouse movement relative to the window
 
-    // Get the relative mouse motion
     int xrel, yrel;
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
-    // Rotate the camera based on mouse movement
     if (xrel != 0) {
-        // Rotate camera left or right based on x movement
-        RotateRight(ctx, xrel * ctx->mouse_sensitivity); // Add sensitivity scaling if needed
+        RotateRight(ctx, xrel * ctx->mouse_sensitivity);
     }
 
     if (yrel != 0) {
-        // Look up or down based on y movement
-        LookUp(ctx, -yrel * ctx->mouse_sensitivity);
+        LookUp(ctx, ((ctx->mouse_inverted) ? -yrel : yrel) * (ctx->mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
     }
 
-    // Optional: Handle other keyboard inputs for movement
     if (keys[SDL_SCANCODE_W]) {
         MoveFront(ctx);
     }

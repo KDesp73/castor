@@ -4,6 +4,7 @@
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -79,11 +80,12 @@ int main(int argc, char** argv)
 {
     Context ctx = {
         .game_name = "3d-game",
-        .player = PlayerNew(0.10, 0.0, 1.5, 1.5),
+        .player = PlayerNew(0.15, 0.0, 1.5, 1.5),
         .texture_width = 64,
         .texture_height = 64,
         .floor_texture_index = 7,
         .ceiling_texture_index = 8,
+        .mouse_sensitivity = 0.4
     };
     ContextInit(&ctx);
     LoadLevel(&ctx, "levels/2.lvl");
@@ -92,6 +94,15 @@ int main(int argc, char** argv)
         EngineClose(&ctx);
         return 1;
     }
+    SDL_DisplayMode displayMode;
+    if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0) {
+        int screenWidth = displayMode.w;
+        int screenHeight = displayMode.h;
+        printf("Screen resolution: %d x %d\n", screenWidth, screenHeight);
+    }
+    ctx.screen_width = displayMode.w;
+    ctx.screen_height = displayMode.h;
+    SDL_SetWindowFullscreen(ctx.window, SDL_WINDOW_FULLSCREEN);
 
     LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
 
