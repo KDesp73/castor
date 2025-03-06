@@ -2,6 +2,9 @@
 
 A level builder for the raycasting engine
 
+![image](https://github.com/user-attachments/assets/3180ad4a-fc2e-4518-aa10-7c37b5069d4c)
+
+
 ![image](https://github.com/user-attachments/assets/98eaeca7-ac19-47b2-9cc1-04909efb6f46)
 
 ## Usage
