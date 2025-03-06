@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         .mouse_sensitivity = 0.4
     };
     ContextInit(&ctx);
-    LoadLevel(&ctx, "levels/2.lvl");
+    LoadLevel(&ctx, "levels/4.lvl");
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);

@@ -159,10 +159,10 @@ Uint8 HandleInput(Context* ctx)
 
 #define ANGLE_DELTA 2.5
     if(keys[SDL_SCANCODE_UP]) {
-        RotateY(ctx, ANGLE_DELTA);
+        RotateY(ctx, ANGLE_DELTA * 2);
     }
     if(keys[SDL_SCANCODE_DOWN]) {
-        RotateY(ctx, -ANGLE_DELTA);
+        RotateY(ctx, -ANGLE_DELTA * 2);
     }
     if(keys[SDL_SCANCODE_LEFT]) {
         RotateX(ctx, -ANGLE_DELTA);
