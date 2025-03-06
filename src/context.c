@@ -1,4 +1,5 @@
 #include "context.h"
+#include "map.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
@@ -37,6 +38,7 @@ void ContextFree(Context* ctx)
 {
     PlayerFree(&ctx->player);
     FreeTextures(ctx);
+    MapFree(ctx->map, ctx->map_height);
 
     SDL_DestroyRenderer(ctx->renderer);
     SDL_DestroyWindow(ctx->window);
@@ -48,5 +50,10 @@ void FreeTextures(Context* ctx)
         if(ctx->textures[i] != NULL)
             SDL_DestroyTexture(ctx->textures[i]); 
     }
+}
+
+void LoadLevel(Context* ctx, const char* path)
+{
+    ctx->map = MapLoad(&ctx->map_height, &ctx->map_width, path);
 }
 

@@ -13,14 +13,13 @@ typedef struct {
 
     int screen_width;
     int screen_height;
-    int map_width;
-    int map_height;
     int fov;
-    double step_size;
     const char* game_name;
 
     Player* player;
-    int map[MAX_MAP_WIDTH][MAX_MAP_HEIGHT];
+    int** map;
+    size_t map_width;
+    size_t map_height;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -37,8 +36,9 @@ bool ConstructRenderer(Context* ctx);
 void ContextInit(Context* ctx);
 void ContextFree(Context* ctx);
 
-void LoadTextures(Context* ctx);
 void FreeTextures(Context* ctx);
+
+void LoadLevel(Context* ctx, const char* path);
 
 
 #endif // CONTEXT_H
