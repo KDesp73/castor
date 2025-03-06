@@ -87,16 +87,15 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
             distance += stepSize;
         }
         
+        // Precise fisheye correction
+        float correctedDistance = distance * cos((x - ctx->screen_width / 2.0) * (ctx->fov / ctx->screen_width) * M_PI / 180.0);
+
+        int wallHeight = (int)(ctx->screen_height / correctedDistance);
+        int verticalOffset = (int)(ctx->player->angleY * 5.0);
+
+        int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
+        int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
         if (hitWall && ctx->textures[tile] != NULL) {
-            // Precise fisheye correction
-            float correctedDistance = distance * cos((x - ctx->screen_width / 2.0) * (ctx->fov / ctx->screen_width) * M_PI / 180.0);
-            
-            int wallHeight = (int)(ctx->screen_height / correctedDistance);
-            int verticalOffset = (int)(ctx->player->angleY * 5.0);
-            
-            int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
-            int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
-            
             // Precise texture coordinate calculation
             float texCoordinate = CalculateTextureCoordinate(hitX, hitY, rayX, rayY);
             
@@ -119,6 +118,16 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
             };
             
             SDL_RenderCopy(renderer, ctx->textures[tile], &srcRect, &dstRect);
+        } else {
+           switch (tile % 6) {
+                case 1: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
+                case 2: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
+                case 3: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
+                case 4: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
+                case 5: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+                default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
+            }
+            SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom); 
         }
     }
 }

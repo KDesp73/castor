@@ -31,7 +31,8 @@ void ContextInit(Context* ctx)
     ctx->fov = 60;
     ctx->screen_width = 1080;
     ctx->screen_height = 720;
-    ctx->fov = 60;
+    ctx->texture_width = 64;
+    ctx->texture_height = 64;
 }
 
 void ContextFree(Context* ctx)

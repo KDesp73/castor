@@ -1,9 +1,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "engine.h"
 #include "map.h"
 #include "player.h"
@@ -15,11 +17,8 @@
 #define TARGET_FPS 60
 #define FRAME_DELAY (1000/TARGET_FPS)
 
-void LoadTextures(Context* ctx)
+void _LoadTextures(Context* ctx)
 {
-    ctx->texture_width = 64;
-    ctx->texture_height = 64;
-
     ctx->textures[1] = LoadTexture(ctx->renderer, "./assets/textures/mossy-rock.png");
     ctx->textures[2] = LoadTexture(ctx->renderer, "./assets/textures/brick.png");
     ctx->textures[3] = LoadTexture(ctx->renderer, "./assets/textures/purple-rock.png");
@@ -29,8 +28,6 @@ void LoadTextures(Context* ctx)
     ctx->textures[7] = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
     ctx->textures[8] = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
 
-    ctx->floor_texture_index = 7;
-    ctx->ceiling_texture_index = 8;
 }
 
 void loop(Context* ctx)
@@ -95,6 +92,10 @@ int main(int argc, char** argv)
     Context ctx = {
         .game_name = "3d-game",
         .player = PlayerNew(0.2, 0.0, 1.5, 1.5),
+        .texture_width = 64,
+        .texture_height = 64,
+        .floor_texture_index = 7,
+        .ceiling_texture_index = 8,
     };
     ContextInit(&ctx);
     LoadLevel(&ctx, "levels/2.lvl");
@@ -104,7 +105,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    LoadTextures(&ctx);
+    LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
 
     loop(&ctx);
 

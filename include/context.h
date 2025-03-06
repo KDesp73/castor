@@ -8,6 +8,7 @@
 
 #define MAX_MAP_WIDTH  64
 #define MAX_MAP_HEIGHT 64
+#define MAX_TEXTURES 512
 typedef struct {
     bool running;
 
@@ -23,7 +24,7 @@ typedef struct {
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-    SDL_Texture* textures[MAX_MAP_WIDTH];
+    SDL_Texture* textures[MAX_TEXTURES];
     size_t floor_texture_index;
     size_t ceiling_texture_index;
     size_t texture_width;
@@ -39,6 +40,5 @@ void ContextFree(Context* ctx);
 void FreeTextures(Context* ctx);
 
 void LoadLevel(Context* ctx, const char* path);
-
 
 #endif // CONTEXT_H
