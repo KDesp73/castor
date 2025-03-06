@@ -3,9 +3,22 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_image.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <sys/stat.h>
+
+static bool FileExists(const char* path)
+{
+    struct stat buffer;
+    return (stat(path, &buffer) == 0) && S_ISREG(buffer.st_mode);
+}
 
 SDL_Texture* LoadTexture(SDL_Renderer *renderer, const char* file_path)
 {
+    if(!FileExists(file_path)) {
+        fprintf(stderr, "Path %s is not a file\n", file_path);
+        return NULL;
+    }
+
     SDL_Surface* surface = IMG_Load(file_path);
     if (!surface) {
         fprintf(stderr, "Failed to load texture: %s\n", IMG_GetError());

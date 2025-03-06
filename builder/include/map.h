@@ -24,18 +24,35 @@ static inline void MapPrint(int* map[], size_t rows, size_t cols)
     printf("}\n");
 }
 
-static inline void MapDraw(int** map, size_t rows, size_t cols, size_t scale)
+static inline void MapDraw(int** map, size_t rows, size_t cols, size_t scale, Texture textures[])
 {
     for (size_t i = 0; i < rows; i++) {
         for (size_t j = 0; j < cols; j++) {
-            const char* text = TextFormat("%d", map[i][j]);
-            int text_width = MeasureText(text, scale / 2);
-            int font_size = scale / 2;
-            int posX = j * scale + (scale - text_width) / 2;
-            int posY = i * scale + (scale - font_size) / 2;  
+            int tile = map[i][j];
+            int posX = j * scale;
+            int posY = i * scale;
             
-            if (map[i][j] != 0) {
-                DrawText(text, posX, posY, font_size, RAYWHITE);
+            if (tile != 0) {
+                if (textures[tile].id == 0) {
+                    // If texture is missing, draw a placeholder text
+                    const char* text = TextFormat("%d", tile);
+                    int font_size = scale / 2;
+                    int text_width = MeasureText(text, font_size);
+                    int textX = posX + (scale - text_width) / 2;
+                    int textY = posY + (scale - font_size) / 2;
+                    DrawRectangle(posX, posY, scale, scale, DARKGRAY);
+                    DrawText(text, textX, textY, font_size, RAYWHITE);
+                } else {
+                    // Draw the texture properly scaled
+                    DrawTexturePro(
+                        textures[tile], 
+                        (Rectangle){0, 0, textures[tile].width, textures[tile].height},  // Source
+                        (Rectangle){posX, posY, scale, scale},  // Destination
+                        (Vector2){0, 0},  // No offset
+                        0.0f,  // No rotation
+                        WHITE
+                    );
+                }
             }
         }
     }

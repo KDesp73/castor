@@ -98,7 +98,7 @@ int main(int argc, char** argv)
         .ceiling_texture_index = 8,
     };
     ContextInit(&ctx);
-    LoadLevel(&ctx, "levels/2.lvl");
+    LoadLevel(&ctx, "levels/3.lvl");
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);

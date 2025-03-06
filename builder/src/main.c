@@ -1,5 +1,6 @@
 #include "cli.h"
 #include "map.h"
+#include "textures.h"
 #include "ui.h"
 #include "raylib.h"
 #include <stdbool.h>
@@ -37,6 +38,9 @@ int main(int argc, char** argv)
     InitWindow(in.cols * in.scale, in.rows * in.scale, WINDOW_TITLE);
     SetTargetFPS(FPS);
 
+    Texture textures[MAX_TEXTURES];
+    LoadTextures(textures, "textures.list");
+
     size_t selected = 0;
     while(!WindowShouldClose()){
         size_t new = Selected();
@@ -64,7 +68,7 @@ int main(int argc, char** argv)
 
         Grid(in.rows, in.cols);
 
-        MapDraw(map, in.rows, in.cols, in.scale);
+        MapDraw(map, in.rows, in.cols, in.scale, textures);
 
         if(selected != 0) {
             ShowSelectedAtCursor(selected, 20, YELLOW);
