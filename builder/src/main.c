@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     if(in.loaded == NULL) {
         map = MapCreate(in.rows, in.cols);
     } else {
-        map = MapLoad(&in.rows, &in.rows, in.loaded);
+        map = MapLoad(&in.rows, &in.cols, in.loaded);
     }
 
     SetTraceLogLevel(LOG_WARNING);
