@@ -9,6 +9,19 @@
 #define WINDOW_TITLE "lvl - A level builder"
 #define FPS 60
 
+void AddBorder(size_t selected, int **map, size_t rows, size_t cols)
+{
+    for(size_t col = 0; col < cols; col++) {
+        map[0][col] = selected;
+        map[rows-1][col] = selected;
+    }
+
+    for(size_t row = 1; row < rows-1; row++) {
+        map[row][0] = selected;
+        map[row][cols-1] = selected;
+    }
+}
+
 int main(int argc, char** argv)
 {
     Input in = ParseCliArgs(argc, argv);
@@ -40,6 +53,10 @@ int main(int argc, char** argv)
 
         if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_S)) {
             MapSave(map, in.rows, in.cols, (in.output) ? in.output : "temp.lvl");
+        }
+
+        if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_B)) {
+            AddBorder(selected, map, in.rows, in.cols);
         }
 
         BeginDrawing();

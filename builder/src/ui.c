@@ -55,7 +55,6 @@ void ShowSelectedAtCursor(size_t selected, int font_size, Color color)
     DrawText(text, GetMousePosition().x + 20, GetMousePosition().y, font_size, color);
 }
 
-// NOTE: The tool supports 35 different textures / sprites 1-9 A-Z
 size_t Selected()
 {
     size_t selected = 0;
@@ -69,32 +68,15 @@ size_t Selected()
     if(IsKeyPressed(KEY_SEVEN)) selected = 7;
     if(IsKeyPressed(KEY_EIGHT)) selected = 8;
     if(IsKeyPressed(KEY_NINE))  selected = 9;
-    if(IsKeyPressed(KEY_A))     selected = 10;
-    if(IsKeyPressed(KEY_B))     selected = 11;
-    if(IsKeyPressed(KEY_C))     selected = 12;
-    if(IsKeyPressed(KEY_D))     selected = 13;
-    if(IsKeyPressed(KEY_E))     selected = 14;
-    if(IsKeyPressed(KEY_F))     selected = 15;
-    if(IsKeyPressed(KEY_G))     selected = 16;
-    if(IsKeyPressed(KEY_H))     selected = 17;
-    if(IsKeyPressed(KEY_I))     selected = 18;
-    if(IsKeyPressed(KEY_J))     selected = 19;
-    if(IsKeyPressed(KEY_K))     selected = 20;
-    if(IsKeyPressed(KEY_L))     selected = 21;
-    if(IsKeyPressed(KEY_M))     selected = 22;
-    if(IsKeyPressed(KEY_N))     selected = 23;
-    if(IsKeyPressed(KEY_O))     selected = 24;
-    if(IsKeyPressed(KEY_P))     selected = 25;
-    if(IsKeyPressed(KEY_Q))     selected = 26;
-    if(IsKeyPressed(KEY_R))     selected = 27;
-    if(IsKeyPressed(KEY_S))     selected = 28;
-    if(IsKeyPressed(KEY_T))     selected = 29;
-    if(IsKeyPressed(KEY_U))     selected = 30;
-    if(IsKeyPressed(KEY_V))     selected = 31;
-    if(IsKeyPressed(KEY_W))     selected = 32;
-    if(IsKeyPressed(KEY_X))     selected = 33;
-    if(IsKeyPressed(KEY_Y))     selected = 34;
-    if(IsKeyPressed(KEY_Z))     selected = 35;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_ONE))   selected = 10;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_TWO))   selected = 11;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_THREE)) selected = 12;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_FOUR))  selected = 13;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_FIVE))  selected = 14;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_SIX))   selected = 15;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_SEVEN)) selected = 16;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_EIGHT)) selected = 17;
+    if((IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) && IsKeyPressed(KEY_NINE))  selected = 18;
 
     return selected;
 }
