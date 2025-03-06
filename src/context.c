@@ -33,6 +33,7 @@ void ContextInit(Context* ctx)
     ctx->screen_height = 720;
     ctx->texture_width = 64;
     ctx->texture_height = 64;
+    ctx->mouse_sensitivity = 0.25;
 }
 
 void ContextFree(Context* ctx)

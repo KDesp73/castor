@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
@@ -52,21 +53,8 @@ void loop(Context* ctx)
             }
         }
 
-
-        const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        if (keys[SDL_SCANCODE_W])
-            MoveFront(ctx);
-        if (keys[SDL_SCANCODE_S])
-            MoveBack(ctx);
-        if (keys[SDL_SCANCODE_A])
-            RotateLeft(ctx);
-        if (keys[SDL_SCANCODE_D])
-            RotateRight(ctx);
-        if (keys[SDL_SCANCODE_UP])
-            LookUp(ctx);
-        if (keys[SDL_SCANCODE_DOWN])
-            LookDown(ctx);
-        if(keys[SDL_SCANCODE_R])
+        Uint8 key = HandleInput(ctx);
+        if(key == SDL_SCANCODE_R)
             PlayerLoad(ctx->player, stored_player);
 
         SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
@@ -91,14 +79,14 @@ int main(int argc, char** argv)
 {
     Context ctx = {
         .game_name = "3d-game",
-        .player = PlayerNew(0.2, 0.0, 1.5, 1.5),
+        .player = PlayerNew(0.10, 0.0, 1.5, 1.5),
         .texture_width = 64,
         .texture_height = 64,
         .floor_texture_index = 7,
         .ceiling_texture_index = 8,
     };
     ContextInit(&ctx);
-    LoadLevel(&ctx, "levels/3.lvl");
+    LoadLevel(&ctx, "levels/2.lvl");
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);

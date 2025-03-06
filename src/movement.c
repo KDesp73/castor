@@ -1,5 +1,8 @@
 #include "movement.h"
 #include "context.h"
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_stdinc.h>
 
 void MoveFront(Context* ctx)
 {
@@ -23,34 +26,59 @@ void MoveBack(Context* ctx)
     }
 }
 
-#define ANGLE_DELTA 2.5
-void RotateLeft(Context* ctx)
+void MoveLeft(Context* ctx)
 {
-    ctx->player->angleX -= ANGLE_DELTA;
+    // Calculate the direction perpendicular to the player's forward direction
+    float moveX = cos((ctx->player->angleX - 90) * M_PI / 180.0) * ctx->player->speed;
+    float moveY = sin((ctx->player->angleX - 90) * M_PI / 180.0) * ctx->player->speed;
+
+    // Check for collision and move if no collision
+    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
+        ctx->player->X += moveX;
+        ctx->player->Y += moveY;
+    }
+}
+
+void MoveRight(Context* ctx)
+{
+    // Calculate the direction perpendicular to the player's forward direction
+    float moveX = cos((ctx->player->angleX + 90) * M_PI / 180.0) * ctx->player->speed;
+    float moveY = sin((ctx->player->angleX + 90) * M_PI / 180.0) * ctx->player->speed;
+
+    // Check for collision and move if no collision
+    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
+        ctx->player->X += moveX;
+        ctx->player->Y += moveY;
+    }
+}
+
+void RotateLeft(Context* ctx, double delta)
+{
+    ctx->player->angleX -= delta;
     if (ctx->player->angleX < 0) ctx->player->angleX += 360;
 
 }
-void RotateRight(Context* ctx)
+void RotateRight(Context* ctx, double delta)
 {
-    ctx->player->angleX += ANGLE_DELTA;
+    ctx->player->angleX += delta;
     if (ctx->player->angleX >= 360) ctx->player->angleX -= 360;
 }
 
-#define ANGLE_Y_CUTOFF 80
-void LookUp(Context *ctx)
+#define ANGLE_Y_CUTOFF 100
+void LookUp(Context *ctx, double delta)
 {
-    if (ctx->player->angleY - ANGLE_DELTA < -ANGLE_Y_CUTOFF)
+    if (ctx->player->angleY - delta < -ANGLE_Y_CUTOFF)
         ctx->player->angleY = -ANGLE_Y_CUTOFF;
     else
-        ctx->player->angleY -= ANGLE_DELTA;
+        ctx->player->angleY -= delta;
 }
 
-void LookDown(Context *ctx)
+void LookDown(Context *ctx, double delta)
 {
-    if (ctx->player->angleY + ANGLE_DELTA > ANGLE_Y_CUTOFF)
+    if (ctx->player->angleY + delta > ANGLE_Y_CUTOFF)
         ctx->player->angleY = ANGLE_Y_CUTOFF;
     else
-        ctx->player->angleY += ANGLE_DELTA;
+        ctx->player->angleY += delta;
 }
 
 bool CheckCollision(float newX, float newY, const Context* ctx)
@@ -68,4 +96,47 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     }
 
     return false;
+}
+
+Uint8 HandleInput(Context* ctx)
+{
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+    // Lock the cursor in the center of the screen
+    SDL_ShowCursor(SDL_FALSE); // Hide the cursor
+    SDL_SetRelativeMouseMode(SDL_TRUE); // Make the mouse movement relative to the window
+
+    // Get the relative mouse motion
+    int xrel, yrel;
+    SDL_GetRelativeMouseState(&xrel, &yrel);
+
+    // Rotate the camera based on mouse movement
+    if (xrel != 0) {
+        // Rotate camera left or right based on x movement
+        RotateRight(ctx, xrel * ctx->mouse_sensitivity); // Add sensitivity scaling if needed
+    }
+
+    if (yrel != 0) {
+        // Look up or down based on y movement
+        LookUp(ctx, -yrel * ctx->mouse_sensitivity);
+    }
+
+    // Optional: Handle other keyboard inputs for movement
+    if (keys[SDL_SCANCODE_W]) {
+        MoveFront(ctx);
+    }
+    if (keys[SDL_SCANCODE_S]) {
+        MoveBack(ctx);
+    }
+    if(keys[SDL_SCANCODE_A]) {
+        MoveLeft(ctx);
+    }
+    if(keys[SDL_SCANCODE_D]) {
+        MoveRight(ctx);
+    }
+    if (keys[SDL_SCANCODE_R]) {
+        return SDL_SCANCODE_R;
+    }
+
+    return 0;
 }

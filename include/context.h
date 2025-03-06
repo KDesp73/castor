@@ -22,6 +22,8 @@ typedef struct {
     size_t map_width;
     size_t map_height;
 
+    double mouse_sensitivity;
+
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* textures[MAX_TEXTURES];
