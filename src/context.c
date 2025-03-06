@@ -1,6 +1,7 @@
 #include "context.h"
 #include "raycaster.h"
 #include "textures.h"
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 
@@ -34,17 +35,15 @@ void ContextFree(Context* ctx)
     SDL_DestroyWindow(ctx->window);
 }
 
-void LoadTextures(Context* ctx)
-{
-    ctx->textures[TILE_WHITE] = LoadTexture(ctx->renderer, "./assets/textures/wall-rock.jpg");
-    ctx->textures[TILE_GREEN] = LoadTexture(ctx->renderer, "./assets/textures/wall-brick.jpg");
-    
-}
 void FreeTextures(Context* ctx)
 {
     for(size_t i = 0; i < MAX_MAP_WIDTH; i++) {
         if(ctx->textures[i] != NULL)
             SDL_DestroyTexture(ctx->textures[i]); 
     }
+    if(ctx->ceiling_texture != NULL)
+        SDL_DestroyTexture(ctx->ceiling_texture);
+    if(ctx->floor_texture != NULL)
+        SDL_DestroyTexture(ctx->floor_texture);
 }
 

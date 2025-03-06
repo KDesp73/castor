@@ -14,6 +14,7 @@ typedef enum {
 } Tile;
 
 void CastRays(SDL_Renderer *renderer, const Context* ctx);
+void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx);
 
 
 #endif // RAYCASTER_H

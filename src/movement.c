@@ -36,7 +36,7 @@ void RotateRight(Context* ctx)
     if (ctx->player->angleX >= 360) ctx->player->angleX -= 360;
 }
 
-#define ANGLE_Y_CUTOFF 120
+#define ANGLE_Y_CUTOFF 80
 void LookUp(Context *ctx)
 {
     if (ctx->player->angleY - ANGLE_DELTA < -ANGLE_Y_CUTOFF)

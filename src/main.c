@@ -8,6 +8,25 @@
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
+#include "textures.h"
+
+void LoadTextures(Context* ctx)
+{
+    ctx->texture_width = 64;
+    ctx->texture_height = 64;
+
+    ctx->floor_texture = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
+    ctx->ceiling_texture = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
+
+    ctx->textures[1] = LoadTexture(ctx->renderer, "./assets/textures/mossy-rock.png");
+    ctx->textures[2] = LoadTexture(ctx->renderer, "./assets/textures/brick.png");
+    ctx->textures[3] = LoadTexture(ctx->renderer, "./assets/textures/purple-rock.png");
+    ctx->textures[4] = LoadTexture(ctx->renderer, "./assets/textures/eagle.png");
+    ctx->textures[5] = LoadTexture(ctx->renderer, "./assets/textures/colored-rock.png");
+    ctx->textures[6] = LoadTexture(ctx->renderer, "./assets/textures/blue-rock.png");
+    ctx->textures[7] = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
+    ctx->textures[8] = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
+}
 
 void loop(Context* ctx)
 {
@@ -48,6 +67,8 @@ void loop(Context* ctx)
         SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
         SDL_RenderClear(ctx->renderer);
 
+
+        // DrawFloorAndCeiling(ctx->renderer, ctx);
         CastRays(ctx->renderer, ctx);
 
         SDL_RenderPresent(ctx->renderer);
@@ -63,18 +84,18 @@ int main(int argc, char** argv)
         .map = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 1, 0, 0, 5, 5, 5, 5, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1},
+            {1, 0, 0, 6, 4, 3, 7, 2, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
         },
@@ -83,9 +104,7 @@ int main(int argc, char** argv)
         .map_width = 16,
         .map_height = 16,
         .fov = 60,
-        .player = PlayerNew(0.02, 0.0, 3.5, 3.5),
-        .texture_width = 2048,
-        .texture_height = 2048
+        .player = PlayerNew(0.05, 0.0, 3.5, 3.5),
     };
 
 
