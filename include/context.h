@@ -25,8 +25,8 @@ typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* textures[MAX_MAP_WIDTH];
-    SDL_Texture* floor_texture;
-    SDL_Texture* ceiling_texture;
+    size_t floor_texture_index;
+    size_t ceiling_texture_index;
     size_t texture_width;
     size_t texture_height;
 } Context;

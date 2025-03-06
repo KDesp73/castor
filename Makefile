@@ -25,7 +25,7 @@ VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 ifeq ($(type), RELEASE)
 	CFLAGS += -O3
 else
-	SANITIZERS = # -fsanitize=address,undefined
+	SANITIZERS = -fsanitize=address,undefined
 	CFLAGS  += -DDEBUG -ggdb
 	CFLAGS  += $(SANITIZERS)
 	LDFLAGS += $(SANITIZERS)

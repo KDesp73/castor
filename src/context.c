@@ -41,9 +41,5 @@ void FreeTextures(Context* ctx)
         if(ctx->textures[i] != NULL)
             SDL_DestroyTexture(ctx->textures[i]); 
     }
-    if(ctx->ceiling_texture != NULL)
-        SDL_DestroyTexture(ctx->ceiling_texture);
-    if(ctx->floor_texture != NULL)
-        SDL_DestroyTexture(ctx->floor_texture);
 }
 

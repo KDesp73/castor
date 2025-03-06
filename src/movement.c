@@ -23,7 +23,7 @@ void MoveBack(Context* ctx)
     }
 }
 
-#define ANGLE_DELTA 0.5
+#define ANGLE_DELTA 2.5
 void RotateLeft(Context* ctx)
 {
     ctx->player->angleX -= ANGLE_DELTA;

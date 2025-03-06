@@ -123,35 +123,45 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
     }
 }
 
-void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx)
-{
+void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx) {
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
+    // Camera direction and plane (for perspective-correct mapping)
+    float dirX = cos(ctx->player->angleX * M_PI / 180.0);
+    float dirY = sin(ctx->player->angleX * M_PI / 180.0);
+    float planeX = -dirY * ctx->fov;
+    float planeY = dirX * ctx->fov;
+
     for (int y = ctx->screen_height / 2; y < ctx->screen_height; y++) {
-        // Calculate distance from player to current row
-        float rowDistance = ctx->player->angleY / ((float)y - ctx->screen_height / 2);
+        float p = y - (ctx->screen_height / 2);
+        float posZ = 0.5 * ctx->screen_height;
+        float rowDistance = posZ / p;
 
-        // Calculate floor position in world space
-        float floorStepX = rowDistance * cos(ctx->player->angleX * M_PI / 180.0);
-        float floorStepY = rowDistance * sin(ctx->player->angleX * M_PI / 180.0);
+        // Step increments for each x
+        float stepX = rowDistance * (planeX * 2) / ctx->screen_width;
+        float stepY = rowDistance * (planeY * 2) / ctx->screen_width;
 
-        float floorX = ctx->player->X + floorStepX;
-        float floorY = ctx->player->Y + floorStepY;
+        float floorX = ctx->player->X + rowDistance * (dirX - planeX);
+        float floorY = ctx->player->Y + rowDistance * (dirY - planeY);
 
         for (int x = 0; x < ctx->screen_width; x++) {
-            // Convert world coordinates to texture coordinates
-            int texX = (int)(floorX * ctx->texture_width) % ctx->texture_width;
-            int texY = (int)(floorY * ctx->texture_height) % ctx->texture_height;
+            int mapX = (int)floorX;
+            int mapY = (int)floorY;
+
+            int texX = (int)(ctx->texture_width * (floorX - mapX)) & (ctx->texture_width - 1);
+            int texY = (int)(ctx->texture_height * (floorY - mapY)) & (ctx->texture_height - 1);
+
+            floorX += stepX;
+            floorY += stepY;
 
             SDL_Rect srcRect = { texX, texY, 1, 1 };
-            SDL_Rect dstRect = { x, y, 1, 1 };
+            SDL_Rect dstFloor = { x, y, 1, 1 };
+            SDL_Rect dstCeiling = { x, ctx->screen_height - y - 1, 1, 1 };
 
             // Draw floor texture
-            SDL_RenderCopy(renderer, ctx->floor_texture, &srcRect, &dstRect);
-
-            // Draw ceiling texture (mirrored)
-            dstRect.y = ctx->screen_height - y;
-            SDL_RenderCopy(renderer, ctx->ceiling_texture, &srcRect, &dstRect);
+            SDL_RenderCopy(renderer, ctx->textures[ctx->floor_texture_index], &srcRect, &dstFloor);
+            // Draw ceiling texture
+            SDL_RenderCopy(renderer, ctx->textures[ctx->ceiling_texture_index], &srcRect, &dstCeiling);
         }
     }
 }

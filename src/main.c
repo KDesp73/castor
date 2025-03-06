@@ -10,13 +10,13 @@
 #include "movement.h"
 #include "textures.h"
 
+#define TARGET_FPS 60
+#define FRAME_DELAY (1000/TARGET_FPS)
+
 void LoadTextures(Context* ctx)
 {
     ctx->texture_width = 64;
     ctx->texture_height = 64;
-
-    ctx->floor_texture = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
-    ctx->ceiling_texture = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
 
     ctx->textures[1] = LoadTexture(ctx->renderer, "./assets/textures/mossy-rock.png");
     ctx->textures[2] = LoadTexture(ctx->renderer, "./assets/textures/brick.png");
@@ -26,6 +26,9 @@ void LoadTextures(Context* ctx)
     ctx->textures[6] = LoadTexture(ctx->renderer, "./assets/textures/blue-rock.png");
     ctx->textures[7] = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
     ctx->textures[8] = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
+
+    ctx->floor_texture_index = 7;
+    ctx->ceiling_texture_index = 8;
 }
 
 void loop(Context* ctx)
@@ -40,7 +43,10 @@ void loop(Context* ctx)
     SDL_Event event;
     TTF_Font *font = TTF_OpenFont("assets/fonts/OpenSans-Regular.ttf", 18);
 
+    Uint32 frameStart, frameTime;
     while (ctx->running) {
+        frameStart = SDL_GetTicks();
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 ctx->running = false;
@@ -72,6 +78,12 @@ void loop(Context* ctx)
         CastRays(ctx->renderer, ctx);
 
         SDL_RenderPresent(ctx->renderer);
+
+        frameTime = SDL_GetTicks() - frameStart;
+        // Delay to cap FPS
+        if (frameTime < FRAME_DELAY) {
+            SDL_Delay(FRAME_DELAY - frameTime);
+        }
     }
     TTF_CloseFont(font);
 }
@@ -104,7 +116,7 @@ int main(int argc, char** argv)
         .map_width = 16,
         .map_height = 16,
         .fov = 60,
-        .player = PlayerNew(0.05, 0.0, 3.5, 3.5),
+        .player = PlayerNew(0.2, 0.0, 3.5, 3.5),
     };
 
 
