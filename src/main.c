@@ -14,6 +14,7 @@
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
+#include "settings.h"
 #include "textures.h"
 
 #define TARGET_FPS 60
@@ -94,15 +95,7 @@ int main(int argc, char** argv)
         EngineClose(&ctx);
         return 1;
     }
-    SDL_DisplayMode displayMode;
-    if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0) {
-        int screenWidth = displayMode.w;
-        int screenHeight = displayMode.h;
-        printf("Screen resolution: %d x %d\n", screenWidth, screenHeight);
-    }
-    ctx.screen_width = displayMode.w;
-    ctx.screen_height = displayMode.h;
-    SDL_SetWindowFullscreen(ctx.window, SDL_WINDOW_FULLSCREEN);
+    // SetFullscreen(&ctx);
 
     LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
 

@@ -90,33 +90,19 @@ void MoveRight(Context* ctx)
     }
 }
 
-void RotateLeft(Context* ctx, double delta)
-{
-    ctx->player->angleX -= delta;
-    if (ctx->player->angleX < 0) ctx->player->angleX += 360;
-
-}
-void RotateRight(Context* ctx, double delta)
+void RotateX(Context* ctx, double delta)
 {
     ctx->player->angleX += delta;
     if (ctx->player->angleX >= 360) ctx->player->angleX -= 360;
 }
 
 #define ANGLE_Y_CUTOFF 100
-void LookUp(Context *ctx, double delta)
+void RotateY(Context *ctx, double delta)
 {
     if (ctx->player->angleY - delta < -ANGLE_Y_CUTOFF)
         ctx->player->angleY = -ANGLE_Y_CUTOFF;
     else
         ctx->player->angleY -= delta;
-}
-
-void LookDown(Context *ctx, double delta)
-{
-    if (ctx->player->angleY + delta > ANGLE_Y_CUTOFF)
-        ctx->player->angleY = ANGLE_Y_CUTOFF;
-    else
-        ctx->player->angleY += delta;
 }
 
 bool CheckCollision(float newX, float newY, const Context* ctx)
@@ -148,11 +134,11 @@ Uint8 HandleInput(Context* ctx)
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
     if (xrel != 0) {
-        RotateRight(ctx, xrel * ctx->mouse_sensitivity);
+        RotateX(ctx, xrel * ctx->mouse_sensitivity);
     }
 
     if (yrel != 0) {
-        LookUp(ctx, ((ctx->mouse_inverted) ? -yrel : yrel) * (ctx->mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
+        RotateY(ctx, ((ctx->mouse_inverted) ? -yrel : yrel) * (ctx->mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
     }
 
     if (keys[SDL_SCANCODE_W]) {
@@ -169,6 +155,20 @@ Uint8 HandleInput(Context* ctx)
     }
     if (keys[SDL_SCANCODE_R]) {
         return SDL_SCANCODE_R;
+    }
+
+#define ANGLE_DELTA 2.5
+    if(keys[SDL_SCANCODE_UP]) {
+        RotateY(ctx, ANGLE_DELTA);
+    }
+    if(keys[SDL_SCANCODE_DOWN]) {
+        RotateY(ctx, -ANGLE_DELTA);
+    }
+    if(keys[SDL_SCANCODE_LEFT]) {
+        RotateX(ctx, -ANGLE_DELTA);
+    }
+    if(keys[SDL_SCANCODE_RIGHT]) {
+        RotateX(ctx, ANGLE_DELTA);
     }
 
     return 0;

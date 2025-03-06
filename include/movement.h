@@ -9,10 +9,8 @@ void MoveFront(Context* context);
 void MoveBack(Context* context);
 void MoveLeft(Context* context);
 void MoveRight(Context* context);
-void RotateLeft(Context* context, double delta);
-void RotateRight(Context* context, double delta);
-void LookUp(Context* context, double delta);
-void LookDown(Context* context, double delta);
+void RotateX(Context* context, double delta);
+void RotateY(Context* context, double delta);
 
 bool CheckCollision(float newX, float newY, const Context* ctx);
 
