@@ -1,6 +1,6 @@
 # raycasting-game 
 
-![image](https://github.com/user-attachments/assets/597e4ffe-299f-4b4b-8419-b161b99fa8f5)
+![image](https://github.com/user-attachments/assets/d1643f65-7f98-448d-9b70-d0e65c389ce9)
 
 > [!NOTE]
 > This project is in early stages of development
