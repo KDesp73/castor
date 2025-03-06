@@ -10,7 +10,7 @@ BUILD_DIR = build
 DIST_DIR = dist
 
 # Target and version info
-TARGET = builder
+TARGET = lvl
 version_file = include/version.h
 VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
 VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))

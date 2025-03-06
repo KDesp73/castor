@@ -48,6 +48,7 @@ counter = 0
 
 .PHONY: all
 all: check_tools $(BUILD_DIR) static shared $(TARGET) ## Build the project
+	./scripts/build.sh
 	@echo "Build complete."
 
 .PHONY: check_tools
