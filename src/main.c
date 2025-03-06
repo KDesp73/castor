@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "engine.h"
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
@@ -92,7 +93,6 @@ int main(int argc, char** argv)
 {
     Context ctx = {
         .game_name = "3d-game",
-        .running = true,
         .map = {
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -111,41 +111,14 @@ int main(int argc, char** argv)
             {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
         },
-        .screen_width = 1080,
-        .screen_height = 720,
         .map_width = 16,
         .map_height = 16,
-        .fov = 60,
         .player = PlayerNew(0.2, 0.0, 3.5, 3.5),
     };
+    ContextInit(&ctx);
 
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
-        ContextFree(&ctx);
-        return 1;
-    }
-
-    if (TTF_Init() == -1) {
-        fprintf(stderr, "TTF_Init Error: %s\n", TTF_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) & (IMG_INIT_JPG | IMG_INIT_PNG))) {
-        fprintf(stderr, "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-        ContextFree(&ctx);
-        TTF_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    if (!ConstructRenderer(&ctx)) {
-        fprintf(stderr, "Renderer initialization failed\n");
-        ContextFree(&ctx);
-        IMG_Quit();
-        TTF_Quit();
-        SDL_Quit();
+    if(!EngineInit(&ctx)) {
+        EngineClose(&ctx);
         return 1;
     }
 
@@ -153,10 +126,7 @@ int main(int argc, char** argv)
 
     loop(&ctx);
 
-    ContextFree(&ctx);
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
+    EngineClose(&ctx);
 
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "player.h"
-#include "context.h"
-#include <math.h>
 #include <stdlib.h>
 
 void PlayerInit(Player* player, double speed, double angle, double x, double y)

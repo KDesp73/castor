@@ -34,6 +34,7 @@ typedef struct {
 
 bool ConstructRenderer(Context* ctx);
 
+void ContextInit(Context* ctx);
 void ContextFree(Context* ctx);
 
 void LoadTextures(Context* ctx);

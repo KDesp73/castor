@@ -1,6 +1,4 @@
 #include "context.h"
-#include "raycaster.h"
-#include "textures.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
@@ -24,6 +22,15 @@ bool ConstructRenderer(Context* ctx)
     }
 
     return true;
+}
+
+void ContextInit(Context* ctx)
+{
+    ctx->running = true;
+    ctx->fov = 60;
+    ctx->screen_width = 1080;
+    ctx->screen_height = 720;
+    ctx->fov = 60;
 }
 
 void ContextFree(Context* ctx)
