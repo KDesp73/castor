@@ -40,7 +40,6 @@ static inline void MapDraw(int** map, size_t rows, size_t cols, size_t scale, Te
                     int text_width = MeasureText(text, font_size);
                     int textX = posX + (scale - text_width) / 2;
                     int textY = posY + (scale - font_size) / 2;
-                    DrawRectangle(posX, posY, scale, scale, DARKGRAY);
                     DrawText(text, textX, textY, font_size, RAYWHITE);
                 } else {
                     // Draw the texture properly scaled
