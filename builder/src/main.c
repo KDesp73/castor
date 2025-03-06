@@ -74,10 +74,10 @@ int main(int argc, char** argv)
             ShowSelectedAtCursor(selected, 20, YELLOW);
         }
 
-
         EndDrawing();
     }
     MapPrint(map, in.rows, in.cols);
+    MapSave(map, in.rows, in.cols, (in.output) ? in.output : "temp.lvl");
     MapFree(map, in.rows);
 
     if(in.output) free(in.output);
