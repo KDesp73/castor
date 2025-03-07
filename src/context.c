@@ -44,12 +44,14 @@ void ContextFree(Context* ctx)
     MapFree(ctx->map, ctx->map_height);
 
     SDL_DestroyRenderer(ctx->renderer);
+    ctx->renderer = NULL;
     SDL_DestroyWindow(ctx->window);
+    ctx->window = NULL;
 }
 
 void FreeTextures(Context* ctx)
 {
-    for(size_t i = 0; i < MAX_MAP_WIDTH; i++) {
+    for(size_t i = 0; i < MAX_TEXTURES; i++) {
         if(ctx->textures[i] != NULL)
             SDL_DestroyTexture(ctx->textures[i]); 
     }

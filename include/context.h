@@ -11,9 +11,9 @@
 #define MAX_TEXTURES 512
 typedef struct {
     bool running;
+    float frame_start, frame_time; 
 
-    int screen_width;
-    int screen_height;
+    int screen_width, screen_height;
     int fov;
     const char* game_name;
 

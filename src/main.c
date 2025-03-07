@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
@@ -16,22 +17,9 @@
 #include "movement.h"
 #include "settings.h"
 #include "textures.h"
+#include "ui.h"
 
 #define TARGET_FPS 60
-#define FRAME_DELAY (1000/TARGET_FPS)
-
-void _LoadTextures(Context* ctx)
-{
-    ctx->textures[1] = LoadTexture(ctx->renderer, "./assets/textures/mossy-rock.png");
-    ctx->textures[2] = LoadTexture(ctx->renderer, "./assets/textures/brick.png");
-    ctx->textures[3] = LoadTexture(ctx->renderer, "./assets/textures/purple-rock.png");
-    ctx->textures[4] = LoadTexture(ctx->renderer, "./assets/textures/eagle.png");
-    ctx->textures[5] = LoadTexture(ctx->renderer, "./assets/textures/colored-rock.png");
-    ctx->textures[6] = LoadTexture(ctx->renderer, "./assets/textures/blue-rock.png");
-    ctx->textures[7] = LoadTexture(ctx->renderer, "./assets/textures/stone.png");
-    ctx->textures[8] = LoadTexture(ctx->renderer, "./assets/textures/wood.png");
-
-}
 
 void loop(Context* ctx)
 {
@@ -43,12 +31,19 @@ void loop(Context* ctx)
     Player stored_player = PlayerStore(ctx->player);
 
     SDL_Event event;
-    TTF_Font *font = TTF_OpenFont("assets/fonts/OpenSans-Regular.ttf", 18);
 
-    Uint32 frameStart, frameTime;
+    static UIFont global = {0};
+    UIFontOpen(&global, UI_GLOBAL_FONT, 20, UI_COLOR_WHITE);
+    static UI ui = {0};
+    UIOpen(&ui, ctx, &global);
+
+    ctx->running = false;
+    UI_POLL_SCREEN(StartScreen(ctx->renderer, &event, &ui), ctx, event);
+    ctx->running = true;
+
+    bool paused = false;
     while (ctx->running) {
-        frameStart = SDL_GetTicks();
-
+        FPS_START(ctx);
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 ctx->running = false;
@@ -58,6 +53,12 @@ void loop(Context* ctx)
         Uint8 key = HandleInput(ctx);
         if(key == SDL_SCANCODE_R)
             PlayerLoad(ctx->player, stored_player);
+        if(key == SDL_SCANCODE_ESCAPE && paused == false){
+            SDL_ResetKeyboard();
+            paused = true;
+            UI_POLL_SCREEN(PauseScreen(ctx->renderer, &event, &ui), ctx, event);
+            paused = false;
+        }
 
         SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
         SDL_RenderClear(ctx->renderer);
@@ -68,19 +69,15 @@ void loop(Context* ctx)
 
         SDL_RenderPresent(ctx->renderer);
 
-        frameTime = SDL_GetTicks() - frameStart;
-        // Delay to cap FPS
-        if (frameTime < FRAME_DELAY) {
-            SDL_Delay(FRAME_DELAY - frameTime);
-        }
+        FPS_END(ctx);
     }
-    TTF_CloseFont(font);
+    UIClose(&ui);
 }
 
 int main(int argc, char** argv)
 {
     Context ctx = {
-        .game_name = "3d-game",
+        .game_name = "RayCasting",
         .player = PlayerNew(0.15, 0.0, 1.5, 1.5),
         .texture_width = 64,
         .texture_height = 64,
@@ -89,13 +86,13 @@ int main(int argc, char** argv)
         .mouse_sensitivity = 0.4
     };
     ContextInit(&ctx);
-    LoadLevel(&ctx, "levels/4.lvl");
+    LoadLevel(&ctx, "levels/2.lvl");
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);
         return 1;
     }
-    // SetFullscreen(&ctx);
+    SetFullscreen(&ctx);
 
     LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
 

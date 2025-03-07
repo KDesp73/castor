@@ -122,6 +122,10 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     return false;
 }
 
+#define IF_PRESSED_RETURN(key) \
+    if (keys[key]) return key 
+
+
 Uint8 HandleInput(Context* ctx)
 {
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -153,9 +157,6 @@ Uint8 HandleInput(Context* ctx)
     if(keys[SDL_SCANCODE_D]) {
         MoveRight(ctx);
     }
-    if (keys[SDL_SCANCODE_R]) {
-        return SDL_SCANCODE_R;
-    }
 
 #define ANGLE_DELTA 2.5
     if(keys[SDL_SCANCODE_UP]) {
@@ -170,6 +171,9 @@ Uint8 HandleInput(Context* ctx)
     if(keys[SDL_SCANCODE_RIGHT]) {
         RotateX(ctx, ANGLE_DELTA);
     }
+
+    IF_PRESSED_RETURN(SDL_SCANCODE_R);
+    IF_PRESSED_RETURN(SDL_SCANCODE_ESCAPE);
 
     return 0;
 }
