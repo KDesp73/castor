@@ -65,7 +65,7 @@ void UIButtonOnHover(SDL_Event* event, UIButton* btn);
 
 /* UI */
 typedef struct {
-    const Context* ctx;
+    Context* ctx;
     UIFont* font;
 } UI;
 void UIOpen(UI* ui, Context* ctx, UIFont* font);

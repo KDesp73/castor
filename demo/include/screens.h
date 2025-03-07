@@ -7,5 +7,6 @@
 
 int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui);
 int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui);
+int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui);
 
 #endif // SCREENS_H

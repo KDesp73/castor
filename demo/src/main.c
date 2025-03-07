@@ -31,7 +31,7 @@ void loop(Context* ctx)
     SDL_Event event;
 
     static UIFont global = {0};
-    UIFontOpen(&global, UI_GLOBAL_FONT, 20, UI_COLOR_WHITE);
+    UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
     static UI ui = {0};
     UIOpen(&ui, ctx, &global);
 
@@ -86,29 +86,29 @@ exit:
 
 int main(int argc, char** argv)
 {
-    Context ctx = {
-        .game_name = "RayCasting",
-        .player = PlayerNew(0.15, 0.0, 1.5, 1.5),
-        .texture_width = 64,
-        .texture_height = 64,
-        .floor_texture_index = 7,
-        .ceiling_texture_index = 8,
-        .mouse_sensitivity = 0.4,
-    };
+    Context ctx = {0};
     ContextInit(&ctx);
-    LoadLevel(&ctx, "levels/2.lvl");
+    ctx.game_name = "RayCasting";
+    ctx.player = PlayerNew(0.15, 0.0, 1.5, 1.5);
+    ctx.texture_width = 64;
+    ctx.texture_height = 64;
+    ctx.floor_texture_index = 7;
+    ctx.ceiling_texture_index = 8;
+    ctx.mouse_sensitivity = 0.4;
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);
         return 1;
     }
+    LoadLevel(&ctx, "levels/2.lvl");
+
     // SetFullscreen(&ctx);
 
     LoadTextures(&ctx, TEXTURES_LIST_FILE);
 
     loop(&ctx);
 
+    printf("Closing...\n");
     EngineClose(&ctx);
-
     return 0;
 }

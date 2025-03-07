@@ -41,14 +41,21 @@ void ContextInit(Context* ctx)
 
 void ContextFree(Context* ctx)
 {
-    PlayerFree(&ctx->player);
-    FreeTextures(ctx);
-    MapFree(ctx->map, ctx->map_height);
+    if (ctx) {
+        PlayerFree(&ctx->player);
+        FreeTextures(ctx);
+        MapFree(ctx->map, ctx->map_height);
 
-    SDL_DestroyRenderer(ctx->renderer);
-    ctx->renderer = NULL;
-    SDL_DestroyWindow(ctx->window);
-    ctx->window = NULL;
+        if (ctx->renderer) {
+            SDL_DestroyRenderer(ctx->renderer);
+            ctx->renderer = NULL;
+        }
+
+        if (ctx->window) {
+            SDL_DestroyWindow(ctx->window);
+            ctx->window = NULL;
+        }
+    }
 }
 
 void FreeTextures(Context* ctx)

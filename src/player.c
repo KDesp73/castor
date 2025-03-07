@@ -5,6 +5,7 @@ void PlayerInit(Player* player, double speed, double angle, double x, double y)
 {
     player->speed = speed;
     player->angleX = angle;
+    player->angleY = 0;
     player->X = x;
     player->Y = y;
 }
