@@ -35,6 +35,9 @@ void loop(Context* ctx)
     static UI ui = {0};
     UIOpen(&ui, ctx, &global);
 
+    UIToast toast = {0};
+    UIShowToast(&toast, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 5000);
+
     ctx->running = false;
     if(UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
     ctx->running = true;
@@ -73,6 +76,7 @@ void loop(Context* ctx)
             SDL_RenderClear(ctx->renderer);
 
             CastRays(ctx->renderer, ctx);
+            UIRenderToast(ctx->renderer, global.ttf, &toast, ctx->screen_width, ctx->screen_height);
 
             SDL_RenderPresent(ctx->renderer);
         }

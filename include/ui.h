@@ -93,4 +93,15 @@ static inline int UIPollScreen(UIScreen screen, SDL_Renderer* renderer, SDL_Even
 }
 #define UI_POLL_SCREEN UIPollScreen
 
+/* TOAST */
+typedef struct {
+    char message[256];
+    int duration_ms;
+    Uint32 start_time;
+    bool active;
+} UIToast;
+
+void UIShowToast(UIToast *toast, const char *message, int duration_ms);
+void UIRenderToast(SDL_Renderer *renderer, TTF_Font *font, UIToast *toast, int screen_width, int screen_height);
+
 #endif // UI_H
