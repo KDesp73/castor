@@ -1,5 +1,6 @@
 #include "raycaster.h"
 #include "context.h"
+#include "ui.h"
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_render.h>
 
@@ -107,12 +108,15 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
             
             SDL_RenderCopy(renderer, ctx->textures[tile], &srcRect, &dstRect);
         } else {
-           switch (tile % 6) {
-                case 1: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
-                case 2: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
-                case 3: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
-                case 4: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
-                case 5: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+           switch (tile % 9) {
+                case 4: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_YELLOW)); break;
+                case 1: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_RED)); break;
+                case 8: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_TEAL)); break;
+                case 2: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_GREEN)); break;
+                case 3: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BLUE)); break;
+                case 5: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_MAGENTA)); break;
+                case 6: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_ORANGE)); break;
+                case 7: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_PINK)); break;
                 default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
             }
             SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom); 

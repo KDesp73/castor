@@ -8,16 +8,14 @@
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include "engine.h"
-#include "map.h"
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
-#include "settings.h"
 #include "textures.h"
 #include "ui.h"
+#include "screens.h"
 
 #define TARGET_FPS 60
 
@@ -38,7 +36,7 @@ void loop(Context* ctx)
     UIOpen(&ui, ctx, &global);
 
     ctx->running = false;
-    UI_POLL_SCREEN(StartScreen(ctx->renderer, &event, &ui), ctx, event);
+    if(UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
     ctx->running = true;
 
     bool paused = false;
@@ -49,20 +47,26 @@ void loop(Context* ctx)
             if (event.type == SDL_QUIT) {
                 ctx->running = false;
             }
-
             if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 if (!paused) {
                     paused = true;
-                    UI_POLL_SCREEN(PauseScreen(ctx->renderer, &event, &ui), ctx, event);
-                    paused = false; // Resume when PauseScreen() exits
+                    int result = UI_POLL_SCREEN(PauseScreen, ctx->renderer, &event, &ui);
+                    if (result == 0) paused = false;
+                    else if(result == -1) goto exit;
                 }
             }
         }
 
-        if (!paused) {  // Only update game if not paused
+        if (!paused) {
             Uint8 key = HandleInput(ctx);
             if (key == SDL_SCANCODE_R) {
                 PlayerLoad(ctx->player, stored_player);
+            } else if(key == SDL_SCANCODE_T) {
+                if(ctx->textures_loaded) {
+                    FreeTextures(ctx);
+                } else {
+                    LoadTextures(ctx, TEXTURES_LIST_FILE);
+                }
             }
 
             SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
@@ -75,6 +79,8 @@ void loop(Context* ctx)
 
         FPS_END(ctx);
     }
+
+exit:
     UIClose(&ui);
 }
 
@@ -98,7 +104,7 @@ int main(int argc, char** argv)
     }
     // SetFullscreen(&ctx);
 
-    LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
+    LoadTextures(&ctx, TEXTURES_LIST_FILE);
 
     loop(&ctx);
 

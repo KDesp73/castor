@@ -54,10 +54,14 @@ typedef struct {
     char label[64];
     UIFont* font;
     SDL_Color color;
+    SDL_Color default_color;
+    SDL_Color onhover;
 } UIButton;
 void UIDrawButton(SDL_Renderer* renderer, UIButton* btn);
 int UIIsButtonPressed(SDL_Event *event, UIButton* btn);
 int UIIsButtonHovered(SDL_Event *event, UIButton* btn);
+void UIButtonOnHover(SDL_Event* event, UIButton* btn);
+
 
 /* UI */
 typedef struct {
@@ -68,19 +72,25 @@ void UIOpen(UI* ui, Context* ctx, UIFont* font);
 void UIClose(UI* ui);
 
 /* SCREENS */
+/*
+ * When a screen returns 0 it means that it's completed its purpose and we continue where we left of.
+ * In case it returns -1 it means that the user tried to quit the game.
+ * Any other code is irrelevant
+ */
 typedef int (*UIScreen)(SDL_Renderer*, SDL_Event*, UI*) ;
-int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui);
-int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui);
 
-#define UI_POLL_SCREEN(screen, ctx, event) \
-    while(screen != 0) { \
-        FPS_START(ctx); \
-        while (SDL_PollEvent(&event)) { \
-            if (event.type == SDL_QUIT) { \
-                return; \
-            } \
-        } \
-        FPS_END(ctx); \
+static inline int UIPollScreen(UIScreen screen, SDL_Renderer* renderer, SDL_Event* event, UI* ui)
+{
+    int code = screen(renderer, event, ui);
+    while (code != 0) {
+        if (code == -1) {
+            return -1; // Exit early if screen function returns -1
+        }
+        SDL_Delay(16); // Prevent CPU overuse
+        code = screen(renderer, event, ui); // Call the screen function again
     }
+    return 0;
+}
+#define UI_POLL_SCREEN UIPollScreen
 
 #endif // UI_H

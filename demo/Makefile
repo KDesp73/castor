@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Iinclude -fPIC
-LDFLAGS = -lSDL2 -lSDL2_ttf -lSDL2_image -lm
+CFLAGS = -Wall -Iinclude -I../include
+LDFLAGS = -L.. -l:libraycasting.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm
 
 # Directories
 SRC_DIR = src
@@ -9,11 +9,8 @@ INCLUDE_DIR = include
 BUILD_DIR = build
 DIST_DIR = dist
 
-LIBRARY_NAME = raycasting
-SO_NAME = lib$(LIBRARY_NAME).so
-A_NAME = lib$(LIBRARY_NAME).a
-
-# Version info
+# Target and version info
+TARGET = game
 version_file = include/version.h
 VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
 VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
@@ -24,7 +21,7 @@ VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 ifeq ($(type), RELEASE)
 	CFLAGS += -O3
 else
-	SANITIZERS = # -fsanitize=address,undefined
+	SANITIZERS = -fsanitize=address,undefined
 	CFLAGS  += -DDEBUG -ggdb
 	CFLAGS  += $(SANITIZERS)
 	LDFLAGS += $(SANITIZERS)
@@ -46,8 +43,7 @@ counter = 0
 # Targets
 
 .PHONY: all
-all: check_tools $(BUILD_DIR) static shared ## Build the project
-	./scripts/build.sh
+all: check_tools $(BUILD_DIR) $(TARGET) ## Build the project
 	@echo "Build complete."
 
 .PHONY: check_tools
@@ -58,27 +54,31 @@ check_tools: ## Check if necessary tools are available
 $(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
 	mkdir -p $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)/ui
+
+$(TARGET): $(OBJ_FILES) ## Build the shell executable
+	@echo "[INFO] Building the project"
+	@$(CC) -o $@ $^ $(LDFLAGS)
+	@echo "[INFO] Executable created: $(TARGET)"
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
 	$(eval counter=$(shell echo $$(($(counter)+1))))
 	@echo "[$(counter)/$(TOTAL_FILES)] Compiling $< -> $@"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
-.PHONY: shared
-shared: $(BUILD_DIR) $(OBJ_FILES) ## Build shared library
-	@echo "[INFO] Building shared library: $(SO_NAME)"
-	@$(CC) -shared $(CFLAGS) -o $(SO_NAME) $(OBJ_FILES)
+.PHONY: install
+install: all ## Install the executable to /usr/bin/
+	@echo "[INFO] Installing $(TARGET) to /usr/bin/"
+	cp $(TARGET) /usr/bin/$(TARGET)
 
-.PHONY: static
-static: $(BUILD_DIR) $(OBJ_FILES) ## Build static library
-	@echo "[INFO] Building static library: $(A_NAME)"
-	@$(AR) rcs $(A_NAME) $(OBJ_FILES)
+.PHONY: uninstall
+uninstall: ## Remove the executable from /usr/bin/
+	@echo "[INFO] Uninstalling $(TARGET)"
+	rm -f /usr/bin/$(TARGET)
 
 .PHONY: clean
 clean: ## Remove all build files and the executable
 	@echo "[INFO] Cleaning up build directory and executable."
-	rm -rf $(BUILD_DIR) $(TARGET) $(SO_NAME) $(A_NAME)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
 .PHONY: distclean
 distclean: clean ## Perform a full clean, including backup and temporary files

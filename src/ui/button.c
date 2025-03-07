@@ -24,3 +24,12 @@ int UIIsButtonHovered(SDL_Event *event, UIButton* btn)
     int my = event->button.y;
     return (mx >= btn->x && mx <= btn->x + btn->w && my >= btn->y && my <= btn->y + btn->h);
 }
+
+void UIButtonOnHover(SDL_Event* event, UIButton* btn)
+{
+    if (UIIsButtonHovered(event, btn)) {
+        btn->color = btn->onhover; // Set hover color
+    } else {
+        btn->color = btn->default_color;
+    }
+}

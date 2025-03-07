@@ -1,8 +1,10 @@
 #include "context.h"
 #include "map.h"
+#include "textures.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
+#include <string.h>
 
 bool ConstructRenderer(Context* ctx)
 {
@@ -52,9 +54,12 @@ void ContextFree(Context* ctx)
 void FreeTextures(Context* ctx)
 {
     for(size_t i = 0; i < MAX_TEXTURES; i++) {
-        if(ctx->textures[i] != NULL)
+        if(ctx->textures[i] != NULL) {
             SDL_DestroyTexture(ctx->textures[i]); 
+            ctx->textures[i] = NULL;
+        }
     }
+    ctx->textures_loaded = false;
 }
 
 void LoadLevel(Context* ctx, const char* path)
@@ -62,3 +67,8 @@ void LoadLevel(Context* ctx, const char* path)
     ctx->map = MapLoad(&ctx->map_height, &ctx->map_width, path);
 }
 
+void LoadTextures(Context* ctx, const char* path)
+{
+    TexturesLoad(ctx->renderer, ctx->textures, path);
+    ctx->textures_loaded = true;
+}
