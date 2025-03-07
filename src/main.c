@@ -44,30 +44,34 @@ void loop(Context* ctx)
     bool paused = false;
     while (ctx->running) {
         FPS_START(ctx);
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 ctx->running = false;
             }
+
+            if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                if (!paused) {
+                    paused = true;
+                    UI_POLL_SCREEN(PauseScreen(ctx->renderer, &event, &ui), ctx, event);
+                    paused = false; // Resume when PauseScreen() exits
+                }
+            }
         }
 
-        Uint8 key = HandleInput(ctx);
-        if(key == SDL_SCANCODE_R)
-            PlayerLoad(ctx->player, stored_player);
-        if(key == SDL_SCANCODE_ESCAPE && paused == false){
-            SDL_ResetKeyboard();
-            paused = true;
-            UI_POLL_SCREEN(PauseScreen(ctx->renderer, &event, &ui), ctx, event);
-            paused = false;
+        if (!paused) {  // Only update game if not paused
+            Uint8 key = HandleInput(ctx);
+            if (key == SDL_SCANCODE_R) {
+                PlayerLoad(ctx->player, stored_player);
+            }
+
+            SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
+            SDL_RenderClear(ctx->renderer);
+
+            CastRays(ctx->renderer, ctx);
+
+            SDL_RenderPresent(ctx->renderer);
         }
-
-        SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
-        SDL_RenderClear(ctx->renderer);
-
-
-        // DrawFloorAndCeiling(ctx->renderer, ctx);
-        CastRays(ctx->renderer, ctx);
-
-        SDL_RenderPresent(ctx->renderer);
 
         FPS_END(ctx);
     }
@@ -83,7 +87,7 @@ int main(int argc, char** argv)
         .texture_height = 64,
         .floor_texture_index = 7,
         .ceiling_texture_index = 8,
-        .mouse_sensitivity = 0.4
+        .mouse_sensitivity = 0.4,
     };
     ContextInit(&ctx);
     LoadLevel(&ctx, "levels/2.lvl");
@@ -92,7 +96,7 @@ int main(int argc, char** argv)
         EngineClose(&ctx);
         return 1;
     }
-    SetFullscreen(&ctx);
+    // SetFullscreen(&ctx);
 
     LoadTextures(ctx.renderer, ctx.textures, "./textures.list");
 

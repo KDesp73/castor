@@ -9,8 +9,32 @@
 #include <SDL2/SDL_ttf.h>
 
 /* COLORS */
-#define UI_COLOR_WHITE (SDL_Color) {255,255,255,255}
-#define UI_COLOR_BLACK (SDL_Color) {0,0,0,255}
+#define UI_COLOR_WHITE       (SDL_Color) {255,255,255,255}
+#define UI_COLOR_BLACK       (SDL_Color) {0,0,0,255}
+#define UI_COLOR_RED         (SDL_Color) {255, 0, 0, 255}
+#define UI_COLOR_GREEN       (SDL_Color) {0, 255, 0, 255}
+#define UI_COLOR_BLUE        (SDL_Color) {0, 0, 255, 255}
+#define UI_COLOR_YELLOW      (SDL_Color) {255, 255, 0, 255}
+#define UI_COLOR_CYAN        (SDL_Color) {0, 255, 255, 255}
+#define UI_COLOR_MAGENTA     (SDL_Color) {255, 0, 255, 255}
+#define UI_COLOR_ORANGE      (SDL_Color) {255, 165, 0, 255}
+#define UI_COLOR_PURPLE      (SDL_Color) {128, 0, 128, 255}
+#define UI_COLOR_PINK        (SDL_Color) {255, 105, 180, 255}
+#define UI_COLOR_LIME        (SDL_Color) {50, 205, 50, 255}
+#define UI_COLOR_GOLD        (SDL_Color) {255, 215, 0, 255}
+#define UI_COLOR_SILVER      (SDL_Color) {192, 192, 192, 255}
+#define UI_COLOR_BRONZE      (SDL_Color) {205, 127, 50, 255}
+#define UI_COLOR_TURQUOISE   (SDL_Color) {64, 224, 208, 255}
+#define UI_COLOR_NAVY        (SDL_Color) {0, 0, 128, 255}
+#define UI_COLOR_MAROON      (SDL_Color) {128, 0, 0, 255}
+#define UI_COLOR_TEAL        (SDL_Color) {0, 128, 128, 255}
+#define UI_COLOR_OLIVE       (SDL_Color) {128, 128, 0, 255}
+#define UI_COLOR_DARK_GRAY   (SDL_Color) {64, 64, 64, 255}
+#define UI_COLOR_GRAY        (SDL_Color) {128, 128, 128, 255}
+#define UI_COLOR_LIGHT_GRAY  (SDL_Color) {192, 192, 192, 255}
+#define UI_COLOR_TRANSPARENT (SDL_Color) {0, 0, 0, 0}  // Fully transparent
+
+#define UI_COLOR_PARAMS(color) color.r, color.g, color.b, color.a
 
 /* TEXT */
 #define UI_GLOBAL_FONT "./assets/fonts/FreeMonoBold.ttf"
@@ -29,9 +53,11 @@ typedef struct {
     int x, y, w, h;
     char label[64];
     UIFont* font;
+    SDL_Color color;
 } UIButton;
 void UIDrawButton(SDL_Renderer* renderer, UIButton* btn);
 int UIIsButtonPressed(SDL_Event *event, UIButton* btn);
+int UIIsButtonHovered(SDL_Event *event, UIButton* btn);
 
 /* UI */
 typedef struct {
