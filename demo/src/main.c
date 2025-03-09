@@ -13,6 +13,7 @@
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
+#include "settings.h"
 #include "textures.h"
 #include "ui.h"
 #include "screens.h"
@@ -36,7 +37,7 @@ void loop(Context* ctx)
     UIOpen(&ui, ctx, &global);
 
     UIToast toast = {0};
-    UIShowToast(&toast, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 5000);
+    UIToastInit(&toast, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 5000);
 
     ctx->running = false;
     if(UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
@@ -76,7 +77,7 @@ void loop(Context* ctx)
             SDL_RenderClear(ctx->renderer);
 
             CastRays(ctx->renderer, ctx);
-            UIRenderToast(ctx->renderer, global.ttf, &toast, ctx->screen_width, ctx->screen_height);
+            UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
             SDL_RenderPresent(ctx->renderer);
         }
@@ -98,15 +99,14 @@ int main(int argc, char** argv)
     ctx.texture_height = 64;
     ctx.floor_texture_index = 7;
     ctx.ceiling_texture_index = 8;
-    ctx.mouse_sensitivity = 0.4;
+    ctx.mouse_sensitivity = 0.3;
+    ctx.fullscreen = false;
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);
         return 1;
     }
     LoadLevel(&ctx, "levels/2.lvl");
-
-    // SetFullscreen(&ctx);
 
     LoadTextures(&ctx, TEXTURES_LIST_FILE);
 

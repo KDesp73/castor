@@ -1,27 +1,28 @@
 #include "ui.h"
 
-void UIShowToast(UIToast *toast, const char *message, int duration_ms)
+void UIToastInit(UIToast *toast, const char *message, int duration_ms)
 {
     strncpy(toast->message, message, sizeof(toast->message) - 1);
-    toast->duration_ms = duration_ms;
-    toast->start_time = SDL_GetTicks();
+    toast->duration = duration_ms;
+    toast->start_time = 0;
     toast->active = true;
 }
 
 #define MAX_TOAST_LINES 10
-void UIRenderToast(SDL_Renderer *renderer, TTF_Font *font, UIToast *toast, int screen_width, int screen_height)
+void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int screen_width, int screen_height)
 {
     if (!toast->active) return;
+    if(toast->start_time == 0)
+        toast->start_time = SDL_GetTicks();
 
     Uint32 elapsed = SDL_GetTicks() - toast->start_time;
-    if (elapsed > toast->duration_ms) {
+    if (elapsed > toast->duration) {
         toast->active = false;  // Hide toast after time expires
         return;
     }
 
-    SDL_Color textColor = {255, 255, 255, 255};  // White text
-    int max_width = screen_width / 2; // Toast max width is half the screen
-    int line_height = TTF_FontHeight(font);
+    int max_width = screen_width / 3; // Toast max width is half the screen
+    int line_height = TTF_FontHeight(font->ttf);
 
     // Word wrapping logic
     char *lines[MAX_TOAST_LINES] = {0};
@@ -41,7 +42,7 @@ void UIRenderToast(SDL_Renderer *renderer, TTF_Font *font, UIToast *toast, int s
         strncat(test_line, token, sizeof(test_line) - strlen(test_line) - 1);
 
         int text_w;
-        TTF_SizeText(font, test_line, &text_w, NULL);
+        TTF_SizeText(font->ttf, test_line, &text_w, NULL);
 
         if (text_w > max_width && strlen(current_line) > 0) {
             lines[num_lines++] = strdup(current_line);
@@ -67,19 +68,12 @@ void UIRenderToast(SDL_Renderer *renderer, TTF_Font *font, UIToast *toast, int s
     // Fade-in/out effect (500ms fade time)
     Uint8 alpha = 255;
     if (elapsed < 500) alpha = (Uint8)((elapsed / 500.0f) * 255);
-    if (elapsed > toast->duration_ms - 500) alpha = (Uint8)(((toast->duration_ms - elapsed) / 500.0f) * 255);
+    if (elapsed > toast->duration - 500) alpha = (Uint8)(((toast->duration - elapsed) / 500.0f) * 255);
 
-    // Render background box
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, alpha);
-    SDL_Rect boxRect = {box_x, box_y, box_w, box_h};
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_RenderFillRect(renderer, &boxRect);
-
-    // Render wrapped text
     int text_x = box_x + padding;
     int text_y = box_y + padding;
     for (int i = 0; i < num_lines; i++) {
-        SDL_Surface *textSurface = TTF_RenderText_Solid(font, lines[i], textColor);
+        SDL_Surface *textSurface = TTF_RenderText_Solid(font->ttf, lines[i], font->color);
         if (textSurface) {
             SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
             SDL_Rect textRect = {text_x, text_y, textSurface->w, textSurface->h};

@@ -10,21 +10,24 @@
 #define MAX_MAP_HEIGHT 64
 #define MAX_TEXTURES 512
 typedef struct {
-    bool running;
-    float frame_start, frame_time; 
-
-    int screen_width, screen_height;
-    int fov;
     const char* game_name;
 
+    // Engine
+    bool running;
+    float frame_start, frame_time; 
     Player* player;
     int** map;
     size_t map_width;
     size_t map_height;
 
+    // Settings
+    int fov;
+    bool fullscreen;
     double mouse_sensitivity;
     bool mouse_inverted;
 
+    // SDL
+    int screen_width, screen_height;
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* textures[MAX_TEXTURES];

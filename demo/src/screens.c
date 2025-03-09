@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "settings.h"
 #include "ui.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keyboard.h>
@@ -23,6 +24,10 @@ static size_t buttonsHeight = 40;
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255); \
     SDL_RenderClear(renderer)
 
+#define SCREEN_TITLE_HEIGHT(screen_height) (screen_height * 0.2)
+#define FIRST_BUTTON_HEIGHT(screen_height) (screen_height * 0.35)
+#define NEXT_BUTTON_HEIGHT(screen_height, button_height, padding, index) \
+    (FIRST_BUTTON_HEIGHT(screen_height) + (button_height + padding) * index)
 
 
 int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
@@ -75,16 +80,20 @@ int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     UIFont title_font = {0};
     UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
 
+    size_t screen_height = ui->ctx->screen_height;
+
     int text_w, text_h;
     TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
-    UIDrawText(renderer, title, (ui->ctx->screen_width - text_w) / 2, (ui->ctx->screen_height - text_h) / 2 - 200, &title_font);
+    UIDrawText(renderer, title, (ui->ctx->screen_width - text_w) / 2, screen_height * 0.2, &title_font);
 
     size_t centerX = (ui->ctx->screen_width - buttonsWidth) / 2;
 
+    size_t padding = 20;
+    size_t btn_index = 0;
     UIButton resumeButton = {
         BUTTON_DEFAULTS,
         .x = centerX,
-        .y = 300,
+        .y = NEXT_BUTTON_HEIGHT(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Resume"
     };
     UIButtonOnHover(evt, &resumeButton);
@@ -93,7 +102,7 @@ int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     UIButton settingsButton = {
         BUTTON_DEFAULTS,
         .x = centerX,
-        .y = 360,
+        .y = NEXT_BUTTON_HEIGHT(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Settings"
     };
     UIButtonOnHover(evt, &settingsButton);
@@ -102,7 +111,7 @@ int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     UIButton exitButton = {
         BUTTON_DEFAULTS,
         .x = centerX,
-        .y = 420,
+        .y = NEXT_BUTTON_HEIGHT(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Exit"
     };
     UIButtonOnHover(evt, &exitButton);
@@ -135,14 +144,25 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
 
     int text_w, text_h;
     TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
-    UIDrawText(renderer, title, (ui->ctx->screen_width - text_w) / 2, (ui->ctx->screen_height - text_h) / 2 - 200, &title_font);
+    UIDrawText(renderer, title, (ui->ctx->screen_width - text_w) / 2, SCREEN_TITLE_HEIGHT(ui->ctx->screen_height), &title_font);
 
     size_t centerX = (ui->ctx->screen_width - buttonsWidth) / 2;
+
+    size_t padding = 20;
+    size_t btn_index = 0;
+    UIButton fullscreenButton = {
+        BUTTON_DEFAULTS,
+        .x = centerX,
+        .y = NEXT_BUTTON_HEIGHT(ui->ctx->screen_height, buttonsHeight, padding, btn_index++),
+        .label = (ui->ctx->fullscreen) ? "Window" : "Fullscreen"
+    };
+    UIButtonOnHover(evt, &fullscreenButton);
+    UIDrawButton(renderer, &fullscreenButton);
 
     UIButton backButton = {
         BUTTON_DEFAULTS,
         .x = centerX,
-        .y = 420,
+        .y = NEXT_BUTTON_HEIGHT(ui->ctx->screen_height, buttonsHeight, padding, btn_index++),
         .label = "Back"
     };
     UIButtonOnHover(evt, &backButton);
@@ -154,6 +174,9 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     while (SDL_PollEvent(evt)) {
         if (evt->type == SDL_QUIT) return -1;
         if(UIIsButtonPressed(evt, &backButton)) return 0;
+        if(UIIsButtonPressed(evt, &fullscreenButton)) {
+            SetFullscreen(ui->ctx, !ui->ctx->fullscreen);
+        }
     }
 
     return 69;

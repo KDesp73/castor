@@ -51,7 +51,7 @@ void UIDrawText(SDL_Renderer *renderer, const char *text, int x, int y, UIFont* 
 /* BUTTON */
 typedef struct {
     int x, y, w, h;
-    char label[64];
+    char* label;
     UIFont* font;
     SDL_Color color;
     SDL_Color default_color;
@@ -96,12 +96,12 @@ static inline int UIPollScreen(UIScreen screen, SDL_Renderer* renderer, SDL_Even
 /* TOAST */
 typedef struct {
     char message[256];
-    int duration_ms;
+    Uint32 duration;
     Uint32 start_time;
     bool active;
 } UIToast;
 
-void UIShowToast(UIToast *toast, const char *message, int duration_ms);
-void UIRenderToast(SDL_Renderer *renderer, TTF_Font *font, UIToast *toast, int screen_width, int screen_height);
+void UIToastInit(UIToast *toast, const char *message, int duration_ms);
+void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int screen_width, int screen_height);
 
 #endif // UI_H
