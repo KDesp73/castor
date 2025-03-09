@@ -156,11 +156,10 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     
     static float sensitivity = 30;
     UISlider sensitivitySlider = {0};
-    size_t sliderWidth = 150;
     UISliderInit(&sensitivitySlider, 
-            (ui->ctx->screen_width - sliderWidth) / 2,
+            (ui->ctx->screen_width - buttonsWidth) / 2,
             (fullscreenButton.y + fullscreenButton.h + padding) + padding,
-            sliderWidth, 15, 0, 100, sensitivity, 
+            buttonsWidth, 15, 0, 100, sensitivity, 
             UI_COLOR_GRAY, UI_COLOR_RED);
     sensitivitySlider.dragging = false; // Explicitly initialize dragging state
     

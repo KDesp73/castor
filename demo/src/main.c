@@ -21,6 +21,17 @@
 
 #define TARGET_FPS 60
 
+static struct {
+    bool keyAquired;
+    size_t potionsCount;
+} Inventory;
+
+static void InventoryInit()
+{
+    Inventory.keyAquired = false;
+    Inventory.potionsCount = 1;
+}
+
 void loop(Context* ctx)
 {
     if (!ctx || !ctx->player) {
@@ -74,16 +85,20 @@ void loop(Context* ctx)
                 } else {
                     LoadTextures(ctx, TEXTURES_LIST_FILE);
                 }
-            }
+            } else if(key == SDL_SCANCODE_K)
+                Inventory.keyAquired = !Inventory.keyAquired;
 
             SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
             SDL_RenderClear(ctx->renderer);
 
+            DrawFloorAndCeiling(ctx->renderer, ctx);
             CastRays(ctx->renderer, ctx);
             UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
-            UpdateAnimation(&keyAnim, SDL_GetTicks());
-            RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);
+            if(Inventory.keyAquired) {
+                UpdateAnimation(&keyAnim, SDL_GetTicks());
+                RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);
+            }
 
             SDL_RenderPresent(ctx->renderer);
         }
@@ -98,6 +113,8 @@ exit:
 
 int main(int argc, char** argv)
 {
+    InventoryInit();
+
     Context ctx = {0};
     ContextInit(&ctx);
     ctx.game_name = "RayCasting";

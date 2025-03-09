@@ -40,6 +40,9 @@ typedef struct {
     size_t ceiling_texture_index;
     size_t texture_width;
     size_t texture_height;
+
+    bool enable_fog;
+    float fog_distance;
 } Context;
 
 

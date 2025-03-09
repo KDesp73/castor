@@ -99,10 +99,12 @@ void RotateX(Context* ctx, double delta)
 #define ANGLE_Y_CUTOFF 100
 void RotateY(Context *ctx, double delta)
 {
-    if (ctx->player->angleY - delta < -ANGLE_Y_CUTOFF)
+    ctx->player->angleY -= delta;
+
+    if (ctx->player->angleY < -ANGLE_Y_CUTOFF)
         ctx->player->angleY = -ANGLE_Y_CUTOFF;
-    else
-        ctx->player->angleY -= delta;
+    else if (ctx->player->angleY > ANGLE_Y_CUTOFF)
+        ctx->player->angleY = ANGLE_Y_CUTOFF;
 }
 
 bool CheckCollision(float newX, float newY, const Context* ctx)
@@ -172,9 +174,8 @@ Uint8 HandleInput(Context* ctx)
         RotateX(ctx, ANGLE_DELTA);
     }
 
-    IF_PRESSED_RETURN(SDL_SCANCODE_R);
-    IF_PRESSED_RETURN(SDL_SCANCODE_ESCAPE);
-    IF_PRESSED_RETURN(SDL_SCANCODE_T);
+    for(size_t i = 4; i < 83; i++)
+        IF_PRESSED_RETURN(i);
 
     return 0;
 }
