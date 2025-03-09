@@ -31,8 +31,8 @@ void ContextInit(Context* ctx)
 {
     ctx->running = true;
     ctx->fov = 60;
-    ctx->screen_width = 1080;
-    ctx->screen_height = 720;
+    ctx->screen_width = DEFAULT_SCREEN_WIDTH;
+    ctx->screen_height = DEFAULT_SCREEN_HEIGHT;
     ctx->texture_width = 64;
     ctx->texture_height = 64;
     ctx->mouse_sensitivity = 0.25;

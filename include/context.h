@@ -9,6 +9,10 @@
 #define MAX_MAP_WIDTH  64
 #define MAX_MAP_HEIGHT 64
 #define MAX_TEXTURES 512
+
+#define DEFAULT_SCREEN_WIDTH 1280
+#define DEFAULT_SCREEN_HEIGHT 720
+
 typedef struct {
     const char* game_name;
 

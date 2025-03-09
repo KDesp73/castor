@@ -18,7 +18,7 @@ void UIFontClose(UIFont *font)
     }
 }
 
-void UIDrawText(SDL_Renderer *renderer, const char *text, int x, int y, UIFont *font)
+void UITextRender(SDL_Renderer *renderer, const char *text, int x, int y, UIFont *font)
 {
     if (!renderer || !text || !font || !font->ttf) {
         printf("Error: Invalid arguments passed to UIDrawText\n");

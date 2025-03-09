@@ -46,7 +46,7 @@ typedef struct {
 } UIFont;
 void UIFontOpen(UIFont* font, const char* path, size_t size, SDL_Color color);
 void UIFontClose(UIFont* font);
-void UIDrawText(SDL_Renderer *renderer, const char *text, int x, int y, UIFont* font);
+void UITextRender(SDL_Renderer *renderer, const char *text, int x, int y, UIFont* font);
 
 /* BUTTON */
 typedef struct {
@@ -57,9 +57,9 @@ typedef struct {
     SDL_Color default_color;
     SDL_Color onhover;
 } UIButton;
-void UIDrawButton(SDL_Renderer* renderer, UIButton* btn);
-int UIIsButtonPressed(SDL_Event *event, UIButton* btn);
-int UIIsButtonHovered(SDL_Event *event, UIButton* btn);
+void UIButtonRender(SDL_Renderer* renderer, UIButton* btn);
+int UIButtonIsPressed(SDL_Event *event, UIButton* btn);
+int UIButtonIsHovered(SDL_Event *event, UIButton* btn);
 void UIButtonOnHover(SDL_Event* event, UIButton* btn);
 
 
@@ -103,5 +103,19 @@ typedef struct {
 
 void UIToastInit(UIToast *toast, const char *message, int duration_ms);
 void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int screen_width, int screen_height);
+
+/* SLIDER */
+typedef struct {
+    int x, y, w, h;          // Position and size
+    float value;             // Current slider value (0.0 - 1.0 normalized)
+    float min, max;          // Min and max value range
+    SDL_Color barColor;      // Slider bar color
+    SDL_Color knobColor;     // Knob color
+    bool dragging;           // Whether the user is currently dragging the knob
+} UISlider;
+
+void UISliderInit(UISlider *slider, int x, int y, int w, int h, float min, float max, float initial, SDL_Color barColor, SDL_Color knobColor);
+void UISliderRender(SDL_Renderer *renderer, UISlider *slider);
+void UISliderHandleEvent(UISlider *slider, SDL_Event *event);
 
 #endif // UI_H
