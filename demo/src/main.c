@@ -3,17 +3,18 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "animation.h"
 #include "engine.h"
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
-#include "settings.h"
 #include "textures.h"
 #include "ui.h"
 #include "screens.h"
@@ -37,7 +38,9 @@ void loop(Context* ctx)
     UIOpen(&ui, ctx, &global);
 
     UIToast toast = {0};
-    UIToastInit(&toast, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 5000);
+    UIToastInit(&toast, "Hello World!", 5000);
+
+    Animation keyAnim = LoadAnimation(ctx->renderer, "assets/animations/key.png", 32, 32, 50);
 
     ctx->running = false;
     if(UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
@@ -79,6 +82,9 @@ void loop(Context* ctx)
             CastRays(ctx->renderer, ctx);
             UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
+            UpdateAnimation(&keyAnim, SDL_GetTicks());
+            RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);
+
             SDL_RenderPresent(ctx->renderer);
         }
 
@@ -86,6 +92,7 @@ void loop(Context* ctx)
     }
 
 exit:
+    FreeAnimation(&keyAnim);
     UIClose(&ui);
 }
 
