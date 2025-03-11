@@ -127,23 +127,24 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
 
 void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
 {
+    if(!ctx->textures[ctx->ceiling_texture_index] || !ctx->textures[ctx->floor_texture_index]) return;
+
     const float playerHeight = 0.5f;
-    const float baseTextureScale = 1.0f;  // Base scale for 1:1 texture/world ratio
-    float textureScale = 1.0f;  // Adjust this value to control texture size
+    const float textureScale = 1.0f;  // Adjust texture density
 
     // Player direction vectors
     float angleRad = ctx->player->angleX * M_PI / 180.0f;
     float dirX = cosf(angleRad);
     float dirY = sinf(angleRad);
 
-    // Camera plane with aspect ratio correction
+    // Camera plane calculation
     float aspectRatio = (float)ctx->screen_width / ctx->screen_height;
     float fov_rad = ctx->fov * M_PI / 180.0f;
-    float planeScale = tanf(fov_rad / 2.0f) * aspectRatio;
+    float planeScale = tanf(fov_rad / 2.0f) * aspectRatio; 
     float planeX = -dirY * planeScale;
     float planeY = dirX * planeScale;
 
-    // Horizon calculation (original working version)
+    // Horizon calculation
     int horizon = (ctx->screen_height / 2) - (int)(ctx->player->angleY * 5);
 
     // Create screen texture for pixel access
@@ -191,15 +192,17 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
         float vertPos = isFloor ? (y - horizon) : (horizon - y);
         float rowDistance = (playerHeight * ctx->screen_height) / (1e-5f + vertPos);
 
-        // Calculate real world coordinates with dual scaling
-        float floorStepX = rowDistance * (dirX - planeX) * baseTextureScale;
-        float floorStepY = rowDistance * (dirY - planeY) * baseTextureScale;
-        float floorX = ctx->player->X * textureScale + floorStepX;
-        float floorY = ctx->player->Y * textureScale + floorStepY;
+        // Static position calculation
+        float floorStepX = rowDistance * (dirX - planeX);
+        float floorStepY = rowDistance * (dirY - planeY);
 
-        // Scaled stepping increments
-        float texStepX = rowDistance * (2.0f * planeX) / ctx->screen_width * textureScale;
-        float texStepY = rowDistance * (2.0f * planeY) / ctx->screen_width * textureScale;
+        // Texture stepping (perspective correct)
+        float texStepX = rowDistance * (2.0f * planeX) / ctx->screen_width;
+        float texStepY = rowDistance * (2.0f * planeY) / ctx->screen_width;
+
+        // Initial texture coordinates
+        float floorX = ctx->player->X + floorStepX * 2.0f; // Correct
+        float floorY = ctx->player->Y + floorStepY;
 
         // Texture selection
         Uint32 *texPixels = isFloor ? floorPixels : ceilPixels;
@@ -207,14 +210,16 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
         int texH = isFloor ? floorH : ceilH;
 
         for (int x = 0; x < ctx->screen_width; x++) {
-            // Calculate texture coordinates with proper scaling
-            int texX = (int)(floorX * texW / textureScale) % texW;
-            int texY = (int)(floorY * texH / textureScale) % texH;
+            // Calculate texture coordinates
+            int texX = (int)(floorX * texW * textureScale) % texW;
+            int texY = (int)(floorY * texH * textureScale) % texH;
+
             texX = texX < 0 ? texX + texW : texX;
             texY = texY < 0 ? texY + texH : texY;
 
             pixels[y * (pitch/sizeof(Uint32)) + x] = texPixels[texY * texW + texX];
 
+            // Update coordinates using perspective-correct steps
             floorX += texStepX;
             floorY += texStepY;
         }
