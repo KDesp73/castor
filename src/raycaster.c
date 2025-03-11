@@ -125,26 +125,37 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
     }
 }
 
-void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
+static Uint32* getPixels(SDL_Renderer* renderer, SDL_Texture* texture, int* W, int* H)
 {
-    if(!ctx->textures[ctx->ceiling_texture_index] || !ctx->textures[ctx->floor_texture_index]) return;
+    SDL_QueryTexture(texture, NULL, NULL, W, H);
+    SDL_Texture *target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+            SDL_TEXTUREACCESS_TARGET, *W, *H);
+    SDL_SetRenderTarget(renderer, target);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    Uint32 *pixels = malloc(*W * *H * sizeof(Uint32));
+    SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, pixels, *W * sizeof(Uint32));
+    SDL_SetRenderTarget(renderer, NULL);
+    SDL_DestroyTexture(target);
+    
+    return pixels;
+}
 
-    const float playerHeight = 0.5f;
-    const float textureScale = 1.0f;  // Adjust texture density
+void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx) {
+    if (!ctx->textures[ctx->ceiling_texture_index] || !ctx->textures[ctx->floor_texture_index]) return;
+
+    const float playerHeight = 0.5f;  // Player's eye level
+    const float textureScale = 1.0f;  // Texture density
 
     // Player direction vectors
-    float angleRad = ctx->player->angleX * M_PI / 180.0f;
-    float dirX = cosf(angleRad);
-    float dirY = sinf(angleRad);
+    float angleRad    = ctx->player->angleX * M_PI / 180.0f;
+    float dirX        = cosf(angleRad);  // Player direction X
+    float dirY        = sinf(angleRad);  // Player direction Y
+    float aspectRatio = (float) ctx->screen_width / ctx->screen_height;
+    float fov_rad     = ctx->fov * M_PI / 180.0f;
+    float planeScale  = tanf(fov_rad / 2.0f) * aspectRatio;
+    float planeX      = -dirY * planeScale;  // Right vector X (flipped sign)
+    float planeY      = dirX * planeScale;   // Right vector Y (flipped sign)
 
-    // Camera plane calculation
-    float aspectRatio = (float)ctx->screen_width / ctx->screen_height;
-    float fov_rad = ctx->fov * M_PI / 180.0f;
-    float planeScale = tanf(fov_rad / 2.0f) * aspectRatio; 
-    float planeX = -dirY * planeScale;
-    float planeY = dirX * planeScale;
-
-    // Horizon calculation
     int horizon = (ctx->screen_height / 2) - (int)(ctx->player->angleY * 5);
 
     // Create screen texture for pixel access
@@ -156,35 +167,10 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
     int pitch;
     SDL_LockTexture(screenTexture, NULL, (void**)&pixels, &pitch);
 
-    // PROPER TEXTURE PIXEL EXTRACTION
-    SDL_Texture *floorTexture = ctx->textures[ctx->floor_texture_index];
-    SDL_Texture *ceilingTexture = ctx->textures[ctx->ceiling_texture_index];
+    int floorW, floorH, ceilW, ceilH;
+    Uint32* floorPixels = getPixels(renderer, ctx->textures[ctx->floor_texture_index], &floorW, &floorH);
+    Uint32* ceilingPixels = getPixels(renderer, ctx->textures[ctx->ceiling_texture_index], &ceilW, &ceilH);
 
-    // Get floor texture pixels
-    int floorW, floorH;
-    SDL_QueryTexture(floorTexture, NULL, NULL, &floorW, &floorH);
-    SDL_Texture *floorTarget = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
-            SDL_TEXTUREACCESS_TARGET, floorW, floorH);
-    SDL_SetRenderTarget(renderer, floorTarget);
-    SDL_RenderCopy(renderer, floorTexture, NULL, NULL);
-    Uint32 *floorPixels = malloc(floorW * floorH * sizeof(Uint32));
-    SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, floorPixels, floorW * sizeof(Uint32));
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_DestroyTexture(floorTarget);
-
-    // Get ceiling texture pixels (same process)
-    int ceilW, ceilH;
-    SDL_QueryTexture(ceilingTexture, NULL, NULL, &ceilW, &ceilH);
-    SDL_Texture *ceilTarget = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
-            SDL_TEXTUREACCESS_TARGET, ceilW, ceilH);
-    SDL_SetRenderTarget(renderer, ceilTarget);
-    SDL_RenderCopy(renderer, ceilingTexture, NULL, NULL);
-    Uint32 *ceilPixels = malloc(ceilW * ceilH * sizeof(Uint32));
-    SDL_RenderReadPixels(renderer, NULL, SDL_PIXELFORMAT_RGBA8888, ceilPixels, ceilW * sizeof(Uint32));
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_DestroyTexture(ceilTarget);
-
-    // Floor/ceiling projection loop
     for (int y = 0; y < ctx->screen_height; y++) {
         if (y == horizon) continue;
 
@@ -205,7 +191,7 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
         float floorY = ctx->player->Y + floorStepY;
 
         // Texture selection
-        Uint32 *texPixels = isFloor ? floorPixels : ceilPixels;
+        Uint32 *texPixels = isFloor ? floorPixels : ceilingPixels;
         int texW = isFloor ? floorW : ceilW;
         int texH = isFloor ? floorH : ceilH;
 
@@ -225,10 +211,10 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
         }
     }
 
-    // Cleanup
+    // Cleanup code
     SDL_UnlockTexture(screenTexture);
     SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
     SDL_DestroyTexture(screenTexture);
     free(floorPixels);
-    free(ceilPixels);
+    free(ceilingPixels);
 }
