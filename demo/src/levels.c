@@ -6,7 +6,10 @@ enum {
     SPRITE_BARREL,
     SPRITE_COLUMN,
     SPRITE_LAMP,
-    SPRITE_GOBLIN
+    SPRITE_GOBLIN,
+    SPRITE_SKELETON,
+    SPRITE_EYE,
+    SPRITE_MUSHROOM
 };
 
 void Level1(Context* ctx)
@@ -45,6 +48,25 @@ void Level2(Context* ctx)
         .texture_id = SPRITE_GOBLIN,
         .scale = 3,
     });
+    AppendSprite(ctx, (Sprite) {
+        SPRITE_PLACE(10, 10),
+        .z = SPRITE_DOWN,
+        .texture_id = SPRITE_SKELETON,
+        .scale = 3,
+    });
+    AppendSprite(ctx, (Sprite) {
+        SPRITE_PLACE(14, 3),
+        .z = SPRITE_MIDDLE,
+        .texture_id = SPRITE_EYE,
+        .scale = 3,
+    });
+    AppendSprite(ctx, (Sprite) {
+        SPRITE_PLACE(12, 12),
+        .z = SPRITE_DOWN,
+        .texture_id = SPRITE_MUSHROOM,
+        .scale = 3,
+    });
+
 }
 
 void Level3(Context* ctx)
