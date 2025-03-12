@@ -162,7 +162,18 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
             buttonsWidth, 15, 0, 100, sensitivity, 
             UI_COLOR_GRAY, UI_COLOR_RED);
     sensitivitySlider.dragging = false; // Explicitly initialize dragging state
+
+    static float render_distance = 20;
+    UISlider renderDistanceSlider = {0};
+    UISliderInit(&renderDistanceSlider, 
+            (ui->ctx->screen_width - buttonsWidth) / 2,
+            sensitivitySlider.y + fullscreenButton.h + padding,
+            buttonsWidth, 15, 10, 50, render_distance, 
+            UI_COLOR_GRAY, UI_COLOR_RED);
+    sensitivitySlider.dragging = false; // Explicitly initialize dragging state
+
     
+    btn_index++;
     btn_index++;
     UIButton backButton = {
         BUTTON_DEFAULTS,
@@ -181,6 +192,7 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
         }
         
         UISliderHandleEvent(&sensitivitySlider, evt);
+        UISliderHandleEvent(&renderDistanceSlider, evt);
         
         if (UIButtonIsPressed(evt, &backButton)) {
             result = 0;
@@ -195,6 +207,9 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     
     sensitivity = sensitivitySlider.value;
     ui->ctx->mouse_sensitivity = sensitivity / 100;
+
+    render_distance = renderDistanceSlider.value;
+    ui->ctx->render_distance = render_distance;
     
     // Rendering starts here
     SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
@@ -208,6 +223,8 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
 
     UITextRender(renderer, "Sensitivity", sensitivitySlider.x, sensitivitySlider.y-sensitivitySlider.h - ui->font->size/2, ui->font);
     UISliderRender(renderer, &sensitivitySlider);
+    UITextRender(renderer, "Render Distance", renderDistanceSlider.x, renderDistanceSlider.y-renderDistanceSlider.h - ui->font->size/2, ui->font);
+    UISliderRender(renderer, &renderDistanceSlider);
     
     SDL_RenderPresent(renderer);
     UIFontClose(&title_font);

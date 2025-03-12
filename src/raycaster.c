@@ -253,7 +253,8 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
 //     return false;
 // }
 
-void CastSprites(SDL_Renderer* renderer, const Context* ctx) {
+void CastSprites(SDL_Renderer* renderer, const Context* ctx)
+{
     Player* player = ctx->player;
     int screen_width = ctx->screen_width;
     int screen_height = ctx->screen_height;
@@ -264,6 +265,13 @@ void CastSprites(SDL_Renderer* renderer, const Context* ctx) {
     double dirY = sin(player->angleX * M_PI / 180.0);
     double planeX = -dirY * tan(ctx->fov * M_PI / 360.0);
     double planeY = dirX * tan(ctx->fov * M_PI / 360.0);
+
+    for (int i = 0; i < ctx->sprite_count; i++) {
+        Sprite sprite = ctx->sprites[i];
+        double dx = sprite.x - player->X;
+        double dy = sprite.y - player->Y;
+        sprite.distance = dx * dx + dy * dy;
+    }
 
     // Sort sprites by distance (farthest to closest)
     qsort((Sprite*)ctx->sprites, ctx->sprite_count, sizeof(Sprite), SpriteCmp);

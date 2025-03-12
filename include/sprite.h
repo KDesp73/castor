@@ -3,6 +3,15 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+
+#define SPRITE_UP 0.5
+#define SPRITE_MIDDLE 0
+#define SPRITE_DOWN -0.5
+
+#define SPRITE_PLACE(_x, _y) \
+    .x = (_x) + 0.5, \
+    .y = (_y) + 0.5
+
 typedef struct {
     float x, y, z;
     int width, height;

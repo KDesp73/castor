@@ -17,6 +17,7 @@
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
+#include "settings.h"
 #include "textures.h"
 #include "ui.h"
 #include "screens.h"
@@ -133,9 +134,10 @@ int main(int argc, char** argv)
         EngineClose(&ctx);
         return 1;
     }
-    LoadLevel(&ctx, Level2);
-
     LoadTextures(&ctx);
+
+    LoadLevel(&ctx, Level2);
+    // SetFullscreen(&ctx, true);
 
     loop(&ctx);
 
