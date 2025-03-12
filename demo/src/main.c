@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "animation.h"
 #include "engine.h"
+#include "ingame-ui.h"
 #include "level.h"
 #include "levels.h"
 #include "player.h"
@@ -97,6 +98,7 @@ void loop(Context* ctx)
             // CastFloorAndCeiling(ctx->renderer, ctx);
             CastWalls(ctx->renderer, ctx);
             CastSprites(ctx->renderer, ctx);
+            RenderCrosshair(ctx->renderer, ctx->screen_width, ctx->screen_height);
             UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
             if(Inventory.keyAquired) {
