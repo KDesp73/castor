@@ -43,8 +43,13 @@ static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, floa
     return fmaxf(0.0f, fminf(0.999f, texCoord));
 }
 
-void CastRays(SDL_Renderer *renderer, const Context* ctx)
+void CastWalls(SDL_Renderer *renderer, Context* ctx)
 {
+    // Ensure the Z-buffer is allocated
+    if (ctx->z_buffer == NULL) {
+        ctx->z_buffer = (float*)malloc(ctx->screen_width * sizeof(float));
+    }
+
     for (int x = 0; x < ctx->screen_width; x++) {
         float rayAngle = (ctx->player->angleX - ctx->fov / 2.0) + ((float)x / ctx->screen_width) * ctx->fov;
         float rayX = cos(rayAngle * M_PI / 180.0);
@@ -54,9 +59,9 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
         float stepSize = 0.01; // NOTE: IMPORTANT!
         float hitX = ctx->player->X, hitY = ctx->player->Y;
         bool hitWall = false;
-        Tile tile = TILE_EMPTY;
+        int tile = TILE_EMPTY;
 
-        while (!hitWall && distance < 20.0) {
+        while (!hitWall && distance < ctx->render_distance) {
             hitX = ctx->player->X + rayX * distance;
             hitY = ctx->player->Y + rayY * distance;
 
@@ -68,7 +73,7 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 break;
             }
 
-            tile = (Tile)ctx->map[mapY][mapX];
+            tile = ctx->map[mapY][mapX];
             if (tile > 0) {
                 hitWall = true;
                 break;
@@ -80,12 +85,15 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
         // Precise fisheye correction
         float correctedDistance = distance * cos((x - ctx->screen_width / 2.0) * (ctx->fov / ctx->screen_width) * M_PI / 180.0);
 
+        // Populate the Z-buffer with the corrected distance
+        ctx->z_buffer[x] = correctedDistance;
+
         int wallHeight = (int)(ctx->screen_height / correctedDistance);
         int verticalOffset = (int)(ctx->player->angleY * 5.0);
 
         int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
         int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
-        if (hitWall && ctx->textures[tile] != NULL) {
+        if (hitWall && ctx->textures[tile-1] != NULL) {
             // Precise texture coordinate calculation
             float texCoordinate = CalculateTextureCoordinate(hitX, hitY, rayX, rayY);
 
@@ -107,9 +115,9 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 wallBottom - wallTop 
             };
 
-            SDL_RenderCopy(renderer, ctx->textures[tile], &srcRect, &dstRect);
+            SDL_RenderCopy(renderer, ctx->textures[tile-1], &srcRect, &dstRect);
         } else {
-            switch (tile % 9) {
+            switch (tile) {
                 case 1: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_RED)); break;
                 case 2: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_GREEN)); break;
                 case 3: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BLUE)); break;
@@ -118,7 +126,9 @@ void CastRays(SDL_Renderer *renderer, const Context* ctx)
                 case 6: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_ORANGE)); break;
                 case 7: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_PINK)); break;
                 case 8: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_TEAL)); break;
-                default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
+                case 9: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_OLIVE)); break;
+                case 10: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BRONZE)); break;
+                // default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
             }
             SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom); 
         }
@@ -140,7 +150,8 @@ static Uint32* getPixels(SDL_Renderer* renderer, SDL_Texture* texture, int* W, i
     return pixels;
 }
 
-void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx) {
+void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
+{
     if (!ctx->textures[ctx->ceiling_texture_index] || !ctx->textures[ctx->floor_texture_index]) return;
 
     const float playerHeight = 0.5f;  // Player's eye level
@@ -215,6 +226,117 @@ void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx) {
     SDL_UnlockTexture(screenTexture);
     SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
     SDL_DestroyTexture(screenTexture);
-    free(floorPixels);
     free(ceilingPixels);
+    free(floorPixels);
+}
+
+void CastSprites(SDL_Renderer* renderer, const Context* ctx) {
+    Player* player = ctx->player;
+    int screen_width = ctx->screen_width;
+    int screen_height = ctx->screen_height;
+    float* z_buffer = ctx->z_buffer;
+
+    double dirX = cos(player->angleX * M_PI / 180.0);
+    double dirY = sin(player->angleX * M_PI / 180.0);
+    double planeX = -dirY * tan(ctx->fov * M_PI / 360.0);
+    double planeY = dirX * tan(ctx->fov * M_PI / 360.0);
+
+    // Sort sprites by distance (farthest to closest)
+    qsort((Sprite*)ctx->sprites, ctx->sprite_count, sizeof(Sprite), SpriteCmp);
+
+    // Pre-cache texture data
+    SDL_Texture* spriteTextures[ctx->sprite_count];
+    int textureWidths[ctx->sprite_count];
+    int textureHeights[ctx->sprite_count];
+
+    for (int i = 0; i < ctx->sprite_count; i++) {
+        Sprite sprite = ctx->sprites[i];
+        spriteTextures[i] = ctx->sprite_textures[sprite.texture_id];
+        if (spriteTextures[i]) {
+            SDL_QueryTexture(spriteTextures[i], NULL, NULL, &textureWidths[i], &textureHeights[i]);
+        }
+    }
+
+    // Precalculate camera inverse determinant
+    double invDet = 1.0 / (planeX * dirY - dirX * planeY);
+    int halfWidth = screen_width / 2;
+    int halfHeight = screen_height / 2;
+
+    for (int i = 0; i < ctx->sprite_count; i++) {
+        Sprite sprite = ctx->sprites[i];
+        SDL_Texture* spriteTexture = spriteTextures[i];
+
+        if (!spriteTexture) continue;
+
+        // Translate sprite position relative to the player
+        double spriteX = sprite.x - player->X;
+        double spriteY = sprite.y - player->Y;
+
+        // Transform sprite with the inverse camera matrix
+        double transformX = invDet * (dirY * spriteX - dirX * spriteY);
+        double transformY = invDet * (-planeY * spriteX + planeX * spriteY);
+
+        // Skip sprites behind the camera or too far away
+        if (transformY <= 0.01) continue;
+
+        // Calculate sprite dimensions and position on screen
+        int spriteScreenX = (int)(halfWidth * (1 + transformX / transformY));
+
+        // Apply sprite scale
+        int spriteHeight = abs((int)(screen_height / transformY * sprite.scale));
+        int spriteWidth = abs((int)(screen_height / transformY * sprite.scale));
+
+        // Early out for very small sprites
+        if (spriteHeight < 2 || spriteWidth < 2) continue;
+
+        // Calculate vertical position with z-offset
+        double verticalOffset = sprite.z / transformY;
+        int baseScreenY = (int)(halfHeight - player->angleY * 5 - verticalOffset * 100);
+
+        // Calculate screen boundaries
+        int drawStartY = -spriteHeight / 2 + baseScreenY;
+        int drawEndY = spriteHeight / 2 + baseScreenY;
+        int drawStartX = -spriteWidth / 2 + spriteScreenX;
+        int drawEndX = spriteWidth / 2 + spriteScreenX;
+
+        // Clamp to screen bounds
+        if (drawStartY < 0) drawStartY = 0;
+        if (drawEndY >= screen_height) drawEndY = screen_height - 1;
+        if (drawStartX < 0) drawStartX = 0;
+        if (drawEndX >= screen_width) drawEndX = screen_width - 1;
+
+        if (drawStartX >= drawEndX || drawStartY >= drawEndY) continue;
+
+        int texture_width = textureWidths[i];
+        int texture_height = textureHeights[i];
+
+        // Loop through every vertical stripe of the sprite on the screen
+        for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
+            // Calculate the texture X coordinate
+            int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * texture_width / spriteWidth / 256);
+
+            // Clamp texX to valid bounds
+            if (texX < 0) texX = 0;
+            if (texX >= texture_width) texX = texture_width - 1;
+
+            // Check if this stripe is visible in the z-buffer
+            if (transformY > 0 && stripe >= 0 && stripe < screen_width && transformY < z_buffer[stripe]) {
+                // For each vertical pixel in the stripe
+                for (int y = drawStartY; y < drawEndY; y++) {
+                    // Use original precise texture coordinate calculation
+                    int d = (y - baseScreenY) * 256 + spriteHeight * 128;
+                    int texY = ((d * texture_height) / spriteHeight) / 256;
+
+                    // Clamp texY to valid bounds
+                    if (texY < 0) texY = 0;
+                    if (texY >= texture_height) texY = texture_height - 1;
+
+                    // Render the pixel
+                    SDL_Rect srcRect = { texX, texY, 1, 1 };
+                    SDL_Rect destRect = { stripe, y, 1, 1 };
+                    SDL_RenderCopy(renderer, spriteTexture, &srcRect, &destRect);
+                }
+            }
+        }
+    }
 }

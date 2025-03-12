@@ -40,7 +40,7 @@ bool TexturesLoad(SDL_Renderer* renderer, SDL_Texture** textures, const char* pa
     }
 
     char line[MAX_PATH + 10];
-    size_t index = 1;
+    size_t index = 0;
 
     while (fgets(line, sizeof(line), file) && index < MAX_TEXTURES) {
         // Trim leading spaces

@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include "animation.h"
 #include "engine.h"
+#include "level.h"
+#include "levels.h"
 #include "player.h"
 #include "raycaster.h"
 #include "context.h"
@@ -83,7 +85,7 @@ void loop(Context* ctx)
                 if(ctx->textures_loaded) {
                     FreeTextures(ctx);
                 } else {
-                    LoadTextures(ctx, TEXTURES_LIST_FILE);
+                    LoadTextures(ctx);
                 }
             } else if(key == SDL_SCANCODE_K)
                 Inventory.keyAquired = !Inventory.keyAquired;
@@ -91,8 +93,9 @@ void loop(Context* ctx)
             SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
             SDL_RenderClear(ctx->renderer);
 
-            DrawFloorAndCeiling(ctx->renderer, ctx);
-            CastRays(ctx->renderer, ctx);
+            // CastFloorAndCeiling(ctx->renderer, ctx);
+            CastWalls(ctx->renderer, ctx);
+            CastSprites(ctx->renderer, ctx);
             UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
             if(Inventory.keyAquired) {
@@ -121,8 +124,8 @@ int main(int argc, char** argv)
     ctx.player = PlayerNew(0.15, 0.0, 1.5, 1.5);
     ctx.texture_width = 64;
     ctx.texture_height = 64;
-    ctx.floor_texture_index = 7;
-    ctx.ceiling_texture_index = 8;
+    ctx.floor_texture_index = 6;
+    ctx.ceiling_texture_index = 7;
     ctx.mouse_sensitivity = 0.3;
     ctx.fullscreen = false;
 
@@ -130,9 +133,9 @@ int main(int argc, char** argv)
         EngineClose(&ctx);
         return 1;
     }
-    LoadLevel(&ctx, "levels/2.lvl");
+    LoadLevel(&ctx, Level2);
 
-    LoadTextures(&ctx, TEXTURES_LIST_FILE);
+    LoadTextures(&ctx);
 
     loop(&ctx);
 

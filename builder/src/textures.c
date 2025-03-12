@@ -11,7 +11,7 @@ bool LoadTextures(Texture2D textures[], const char* path)
     }
 
     char line[MAX_PATH];
-    size_t index = 1;
+    size_t index = 0;
 
     while (fgets(line, sizeof(line), file) && index < MAX_TEXTURES) {
         // Trim leading spaces

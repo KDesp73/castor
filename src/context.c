@@ -37,6 +37,7 @@ void ContextInit(Context* ctx)
     ctx->texture_height = 64;
     ctx->mouse_sensitivity = 0.25;
     ctx->mouse_inverted = true;
+    ctx->render_distance = 20.0f;
 
     ctx->enable_fog = true;
     ctx->fog_distance = 10;
@@ -68,17 +69,31 @@ void FreeTextures(Context* ctx)
             SDL_DestroyTexture(ctx->textures[i]); 
             ctx->textures[i] = NULL;
         }
+        if(ctx->sprite_textures[i] != NULL) {
+            SDL_DestroyTexture(ctx->sprite_textures[i]); 
+            ctx->sprite_textures[i] = NULL;
+        }
     }
     ctx->textures_loaded = false;
+    ctx->sprites_loaded = false;
 }
 
-void LoadLevel(Context* ctx, const char* path)
+void LoadLevelMap(Context* ctx, const char* path)
 {
     ctx->map = MapLoad(&ctx->map_height, &ctx->map_width, path);
 }
 
-void LoadTextures(Context* ctx, const char* path)
+void LoadTextures(Context* ctx)
 {
-    TexturesLoad(ctx->renderer, ctx->textures, path);
+    TexturesLoad(ctx->renderer, ctx->textures, TEXTURES_LIST_FILE);
     ctx->textures_loaded = true;
+    TexturesLoad(ctx->renderer, ctx->sprite_textures, SPRITES_LIST_FILE);
+    ctx->sprites_loaded = true;
+}
+
+void AppendSprite(Context* ctx, Sprite sprite)
+{
+    if(ctx->sprite_count >= MAX_TEXTURES) return;
+
+    ctx->sprites[ctx->sprite_count++] = sprite;
 }

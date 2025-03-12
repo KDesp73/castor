@@ -32,8 +32,9 @@ static inline void MapDraw(int** map, size_t rows, size_t cols, size_t scale, Te
             int posX = j * scale;
             int posY = i * scale;
             
+            Texture texture = textures[tile-1];
             if (tile != 0) {
-                if (textures[tile].id == 0) {
+                if (texture.id == 0) {
                     // If texture is missing, draw a placeholder text
                     const char* text = TextFormat("%d", tile);
                     int font_size = scale / 2;
@@ -42,15 +43,14 @@ static inline void MapDraw(int** map, size_t rows, size_t cols, size_t scale, Te
                     int textY = posY + (scale - font_size) / 2;
                     DrawText(text, textX, textY, font_size, RAYWHITE);
                 } else {
-                    // Draw the texture properly scaled
                     DrawTexturePro(
-                        textures[tile], 
-                        (Rectangle){0, 0, textures[tile].width, textures[tile].height},  // Source
-                        (Rectangle){posX, posY, scale, scale},  // Destination
-                        (Vector2){0, 0},  // No offset
-                        0.0f,  // No rotation
-                        WHITE
-                    );
+                            texture, 
+                            (Rectangle){0, 0, texture.width, texture.height},  // Source
+                            (Rectangle){posX, posY, scale, scale},  // Destination
+                            (Vector2){0, 0},  // No offset
+                            0.0f,  // No rotation
+                            WHITE
+                            );
                 }
             }
         }

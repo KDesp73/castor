@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     SetTargetFPS(FPS);
 
     Texture textures[MAX_TEXTURES];
-    LoadTextures(textures, "textures.list");
+    LoadTextures(textures, "assets/textures.list");
 
     size_t selected = 0;
     while(!WindowShouldClose()){

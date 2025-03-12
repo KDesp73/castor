@@ -4,17 +4,12 @@
 #include "context.h"
 #include <SDL2/SDL_render.h>
 
-typedef enum {
-    TILE_EMPTY = 0,
-    TILE_WHITE = 1,
-    TILE_BLACK = 2,
-    TILE_RED = 3,
-    TILE_BLUE = 4,
-    TILE_GREEN = 5,
-} Tile;
+#define TILE_EMPTY 0
 
-void CastRays(SDL_Renderer *renderer, const Context* ctx);
-void DrawFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx);
+void CastWalls(SDL_Renderer *renderer, Context* ctx);
+void CastFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx);
+void CastSprites(SDL_Renderer* renderer, const Context* ctx);
+
 
 
 #endif // RAYCASTER_H
