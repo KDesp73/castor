@@ -8,7 +8,7 @@
 
 void CastWalls(SDL_Renderer *renderer, Context* ctx);
 void CastFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx);
-void CastSprites(SDL_Renderer* renderer, const Context* ctx);
+void CastSprites(SDL_Renderer* renderer, Context* ctx);
 
 
 
