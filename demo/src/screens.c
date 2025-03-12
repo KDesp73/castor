@@ -64,6 +64,7 @@ int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
             return -1;
         }
 
+        if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_RETURN) return 0;
         if (UIButtonIsPressed(evt, &start_button)) {
             return 0;
         }

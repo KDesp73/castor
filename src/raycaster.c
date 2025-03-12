@@ -231,28 +231,6 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
     free(floorPixels);
 }
 
-// static int Clamp(int value, int min, int max)
-// {
-//     if (value < min) {
-//         return min;
-//     } else if (value > max) {
-//         return max;
-//     }
-//     return value;
-// }
-
-// static bool isSpriteVisible(int drawStartX, int drawEndX, double transformY, int screen_width, float* z_buffer)
-// {
-//     int center = (drawStartX + drawEndX) / 2;
-//     int samples[3] = { drawStartX, center, drawEndX - 1 };
-//     for (int j = 0; j < 3; j++) {
-//         int stripe = samples[j];
-//         if (stripe >= 0 && stripe < screen_width && transformY < z_buffer[stripe])
-//             return true;
-//     }
-//     return false;
-// }
-
 void CastSprites(SDL_Renderer* renderer, Context* ctx)
 {
     Player* player = ctx->player;
@@ -310,7 +288,7 @@ void CastSprites(SDL_Renderer* renderer, Context* ctx)
         double verticalOffset = sprite.z / transformY;
         int baseScreenY = (int)(screen_height / 2 - player->angleY * 5 - verticalOffset * 100);
 
-        // Calculate drawing bounds (DO NOT CLAMP TO SCREEN BOUNDARIES)
+        // Calculate drawing bounds
         int drawStartX = spriteScreenX - spriteWidth / 2;
         int drawEndX = spriteScreenX + spriteWidth / 2;
         int drawStartY = baseScreenY - spriteHeight / 2;

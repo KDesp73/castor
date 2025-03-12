@@ -1,5 +1,4 @@
 #include "engine.h"
-#include "ui.h"
 
 
 bool EngineInit(Context* ctx)
@@ -29,16 +28,9 @@ bool EngineInit(Context* ctx)
 
 void EngineClose(Context* ctx)
 {
-    if (ctx) {
-        // First, clean up all resources in the context
-        ContextFree(ctx);
-
-        // Now clean up external libraries
-        TTF_Quit();
-        IMG_Quit();
-        
-        // Finally, clean up SDL
-        SDL_Quit();
-    }
+    ContextFree(ctx);
+    TTF_Quit();
+    IMG_Quit();
+    SDL_Quit();
 }
 
