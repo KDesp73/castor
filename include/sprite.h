@@ -1,6 +1,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 typedef struct {
     float x, y, z;
@@ -8,6 +9,7 @@ typedef struct {
     float distance;
     size_t texture_id;
     float scale;
+    bool collision;
 } Sprite;
 
 static inline int SpriteCmp(const void* a, const void* b)

@@ -107,21 +107,42 @@ void RotateY(Context *ctx, double delta)
         ctx->player->angleY = ANGLE_Y_CUTOFF;
 }
 
-bool CheckCollision(float newX, float newY, const Context* ctx)
-{
+bool CheckCollision(float newX, float newY, const Context* ctx) {
+    // Check collision with map tiles
     int mapX = (int)newX;
     int mapY = (int)newY;
 
     if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
-        return true;
+        return true;  // Collision with map boundaries
     }
 
     int tile = ctx->map[mapY][mapX];
     if (tile > 0) {
-        return true;
+        return true;  // Collision with a solid tile
     }
 
-    return false;
+    // Check collision with sprites
+    for (int i = 0; i < ctx->sprite_count; i++) {
+        Sprite sprite = ctx->sprites[i];
+
+        // Skip sprites without collision
+        if (!sprite.collision) continue;
+
+        // Calculate distance between player and sprite
+        float dx = newX - sprite.x;
+        float dy = newY - sprite.y;
+        float distanceSquared = dx * dx + dy * dy;
+
+        // Define a collision radius (adjust as needed)
+        float collisionRadius = 1.0f;
+
+        // Check if the player is within the collision radius of the sprite
+        if (distanceSquared < collisionRadius * collisionRadius) {
+            return true;  // Collision with a sprite
+        }
+    }
+
+    return false;  // No collision
 }
 
 #define IF_PRESSED_RETURN(key) \

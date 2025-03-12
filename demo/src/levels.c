@@ -19,7 +19,8 @@ void Level2(Context* ctx)
         .width = 64,
         .height = 64,
         .distance = 1,
-        .scale = 3
+        .scale = 3,
+        .collision = true
     });
     AppendSprite(ctx, (Sprite) {
         .x = 5.5,

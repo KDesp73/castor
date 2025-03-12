@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+
 static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, float rayY)
 {
     // Detect exactly which wall was hit by checking grid boundaries
@@ -230,12 +231,35 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
     free(floorPixels);
 }
 
+// static int Clamp(int value, int min, int max)
+// {
+//     if (value < min) {
+//         return min;
+//     } else if (value > max) {
+//         return max;
+//     }
+//     return value;
+// }
+
+// static bool isSpriteVisible(int drawStartX, int drawEndX, double transformY, int screen_width, float* z_buffer)
+// {
+//     int center = (drawStartX + drawEndX) / 2;
+//     int samples[3] = { drawStartX, center, drawEndX - 1 };
+//     for (int j = 0; j < 3; j++) {
+//         int stripe = samples[j];
+//         if (stripe >= 0 && stripe < screen_width && transformY < z_buffer[stripe])
+//             return true;
+//     }
+//     return false;
+// }
+
 void CastSprites(SDL_Renderer* renderer, const Context* ctx) {
     Player* player = ctx->player;
     int screen_width = ctx->screen_width;
     int screen_height = ctx->screen_height;
     float* z_buffer = ctx->z_buffer;
 
+    // Precompute camera vectors
     double dirX = cos(player->angleX * M_PI / 180.0);
     double dirY = sin(player->angleX * M_PI / 180.0);
     double planeX = -dirY * tan(ctx->fov * M_PI / 360.0);
@@ -244,99 +268,60 @@ void CastSprites(SDL_Renderer* renderer, const Context* ctx) {
     // Sort sprites by distance (farthest to closest)
     qsort((Sprite*)ctx->sprites, ctx->sprite_count, sizeof(Sprite), SpriteCmp);
 
-    // Pre-cache texture data
-    SDL_Texture* spriteTextures[ctx->sprite_count];
-    int textureWidths[ctx->sprite_count];
-    int textureHeights[ctx->sprite_count];
-
     for (int i = 0; i < ctx->sprite_count; i++) {
         Sprite sprite = ctx->sprites[i];
-        spriteTextures[i] = ctx->sprite_textures[sprite.texture_id];
-        if (spriteTextures[i]) {
-            SDL_QueryTexture(spriteTextures[i], NULL, NULL, &textureWidths[i], &textureHeights[i]);
-        }
-    }
-
-    // Precalculate camera inverse determinant
-    double invDet = 1.0 / (planeX * dirY - dirX * planeY);
-    int halfWidth = screen_width / 2;
-    int halfHeight = screen_height / 2;
-
-    for (int i = 0; i < ctx->sprite_count; i++) {
-        Sprite sprite = ctx->sprites[i];
-        SDL_Texture* spriteTexture = spriteTextures[i];
-
+        SDL_Texture* spriteTexture = ctx->sprite_textures[sprite.texture_id];
         if (!spriteTexture) continue;
 
-        // Translate sprite position relative to the player
+        // Get texture dimensions and calculate aspect ratio
+        int texW, texH;
+        SDL_QueryTexture(spriteTexture, NULL, NULL, &texW, &texH);
+        float aspect_ratio = (float)texW / texH;  // Preserve aspect ratio
+
+        // Translate sprite position
         double spriteX = sprite.x - player->X;
         double spriteY = sprite.y - player->Y;
 
-        // Transform sprite with the inverse camera matrix
+        // Transform to camera space
+        double invDet = 1.0 / (planeX * dirY - dirX * planeY);
         double transformX = invDet * (dirY * spriteX - dirX * spriteY);
         double transformY = invDet * (-planeY * spriteX + planeX * spriteY);
+        if (transformY <= 0.01) continue;  // Skip sprites behind the camera
 
-        // Skip sprites behind the camera or too far away
-        if (transformY <= 0.01) continue;
-
-        // Calculate sprite dimensions and position on screen
-        int spriteScreenX = (int)(halfWidth * (1 + transformX / transformY));
-
-        // Apply sprite scale
+        // Calculate sprite height based on distance and scale
         int spriteHeight = abs((int)(screen_height / transformY * sprite.scale));
-        int spriteWidth = abs((int)(screen_height / transformY * sprite.scale));
+        int spriteWidth = (int)(spriteHeight * aspect_ratio);  // Width derived from height and aspect ratio
 
-        // Early out for very small sprites
+        // Skip rendering if too small
         if (spriteHeight < 2 || spriteWidth < 2) continue;
 
-        // Calculate vertical position with z-offset
+        // Calculate screen position
+        int spriteScreenX = (int)(screen_width / 2 * (1 + transformX / transformY));
+
+        // Vertical positioning
         double verticalOffset = sprite.z / transformY;
-        int baseScreenY = (int)(halfHeight - player->angleY * 5 - verticalOffset * 100);
+        int baseScreenY = (int)(screen_height / 2 - player->angleY * 5 - verticalOffset * 100);
 
-        // Calculate screen boundaries
-        int drawStartY = -spriteHeight / 2 + baseScreenY;
-        int drawEndY = spriteHeight / 2 + baseScreenY;
-        int drawStartX = -spriteWidth / 2 + spriteScreenX;
-        int drawEndX = spriteWidth / 2 + spriteScreenX;
+        // Calculate drawing bounds (DO NOT CLAMP TO SCREEN BOUNDARIES)
+        int drawStartX = spriteScreenX - spriteWidth / 2;
+        int drawEndX = spriteScreenX + spriteWidth / 2;
+        int drawStartY = baseScreenY - spriteHeight / 2;
+        int drawEndY = baseScreenY + spriteHeight / 2;
 
-        // Clamp to screen bounds
-        if (drawStartY < 0) drawStartY = 0;
-        if (drawEndY >= screen_height) drawEndY = screen_height - 1;
-        if (drawStartX < 0) drawStartX = 0;
-        if (drawEndX >= screen_width) drawEndX = screen_width - 1;
+        // Render vertical stripes (only visible parts will be rendered)
+        SDL_SetTextureBlendMode(spriteTexture, SDL_BLENDMODE_BLEND);
+        for (int x = drawStartX; x < drawEndX; x++) {
+            // Skip if the stripe is outside the screen or occluded by the z-buffer
+            if (x < 0 || x >= screen_width || transformY >= z_buffer[x]) continue;
 
-        if (drawStartX >= drawEndX || drawStartY >= drawEndY) continue;
+            // Calculate texture X coordinate proportionally
+            int texX = (int)((x - drawStartX) * (float)texW / (drawEndX - drawStartX));
+            texX = texX < 0 ? 0 : (texX >= texW ? texW - 1 : texX);
 
-        int texture_width = textureWidths[i];
-        int texture_height = textureHeights[i];
-
-        // Loop through every vertical stripe of the sprite on the screen
-        for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-            // Calculate the texture X coordinate
-            int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * texture_width / spriteWidth / 256);
-
-            // Clamp texX to valid bounds
-            if (texX < 0) texX = 0;
-            if (texX >= texture_width) texX = texture_width - 1;
-
-            // Check if this stripe is visible in the z-buffer
-            if (transformY > 0 && stripe >= 0 && stripe < screen_width && transformY < z_buffer[stripe]) {
-                // For each vertical pixel in the stripe
-                for (int y = drawStartY; y < drawEndY; y++) {
-                    // Use original precise texture coordinate calculation
-                    int d = (y - baseScreenY) * 256 + spriteHeight * 128;
-                    int texY = ((d * texture_height) / spriteHeight) / 256;
-
-                    // Clamp texY to valid bounds
-                    if (texY < 0) texY = 0;
-                    if (texY >= texture_height) texY = texture_height - 1;
-
-                    // Render the pixel
-                    SDL_Rect srcRect = { texX, texY, 1, 1 };
-                    SDL_Rect destRect = { stripe, y, 1, 1 };
-                    SDL_RenderCopy(renderer, spriteTexture, &srcRect, &destRect);
-                }
-            }
+            // Render the entire vertical stripe (no clamping for height)
+            SDL_Rect srcRect = {texX, 0, 1, texH};
+            SDL_Rect destRect = {x, drawStartY, 1, drawEndY - drawStartY};
+            SDL_RenderCopy(renderer, spriteTexture, &srcRect, &destRect);
         }
     }
 }
