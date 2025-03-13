@@ -58,7 +58,7 @@ void Level2(Context* ctx)
         0.5,
         10,
         10.0f,
-        ChasePlayer
+        MoveSmoothAStar
     ));
     AppendSprite(ctx, SpriteNew(
         10.5, 10.5,

@@ -169,7 +169,7 @@ void UpdateEntities(Context* ctx, float deltaTime)
     
     for (size_t i = 0; i < ctx->entity_count; i++) {
         if (ctx->entities[i]->move) {  // Ensure move function is not NULL
-            ctx->entities[i]->move(ctx->entities[i], (const int**)map, ctx->player, deltaTime);
+            ctx->entities[i]->move(ctx->entities[i], (const int**)map, ctx->map_width, ctx->map_height, ctx->player, deltaTime);
         }
     }
 
