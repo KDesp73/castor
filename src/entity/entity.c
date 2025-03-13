@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "sprite.h"
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,8 +18,6 @@ Entity* EntityNew(Sprite* sprite, float speed, size_t health, float strength, fl
     }
 
     e->sprite = sprite;
-    e->x = sprite->x;
-    e->y = sprite->y;
     e->speed = speed;
     e->health = health;
     e->strength = strength;
@@ -26,6 +25,10 @@ Entity* EntityNew(Sprite* sprite, float speed, size_t health, float strength, fl
     e->detection_range = detectionRange;
     e->hitbox = hitbox;
     e->move = move;
+    e->default_path = (Path) {
+        .length = 0,
+        .index = 0
+    };
 
     return e;
 }
@@ -38,14 +41,6 @@ void EntityFree(Entity** e)
     }
 }
 
-void EntityMove(Entity* e, float newX, float newY)
-{
-    e->x = newX + 0.5;
-    e->y = newY + 0.5;
-    e->sprite->x = newX + 0.5;
-    e->sprite->y = newY + 0.5;
-}
-
 void EntityTakeDamage(Entity* e, size_t damage)
 {
     if(e->health - (1 - e->toughness) * damage < 0) {
@@ -56,3 +51,46 @@ void EntityTakeDamage(Entity* e, size_t damage)
     e->health -= (1 - e->toughness) * damage;
 }
 
+#include <stdio.h>
+#include <math.h>
+
+void EntityFollowDefaultPath(Entity* entity, float deltaTime) {
+    // Check if entity pointer is valid
+    if (entity == NULL) {
+        fprintf(stderr, "Error: Entity pointer is null.\n");
+        return;
+    }
+
+    // Check if default path is valid
+    if (entity->default_path.length <= 0 || entity->default_path.length > MAX_PATH_LENGTH) {
+        fprintf(stderr, "Error: Default path is not initialized or has invalid length.\n");
+        return;
+    }
+
+    // Check if index is within bounds
+    if (entity->default_path.index < 0 || entity->default_path.index >= entity->default_path.length) {
+        entity->default_path.index = 0;
+    }
+
+    // Get target position from the path
+    float targetX = entity->default_path.path[entity->default_path.index][0];
+    float targetY = entity->default_path.path[entity->default_path.index][1];
+
+    // Calculate direction and distance to the target
+    float dx = targetX - entity->sprite->x;
+    float dy = targetY - entity->sprite->y;
+    float distance = sqrtf(dx * dx + dy * dy);
+
+    // Prevent division by zero
+    if (distance > 0) {
+        float dirX = dx / distance;
+        float dirY = dy / distance;
+
+        entity->sprite->x += dirX * entity->speed * deltaTime;
+        entity->sprite->y += dirY * entity->speed * deltaTime;
+
+        if (distance <= entity->speed * deltaTime) {
+            entity->default_path.index = (entity->default_path.index + 1) % entity->default_path.length;
+        }
+    }
+}

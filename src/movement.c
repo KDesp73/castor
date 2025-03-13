@@ -107,7 +107,8 @@ void RotateY(Context *ctx, double delta)
         ctx->player->angleY = ANGLE_Y_CUTOFF;
 }
 
-bool CheckCollision(float newX, float newY, const Context* ctx) {
+bool CheckCollision(float newX, float newY, const Context* ctx)
+{
     // Check collision with map tiles
     int mapX = (int)newX;
     int mapY = (int)newY;
@@ -118,7 +119,21 @@ bool CheckCollision(float newX, float newY, const Context* ctx) {
 
     int tile = ctx->map[mapY][mapX];
     if (tile > 0) {
-        return true;  // Collision with a solid tile
+        // Allow some error margin in collision with tiles
+        if (COLLISION_TOLERANCE > 0) {
+            float tileCenterX = (float)mapX + 0.5f;
+            float tileCenterY = (float)mapY + 0.5f;
+
+            float dx = newX - tileCenterX;
+            float dy = newY - tileCenterY;
+            float distanceSquared = dx * dx + dy * dy;
+
+            // Check if the distance is less than the error margin
+            if (distanceSquared < COLLISION_TOLERANCE * COLLISION_TOLERANCE) {
+                return false;  // Allow movement with an error margin
+            }
+        }
+        return true;  // Collision with a solid tile (without margin)
     }
 
     // Check collision with sprites
@@ -128,17 +143,17 @@ bool CheckCollision(float newX, float newY, const Context* ctx) {
         // Skip sprites without collision
         if (!sprite->collision) continue;
 
-        // Calculate distance between player and sprite
+        // Calculate distance between the new position and sprite
         float dx = newX - sprite->x;
         float dy = newY - sprite->y;
         float distanceSquared = dx * dx + dy * dy;
 
         // Define a collision radius (adjust as needed)
-        float collisionRadius = 1.0f;
+        float collisionRadius = 0.9f;  // You can tweak this for each sprite
 
-        // Check if the player is within the collision radius of the sprite
-        if (distanceSquared < collisionRadius * collisionRadius) {
-            return true;  // Collision with a sprite
+        // Allow some error margin for sprite collisions
+        if (distanceSquared < (collisionRadius - COLLISION_TOLERANCE) * (collisionRadius - COLLISION_TOLERANCE)) {
+            return true;  // Collision with a sprite, considering error margin
         }
     }
 

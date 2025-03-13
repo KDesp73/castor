@@ -1,5 +1,7 @@
 #include "entity.h"
+#include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static bool IsWalkable(int** map, int x, int y, size_t mapW, size_t mapH)
@@ -8,66 +10,131 @@ static bool IsWalkable(int** map, int x, int y, size_t mapW, size_t mapH)
     return map[y][x] == 0;  // 0 is assumed to be a walkable tile, change if needed
 }
 
-Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH)
+Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY)
 {
-    // Define starting point for the path
-    int startX = rand() % mapW;
-    int startY = rand() % mapH;
+    Path result;
+    result.length = 0;
 
-    // Define current position
-    int x = startX;
-    int y = startY;
+    if (startX < 0 || startX >= mapW || startY < 0 || startY >= mapH || !IsWalkable(map, (int)startX, (int)startY, mapW, mapH)) {
+        fprintf(stderr, "Error: Starting point (%.2f, %.2f) is invalid or not walkable.\n", startX, startY);
+        return result; // Return an empty path
+    }
 
-    // Define the path as a list of points (can be a simple array or a linked list)
-    int path[MAX_PATH_LENGTH][2];
-    size_t pathLength = 0;
+    float x = startX;
+    float y = startY;
 
-    // Store the starting point in the path
-    path[pathLength][0] = x;
-    path[pathLength][1] = y;
-    pathLength++;
+    bool visited[mapW][mapH];
+    for (size_t i = 0; i < mapW; i++) {
+        for (size_t j = 0; j < mapH; j++) {
+            visited[i][j] = false;
+        }
+    }
 
-    // Directions array (up, right, down, left)
-    int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}; // Up, Right, Down, Left
+    result.path[result.length][0] = x;
+    result.path[result.length][1] = y;
+    result.length++;
+    visited[(int)startX][(int)startY] = true;
 
-    // Number of steps before looping or retrying
+    int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+
     int maxSteps = 1000;
     int stepCount = 0;
 
-    // Try to generate a random loop path
-    while (stepCount < maxSteps) {
-        // Choose a random direction (up, down, left, right)
-        int dir = rand() % 4;
-        int newX = x + directions[dir][0];
-        int newY = y + directions[dir][1];
+    while (stepCount < maxSteps && result.length < targetLength) {
+        for (int i = 0; i < 4; i++) {
+            int j = rand() % 4;
+            int tempX = directions[i][0];
+            int tempY = directions[i][1];
+            directions[i][0] = directions[j][0];
+            directions[i][1] = directions[j][1];
+            directions[j][0] = tempX;
+            directions[j][1] = tempY;
+        }
 
-        // Check if the new point is walkable
-        if (IsWalkable(map, newX, newY, mapW, mapH)) {
-            // Add the new point to the path
-            path[pathLength][0] = newX;
-            path[pathLength][1] = newY;
-            pathLength++;
+        // Try each direction in random order
+        bool moved = false;
+        for (int i = 0; i < 4; i++) {
+            int newX = (int)(x - 0.5f) + directions[i][0]; // Convert to grid coordinates
+            int newY = (int)(y - 0.5f) + directions[i][1]; // Convert to grid coordinates
 
-            // Move to the new point
-            x = newX;
-            y = newY;
+            // Check if the new point is walkable and not visited
+            if (IsWalkable(map, newX, newY, mapW, mapH) && !visited[newX][newY]) {
+                // Add the new point to the path (centered)
+                result.path[result.length][0] = (float)newX + 0.5f;
+                result.path[result.length][1] = (float)newY + 0.5f;
+                result.length++;
+                visited[newX][newY] = true;
 
-            // If we've made a full loop (i.e., returned to the start), break the loop
-            if (x == startX && y == startY && pathLength > 3) {
-                break;  // Path is closed
+                // Move to the new point (centered)
+                x = (float)newX + 0.5f;
+                y = (float)newY + 0.5f;
+                moved = true;
+                break;
+            }
+        }
+
+        // If no valid move, backtrack to the previous position
+        if (!moved) {
+            if (result.length > 1) {
+                // Mark the current position as unvisited
+                visited[(int)(x - 0.5f)][(int)(y - 0.5f)] = false;
+
+                // Backtrack
+                result.length--;
+                x = result.path[result.length - 1][0];
+                y = result.path[result.length - 1][1];
+            } else {
+                // If stuck at the start, reset the path and try again
+                result.length = 0;
+                result.path[result.length][0] = startX + 0.5f;
+                result.path[result.length][1] = startY + 0.5f;
+                result.length++;
+                for (size_t i = 0; i < mapW; i++) {
+                    for (size_t j = 0; j < mapH; j++) {
+                        visited[i][j] = false;
+                    }
+                }
+                visited[(int)startX][(int)startY] = true;
+                x = startX + 0.5f;
+                y = startY + 0.5f;
             }
         }
 
         stepCount++;
     }
 
-    // Create the path structure to return
-    Path result;
-    result.length = pathLength;
-    for (size_t i = 0; i < pathLength; i++) {
-        result.path[i][0] = path[i][0];
-        result.path[i][1] = path[i][1];
+    // Ensure the path ends at the starting point to form a loop
+    if (result.length >= 2) {
+        float lastX = result.path[result.length - 1][0];
+        float lastY = result.path[result.length - 1][1];
+
+        // Check if the last point is adjacent to the starting point
+        if (fabsf(lastX - (startX + 0.5f)) + fabsf(lastY - (startY + 0.5f)) == 1.0f) {
+            result.path[result.length][0] = startX + 0.5f;
+            result.path[result.length][1] = startY + 0.5f;
+            result.length++;
+        } else {
+            // If not adjacent, try to find a path back to the start
+            for (int i = 0; i < 4; i++) {
+                int newX = (int)(lastX - 0.5f) + directions[i][0];
+                int newY = (int)(lastY - 0.5f) + directions[i][1];
+
+                if (newX == (int)startX && newY == (int)startY) {
+                    result.path[result.length][0] = startX + 0.5f;
+                    result.path[result.length][1] = startY + 0.5f;
+                    result.length++;
+                    break;
+                }
+            }
+        }
     }
 
-    return result;  // Return the generated path
+    return result;
+}
+
+void PathPrint(const Path path)
+{
+    for(size_t i = 0; i < path.length; i++){
+        printf("%zu: %f, %f %s\n", i, path.path[i][0], path.path[i][1], (i == path.index) ? "<" : "");
+    }
 }

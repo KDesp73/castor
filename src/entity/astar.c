@@ -16,8 +16,8 @@ static bool IsValidNode(int x, int y, size_t mapW, size_t mapH, const int** map)
 // A* algorithm to find the next step toward the player
 Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, size_t mapH)
 {
-    int startX = (int)floor(entity->x);
-    int startY = (int)floor(entity->y);
+    int startX = (int)floor(entity->sprite->x);
+    int startY = (int)floor(entity->sprite->y);
     int targetX = (int)floor(player->X);
     int targetY = (int)floor(player->Y);
 

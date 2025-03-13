@@ -7,6 +7,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_video.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include "animation.h"
@@ -18,8 +19,6 @@
 #include "raycaster.h"
 #include "context.h"
 #include "movement.h"
-#include "settings.h"
-#include "textures.h"
 #include "ui.h"
 #include "screens.h"
 
@@ -36,8 +35,7 @@ static void InventoryInit()
     Inventory.potionsCount = 1;
 }
 
-void loop(Context* ctx)
-{
+void loop(Context* ctx) {
     if (!ctx || !ctx->player) {
         fprintf(stderr, "Error: Context or Player is NULL!\n");
         return;
@@ -58,7 +56,7 @@ void loop(Context* ctx)
     Animation keyAnim = LoadAnimation(ctx->renderer, "assets/animations/key.png", 32, 32, 50);
 
     ctx->running = false;
-    if(UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
+    if (UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
     ctx->running = true;
 
     bool paused = false;
@@ -73,8 +71,19 @@ void loop(Context* ctx)
                 if (!paused) {
                     paused = true;
                     int result = UI_POLL_SCREEN(PauseScreen, ctx->renderer, &event, &ui);
-                    if (result == 0) paused = false;
-                    else if(result == -1) goto exit;
+                    if (result == 0) {
+                        paused = false;
+                        // Flush remaining ESC key events to prevent immediate re-pause
+                        SDL_Event e;
+                        while (SDL_PollEvent(&e)) {
+                            if (e.type == SDL_KEYDOWN && e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                                continue; // Discard ESC keydown events
+                            }
+                            SDL_PushEvent(&e); // Re-queue other events
+                        }
+                    } else if (result == -1) {
+                        goto exit;
+                    }
                 }
             }
         }
@@ -83,19 +92,19 @@ void loop(Context* ctx)
             Uint8 key = HandleInput(ctx);
             if (key == SDL_SCANCODE_R) {
                 PlayerLoad(ctx->player, stored_player);
-            } else if(key == SDL_SCANCODE_T) {
-                if(ctx->textures_loaded) {
+            } else if (key == SDL_SCANCODE_T) {
+                if (ctx->textures_loaded) {
                     FreeTextures(ctx);
                 } else {
                     LoadTextures(ctx);
                 }
-            } else if(key == SDL_SCANCODE_K)
+            } else if (key == SDL_SCANCODE_K) {
                 Inventory.keyAquired = !Inventory.keyAquired;
+            }
 
             SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
             SDL_RenderClear(ctx->renderer);
 
-            // CastFloorAndCeiling(ctx->renderer, ctx);
             CastWalls(ctx->renderer, ctx);
             CastSprites(ctx->renderer, ctx);
             RenderCrosshair(ctx->renderer, ctx->screen_width, ctx->screen_height);
@@ -103,7 +112,7 @@ void loop(Context* ctx)
 
             UpdateEntities(ctx, ctx->frame_time / 1000.0f);
 
-            if(Inventory.keyAquired) {
+            if (Inventory.keyAquired) {
                 UpdateAnimation(&keyAnim, SDL_GetTicks());
                 RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);
             }
@@ -121,6 +130,7 @@ exit:
 
 int main(int argc, char** argv)
 {
+   srand(time(NULL));
     InventoryInit();
 
     Context ctx = {0};

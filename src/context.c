@@ -1,4 +1,5 @@
 #include "context.h"
+#include "entity.h"
 #include "map.h"
 #include "sprite.h"
 #include "textures.h"
@@ -129,9 +130,6 @@ void AppendEntity(Context* ctx, Entity* entity)
     // Append sprite and reassign the pointer to ensure consistency
     AppendSprite(ctx, entity->sprite);
     entity->sprite = ctx->sprites[ctx->sprite_count - 1];  // Ensure entity references the stored sprite
-
-    entity->x = entity->sprite->x;
-    entity->y = entity->sprite->y;
 
     ctx->entities[ctx->entity_count++] = entity;
 }

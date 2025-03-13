@@ -5,17 +5,14 @@
 #include "sprite.h"
 
 #define MAX_PATH_LENGTH 200
-#define MAX_RADIUS 10
 
-#define UP 0
-#define RIGHT 1
-#define DOWN 2
-#define LEFT 3
 typedef struct {
-    int path[MAX_PATH_LENGTH][2];
+    float path[MAX_PATH_LENGTH][2];
     size_t length;
+    int index;
 } Path;
-Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH);
+Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY);
+void PathPrint(const Path path);
 
 
 #define MIN_STOP_DISTANCE 1.5f
@@ -27,7 +24,6 @@ Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH);
 
 typedef struct Entity {
     Sprite* sprite;
-    float x, y;
     float speed;
     size_t health;
     float strength; // 0..1
@@ -50,7 +46,7 @@ Entity* EntityNew(
     EntityMovement move
 );
 void EntityFree(Entity** e);
-void EntityMove(Entity* e, float newX, float newY);
+void EntityFollowDefaultPath(Entity* entity, float deltaTime);
 
 void EntityTakeDamage(Entity* e, size_t damage);
 float EntityDealDamage(const Entity* e);

@@ -1,6 +1,7 @@
 #include "levels.h"
 #include "context.h"
 #include "entity.h"
+#include "map.h"
 #include "sprite.h"
 
 enum {
@@ -13,101 +14,129 @@ enum {
     SPRITE_MUSHROOM
 };
 
+#define ENTITY_GOBLIN(x, y)   \
+    EntityNew(                \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            SPRITE_DOWN,      \
+            SPRITE_GOBLIN,    \
+            3,                \
+            false             \
+        ),                    \
+        6.0f,                 \
+        100,                  \
+        0.5,                  \
+        0.5,                  \
+        4,                    \
+        10.0f,                \
+        MoveSmoothAStar       \
+    )
+#define ENTITY_SKELETON(x, y) \
+    EntityNew(                \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            SPRITE_DOWN,      \
+            SPRITE_SKELETON,  \
+            3,                \
+            false             \
+        ),                    \
+        7.0f,                 \
+        100,                  \
+        0.7,                  \
+        0.4,                  \
+        4,                    \
+        10.0f,                \
+        MoveSmoothAStar       \
+    )
+#define ENTITY_MUSHROOM(x, y) \
+    EntityNew(                \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            SPRITE_DOWN,      \
+            SPRITE_MUSHROOM,  \
+            3,                \
+            false             \
+        ),                    \
+        3.0f,                 \
+        100,                  \
+        0.3,                  \
+        0.4,                  \
+        6,                    \
+        10.0f,                \
+        MoveSmoothAStar       \
+    )
+#define ENTITY_EYE(x, y)      \
+    EntityNew(                \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            SPRITE_DOWN,      \
+            SPRITE_EYE,       \
+            3,                \
+            false             \
+            ),                \
+        5.0f,                 \
+        100,                  \
+        0.4,                  \
+        0.6,                  \
+        5,                    \
+        10.0f,                \
+        MoveSmoothAStar       \
+    )
+
+#define SPRITE_COLUMN(x, y)   \
+    SpriteNew(                \
+        x+0.5, y+0.5,         \
+        SPRITE_MIDDLE,        \
+        SPRITE_COLUMN,        \
+        2,                    \
+        true                  \
+    )
+#define SPRITE_LAMP(x, y)     \
+    SpriteNew(                \
+        x+0.5, y+0.5,         \
+        SPRITE_UP,            \
+        SPRITE_LAMP,          \
+        2,                    \
+        false                 \
+    )
+#define SPRITE_BARREL(x, y)   \
+    SpriteNew(                \
+        x+0.5, y+0.5,         \
+        SPRITE_DOWN,          \
+        SPRITE_BARREL,        \
+        2,                    \
+        true                  \
+    )
+
+
 void Level1(Context* ctx)
 {
     LoadLevelMap(ctx, "levels/1.lvl");
     
+    AppendSprite(ctx, SPRITE_COLUMN(9, 9));
 }
 
 void Level2(Context* ctx)
 {
     LoadLevelMap(ctx, "levels/2.lvl");
+    ctx->render_distance = 50;
 
-    AppendSprite(ctx, SpriteNew( 
-        8.5, 2.5,
-        SPRITE_DOWN,
-        SPRITE_BARREL,
-        2,
-        true
-    ));
-    AppendSprite(ctx, SpriteNew(
-        5.5, 10.5,
-        SPRITE_UP,
-        SPRITE_LAMP,
-        2, 
-        false
-    ));
-    AppendSprite(ctx, SpriteNew(
-        4.5, 4.5,
-        SPRITE_MIDDLE,
-        SPRITE_COLUMN,
-        2,
-        true
-    ));
-    AppendEntity(ctx, EntityNew(
-        SpriteNew(
-            2.5, 2.5,
-            SPRITE_DOWN,
-            SPRITE_GOBLIN,
-            3,
-            false
-        ),
-        6.0f,   // speed
-        100,    // health
-        0.5,    // strength
-        0.5,    // toughness
-        10,     // detection_range
-        10.0f,  // hitbox
-        MoveSmoothAStar
-    ));
-    AppendEntity(ctx, EntityNew(
-        SpriteNew(
-            10.5, 10.5,
-            SPRITE_DOWN,
-            SPRITE_SKELETON,
-            3,
-            false
-        ),
-        7.0f,
-        100,
-        0.5,
-        0.5,
-        10,
-        10.0f,
-        MoveSmoothAStar
-    ));
-    AppendEntity(ctx, EntityNew(
-        SpriteNew(
-            14.5, 3.5,
-            SPRITE_MIDDLE,
-            SPRITE_EYE,
-            3,
-            false
-        ),
-        4.0f,
-        100,
-        0.5,
-        0.5,
-        10,
-        10.0f,
-        MoveSmoothAStar
-    ));
-    AppendEntity(ctx, EntityNew(
-        SpriteNew(
-            12.5, 12.5,
-            SPRITE_DOWN,
-            SPRITE_MUSHROOM,
-            3,
-            false
-        ),
-        3.0f,
-        100,
-        0.5,
-        0.5,
-        10,
-        10.0f,
-        MoveSmoothAStar
-    ));
+    AppendSprite(ctx, SPRITE_BARREL(9, 2));
+    AppendSprite(ctx, SPRITE_LAMP(5, 10));
+    AppendSprite(ctx, SPRITE_COLUMN(4, 4));
+    AppendEntity(ctx, ENTITY_GOBLIN(2, 2));
+    AppendEntity(ctx, ENTITY_SKELETON(10, 10));
+    AppendEntity(ctx, ENTITY_EYE(14, 2));
+    AppendEntity(ctx, ENTITY_MUSHROOM(12, 12));
+    
+    int** map = ExportSearchMap(ctx);
+    for (size_t i = 0; i < ctx->entity_count; i++) {
+        if(ctx->entities[i]->default_path.length == 0) {
+            ctx->entities[i]->default_path = 
+                GenerateRandomLoopPath(map, ctx->map_width, ctx->map_height, 12, ctx->entities[i]->sprite->x, ctx->entities[i]->sprite->y);
+        }
+    }
+    MapFree(map, ctx->map_height);
 }
 
 void Level3(Context* ctx)
