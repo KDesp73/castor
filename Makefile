@@ -59,6 +59,7 @@ $(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/ui
+	mkdir -p $(BUILD_DIR)/entity
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
 	$(eval counter=$(shell echo $$(($(counter)+1))))

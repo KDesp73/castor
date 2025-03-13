@@ -52,7 +52,23 @@ void Level2(Context* ctx)
             3,
             false
         ),
-        6.0f,
+        6.0f,   // speed
+        100,    // health
+        0.5,    // strength
+        0.5,    // toughness
+        10,     // detection_range
+        10.0f,  // hitbox
+        MoveSmoothAStar
+    ));
+    AppendEntity(ctx, EntityNew(
+        SpriteNew(
+            10.5, 10.5,
+            SPRITE_DOWN,
+            SPRITE_SKELETON,
+            3,
+            false
+        ),
+        7.0f,
         100,
         0.5,
         0.5,
@@ -60,28 +76,38 @@ void Level2(Context* ctx)
         10.0f,
         MoveSmoothAStar
     ));
-    AppendSprite(ctx, SpriteNew(
-        10.5, 10.5,
-        SPRITE_DOWN,
-        SPRITE_SKELETON,
-        3,
-        false
+    AppendEntity(ctx, EntityNew(
+        SpriteNew(
+            14.5, 3.5,
+            SPRITE_MIDDLE,
+            SPRITE_EYE,
+            3,
+            false
+        ),
+        4.0f,
+        100,
+        0.5,
+        0.5,
+        10,
+        10.0f,
+        MoveSmoothAStar
     ));
-    AppendSprite(ctx, SpriteNew(
-        14.5, 3.5,
-        SPRITE_MIDDLE,
-        SPRITE_EYE,
-        3,
-        false
+    AppendEntity(ctx, EntityNew(
+        SpriteNew(
+            12.5, 12.5,
+            SPRITE_DOWN,
+            SPRITE_MUSHROOM,
+            3,
+            false
+        ),
+        3.0f,
+        100,
+        0.5,
+        0.5,
+        10,
+        10.0f,
+        MoveSmoothAStar
     ));
-    AppendSprite(ctx, SpriteNew(
-        12.5, 12.5,
-        SPRITE_DOWN,
-        SPRITE_MUSHROOM,
-        3,
-        false
-    ));
-
 }
 
 void Level3(Context* ctx)
