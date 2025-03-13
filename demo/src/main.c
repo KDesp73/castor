@@ -101,6 +101,8 @@ void loop(Context* ctx)
             RenderCrosshair(ctx->renderer, ctx->screen_width, ctx->screen_height);
             UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
+            UpdateEntities(ctx, ctx->frame_time / 1000.0f);
+
             if(Inventory.keyAquired) {
                 UpdateAnimation(&keyAnim, SDL_GetTicks());
                 RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);

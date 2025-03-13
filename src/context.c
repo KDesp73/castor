@@ -1,9 +1,13 @@
 #include "context.h"
 #include "map.h"
+#include "sprite.h"
 #include "textures.h"
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 bool ConstructRenderer(Context* ctx)
@@ -48,6 +52,8 @@ void ContextFree(Context* ctx)
     if (ctx) {
         PlayerFree(&ctx->player);
         FreeTextures(ctx);
+        FreeSprites(ctx);
+        FreeEntities(ctx);
         MapFree(ctx->map, ctx->map_height);
 
         if (ctx->renderer) {
@@ -77,6 +83,24 @@ void FreeTextures(Context* ctx)
     ctx->textures_loaded = false;
     ctx->sprites_loaded = false;
 }
+void FreeSprites(Context* ctx)
+{
+    for(size_t i = 0; i < ctx->sprite_count; i++){
+        if(ctx->sprites[i]){
+            SpriteFree(&ctx->sprites[i]);
+        }
+    }
+}
+void FreeEntities(Context* ctx)
+{
+    for(size_t i = 0; i < ctx->entity_count; i++){
+        if(ctx->entities[i]){
+            EntityFree(&ctx->entities[i]);
+        }
+    }
+}
+
+
 
 void LoadLevelMap(Context* ctx, const char* path)
 {
@@ -91,9 +115,63 @@ void LoadTextures(Context* ctx)
     ctx->sprites_loaded = true;
 }
 
-void AppendSprite(Context* ctx, Sprite sprite)
+void AppendSprite(Context* ctx, Sprite* sprite)
 {
     if(ctx->sprite_count >= MAX_TEXTURES) return;
 
     ctx->sprites[ctx->sprite_count++] = sprite;
+}
+
+void AppendEntity(Context* ctx, Entity* entity)
+{
+    if (ctx->entity_count >= MAX_ENTITIES) return;
+
+    // Append sprite and reassign the pointer to ensure consistency
+    AppendSprite(ctx, entity->sprite);
+    entity->sprite = ctx->sprites[ctx->sprite_count - 1];  // Ensure entity references the stored sprite
+
+    entity->x = entity->sprite->x;
+    entity->y = entity->sprite->y;
+
+    ctx->entities[ctx->entity_count++] = entity;
+}
+
+int** ExportSearchMap(Context* ctx)
+{
+    int** res = MapCreate(ctx->map_height, ctx->map_width);
+    if (!res) return NULL;
+
+    for (size_t i = 0; i < ctx->map_width; i++) {
+        for (size_t j = 0; j < ctx->map_height; j++) {
+            res[j][i] = (ctx->map[j][i] != 0) ? 1 : 0;
+        }
+    }
+
+    for (size_t k = 0; k < ctx->sprite_count; k++) {
+        Sprite* sprite = ctx->sprites[k];
+
+        if (sprite->collision) {
+            int gridX = (int)floor(sprite->x);
+            int gridY = (int)floor(sprite->y);
+
+            if (gridX >= 0 && gridX < ctx->map_width && gridY >= 0 && gridY < ctx->map_height) {
+                res[gridY][gridX] = 1;
+            }
+        }
+    }
+
+    return res;
+}
+
+void UpdateEntities(Context* ctx, float deltaTime)
+{
+    int** map = ExportSearchMap(ctx);
+    
+    for (size_t i = 0; i < ctx->entity_count; i++) {
+        if (ctx->entities[i]->move) {  // Ensure move function is not NULL
+            ctx->entities[i]->move(ctx->entities[i], (const int**)map, ctx->player, deltaTime);
+        }
+    }
+
+    MapFree(map, ctx->map_height);
 }

@@ -123,14 +123,14 @@ bool CheckCollision(float newX, float newY, const Context* ctx) {
 
     // Check collision with sprites
     for (int i = 0; i < ctx->sprite_count; i++) {
-        Sprite sprite = ctx->sprites[i];
+        Sprite* sprite = ctx->sprites[i];
 
         // Skip sprites without collision
-        if (!sprite.collision) continue;
+        if (!sprite->collision) continue;
 
         // Calculate distance between player and sprite
-        float dx = newX - sprite.x;
-        float dy = newY - sprite.y;
+        float dx = newX - sprite->x;
+        float dy = newY - sprite->y;
         float distanceSquared = dx * dx + dy * dy;
 
         // Define a collision radius (adjust as needed)

@@ -1,5 +1,6 @@
 #include "levels.h"
 #include "context.h"
+#include "entity.h"
 #include "sprite.h"
 
 enum {
@@ -22,50 +23,64 @@ void Level2(Context* ctx)
 {
     LoadLevelMap(ctx, "levels/2.lvl");
 
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(8, 2),
-        .z = SPRITE_DOWN,
-        .texture_id = SPRITE_BARREL,
-        .scale = 2,
-        .collision = true,
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(5, 10),
-        .z = SPRITE_UP,
-        .texture_id = SPRITE_LAMP,
-        .scale = 2
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(4, 4),
-        .z = SPRITE_MIDDLE,
-        .texture_id = SPRITE_COLUMN,
-        .scale = 2,
-        .collision = true
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(2, 2),
-        .z = SPRITE_DOWN,
-        .texture_id = SPRITE_GOBLIN,
-        .scale = 3,
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(10, 10),
-        .z = SPRITE_DOWN,
-        .texture_id = SPRITE_SKELETON,
-        .scale = 3,
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(14, 3),
-        .z = SPRITE_MIDDLE,
-        .texture_id = SPRITE_EYE,
-        .scale = 3,
-    });
-    AppendSprite(ctx, (Sprite) {
-        SPRITE_PLACE(12, 12),
-        .z = SPRITE_DOWN,
-        .texture_id = SPRITE_MUSHROOM,
-        .scale = 3,
-    });
+    AppendSprite(ctx, SpriteNew( 
+        8.5, 2.5,
+        SPRITE_DOWN,
+        SPRITE_BARREL,
+        2,
+        true
+    ));
+    AppendSprite(ctx, SpriteNew(
+        5.5, 10.5,
+        SPRITE_UP,
+        SPRITE_LAMP,
+        2, 
+        false
+    ));
+    AppendSprite(ctx, SpriteNew(
+        4.5, 4.5,
+        SPRITE_MIDDLE,
+        SPRITE_COLUMN,
+        2,
+        true
+    ));
+    AppendEntity(ctx, EntityNew(
+        SpriteNew(
+            2.5, 2.5,
+            SPRITE_DOWN,
+            SPRITE_GOBLIN,
+            3,
+            false
+        ),
+        6.0f,
+        100,
+        0.5,
+        0.5,
+        10,
+        10.0f,
+        ChasePlayer
+    ));
+    AppendSprite(ctx, SpriteNew(
+        10.5, 10.5,
+        SPRITE_DOWN,
+        SPRITE_SKELETON,
+        3,
+        false
+    ));
+    AppendSprite(ctx, SpriteNew(
+        14.5, 3.5,
+        SPRITE_MIDDLE,
+        SPRITE_EYE,
+        3,
+        false
+    ));
+    AppendSprite(ctx, SpriteNew(
+        12.5, 12.5,
+        SPRITE_DOWN,
+        SPRITE_MUSHROOM,
+        3,
+        false
+    ));
 
 }
 

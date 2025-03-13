@@ -21,16 +21,10 @@ typedef struct {
     bool collision;
 } Sprite;
 
-static inline int SpriteCmp(const void* a, const void* b)
-{
-    const Sprite* spriteA = (const Sprite*)a;
-    const Sprite* spriteB = (const Sprite*)b;
+Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision);
+void SpriteFree(Sprite** s);
 
-    // Sorting in descending order based on distance
-    if (spriteA->distance < spriteB->distance) return 1;
-    if (spriteA->distance > spriteB->distance) return -1;
-    return 0;
-}
+int SpriteCmp(const void* a, const void* b);
 
 
 #endif // SPRITE_H
