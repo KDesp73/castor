@@ -2,16 +2,21 @@
 #define CONTEXT_H
 
 #include "entity.h"
+#include "event.h"
 #include "player.h"
 #include "sprite.h"
+#include "ui.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
 
 #define MAX_MAP_WIDTH  64
 #define MAX_MAP_HEIGHT 64
+
 #define MAX_TEXTURES 32
+#define MAX_SPRITES 32
 #define MAX_ENTITIES 16
+#define MAX_EVENTS 128
 
 #define DEFAULT_SCREEN_WIDTH 1280
 #define DEFAULT_SCREEN_HEIGHT 720
@@ -53,10 +58,15 @@ typedef struct {
     int** map;
     size_t map_width;
     size_t map_height;
-    Sprite* sprites[MAX_TEXTURES];
+    Sprite* sprites[MAX_SPRITES];
     size_t sprite_count;
     Entity* entities[MAX_ENTITIES];
     size_t entity_count;
+    Event* events[MAX_EVENTS];
+    size_t event_count;
+
+    // UI
+    UI ui;
 } Context;
 
 
@@ -68,15 +78,18 @@ void ContextFree(Context* ctx);
 void FreeTextures(Context* ctx);
 void FreeSprites(Context* ctx);
 void FreeEntities(Context* ctx);
+void FreeEvents(Context* ctx);
 
 void LoadLevelMap(Context* ctx, const char* path);
 void LoadTextures(Context* ctx);
 
 void AppendSprite(Context* ctx, Sprite* sprite);
 void AppendEntity(Context* ctx, Entity* entity);
+void AppendEvent(Context* ctx, Event* evt);
 
 int** ExportSearchMap(Context* ctx);
 void UpdateEntities(Context* ctx, float deltaTime);
+void ProcessEvents(Context* ctx);
 
 
 #endif // CONTEXT_H

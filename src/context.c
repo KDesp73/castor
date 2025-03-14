@@ -1,8 +1,10 @@
 #include "context.h"
 #include "entity.h"
+#include "event.h"
 #include "map.h"
 #include "sprite.h"
 #include "textures.h"
+#include "ui.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -55,6 +57,8 @@ void ContextFree(Context* ctx)
         FreeTextures(ctx);
         FreeSprites(ctx);
         FreeEntities(ctx);
+        FreeEvents(ctx);
+        UIClose(&ctx->ui);
         MapFree(ctx->map, ctx->map_height);
 
         if (ctx->renderer) {
@@ -100,6 +104,14 @@ void FreeEntities(Context* ctx)
         }
     }
 }
+void FreeEvents(Context* ctx)
+{
+    for(size_t i = 0; i < ctx->event_count; i++){
+        if(ctx->events[i]){
+            EventFree(&ctx->events[i]);
+        }
+    }
+}
 
 
 
@@ -118,7 +130,7 @@ void LoadTextures(Context* ctx)
 
 void AppendSprite(Context* ctx, Sprite* sprite)
 {
-    if(ctx->sprite_count >= MAX_TEXTURES) return;
+    if(ctx->sprite_count >= MAX_SPRITES) return;
 
     ctx->sprites[ctx->sprite_count++] = sprite;
 }
@@ -127,11 +139,17 @@ void AppendEntity(Context* ctx, Entity* entity)
 {
     if (ctx->entity_count >= MAX_ENTITIES) return;
 
-    // Append sprite and reassign the pointer to ensure consistency
     AppendSprite(ctx, entity->sprite);
-    entity->sprite = ctx->sprites[ctx->sprite_count - 1];  // Ensure entity references the stored sprite
+    entity->sprite = ctx->sprites[ctx->sprite_count - 1];
 
     ctx->entities[ctx->entity_count++] = entity;
+}
+
+void AppendEvent(Context* ctx, Event* evt)
+{
+    if(ctx->event_count >= MAX_EVENTS) return;
+
+    ctx->events[ctx->event_count++] = evt;
 }
 
 int** ExportSearchMap(Context* ctx)
@@ -172,4 +190,11 @@ void UpdateEntities(Context* ctx, float deltaTime)
     }
 
     MapFree(map, ctx->map_height);
+}
+
+void ProcessEvents(Context* ctx)
+{
+    for(size_t i = 0; i < ctx->entity_count; i++) {
+        EventProcess(ctx->events[i]);
+    }
 }

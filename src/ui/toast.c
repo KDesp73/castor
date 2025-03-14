@@ -1,10 +1,11 @@
 #include "ui.h"
+#include <SDL2/SDL_timer.h>
 
 void UIToastInit(UIToast *toast, const char *message, int duration_ms)
 {
     strncpy(toast->message, message, sizeof(toast->message) - 1);
     toast->duration = duration_ms;
-    toast->start_time = 0;
+    toast->start_time = SDL_GetTicks();
     toast->active = true;
 }
 

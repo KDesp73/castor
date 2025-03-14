@@ -11,19 +11,19 @@
 static size_t buttonsWidth = 120;
 static size_t buttonsHeight = 40;
 
-#define BUTTON_DEFAULTS \
+#define BUTTON_DEFAULTS(ctx) \
     .w = buttonsWidth, \
     .h = buttonsHeight, \
     .color = UI_COLOR_RED, \
     .default_color = UI_COLOR_RED, \
     .onhover = UI_COLOR_MAROON, \
-    .font = ui->font
+    .font = ctx->ui.font
 
-#define SCREEN_HEADER \
+#define SCREEN_HEADER(ctx) \
     SDL_ShowCursor(SDL_TRUE); \
     SDL_SetRelativeMouseMode(SDL_FALSE); \
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255); \
-    SDL_RenderClear(renderer)
+    SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255); \
+    SDL_RenderClear(ctx->renderer)
 
 #define SCREEN_TITLE_Y(screen_height) (screen_height * 0.2)
 #define FIRST_BUTTON_Y(screen_height) (screen_height * 0.35)
@@ -31,31 +31,32 @@ static size_t buttonsHeight = 40;
     (FIRST_BUTTON_Y(screen_height) + (button_height + padding) * index)
 
 
-int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
+int StartScreen(void* context, SDL_Event* evt)
 {
-    SCREEN_HEADER;
+    Context* ctx = (Context*) context;
+    SCREEN_HEADER(ctx);
 
     UIButton start_button = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .label = "Start",
     };
-    start_button.x = (ui->ctx->screen_width - start_button.w) / 2;
-    start_button.y = (ui->ctx->screen_height - start_button.h) / 2 + 100;
+    start_button.x = (ctx->screen_width - start_button.w) / 2;
+    start_button.y = (ctx->screen_height - start_button.h) / 2 + 100;
 
 
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
+    SDL_RenderClear(ctx->renderer);
 
-    const char* title = ui->ctx->game_name;
+    const char* title = ctx->game_name;
     UIFont title_font = {0};
     UIFontOpen(&title_font, UI_GLOBAL_FONT, 80, UI_COLOR_WHITE);
     int text_w, text_h;
     TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
-    UITextRender(renderer, title, (ui->ctx->screen_width - text_w) / 2, (ui->ctx->screen_height - text_h) / 2 - 100, &title_font);
+    UITextRender(ctx->renderer, title, (ctx->screen_width - text_w) / 2, (ctx->screen_height - text_h) / 2 - 100, &title_font);
 
     UIButtonOnHover(evt, &start_button);
-    UIButtonRender(renderer, &start_button);
-    SDL_RenderPresent(renderer);
+    UIButtonRender(ctx->renderer, &start_button);
+    SDL_RenderPresent(ctx->renderer);
     UIFontClose(&title_font);
 
     // Poll events here
@@ -74,52 +75,53 @@ int StartScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     return 69;
 }
 
-int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
+int PauseScreen(void* context, SDL_Event* evt)
 {
-    SCREEN_HEADER;
+    Context* ctx = context;
+    SCREEN_HEADER(ctx);
 
     const char* title = "Paused";
     UIFont title_font = {0};
     UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
 
-    size_t screen_height = ui->ctx->screen_height;
+    size_t screen_height = ctx->screen_height;
 
     int text_w, text_h;
     TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
-    UITextRender(renderer, title, (ui->ctx->screen_width - text_w) / 2, screen_height * 0.2, &title_font);
+    UITextRender(ctx->renderer, title, (ctx->screen_width - text_w) / 2, screen_height * 0.2, &title_font);
 
-    size_t centerX = (ui->ctx->screen_width - buttonsWidth) / 2;
+    size_t centerX = (ctx->screen_width - buttonsWidth) / 2;
 
     size_t padding = 20;
     size_t btn_index = 0;
     UIButton resumeButton = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .x = centerX,
         .y = NEXT_BUTTON_Y(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Resume"
     };
     UIButtonOnHover(evt, &resumeButton);
-    UIButtonRender(renderer, &resumeButton);
+    UIButtonRender(ctx->renderer, &resumeButton);
 
     UIButton settingsButton = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .x = centerX,
         .y = NEXT_BUTTON_Y(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Settings"
     };
     UIButtonOnHover(evt, &settingsButton);
-    UIButtonRender(renderer, &settingsButton);
+    UIButtonRender(ctx->renderer, &settingsButton);
 
     UIButton exitButton = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .x = centerX,
         .y = NEXT_BUTTON_Y(screen_height, buttonsHeight, padding, btn_index++),
         .label = "Exit"
     };
     UIButtonOnHover(evt, &exitButton);
-    UIButtonRender(renderer, &exitButton);
+    UIButtonRender(ctx->renderer, &exitButton);
 
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(ctx->renderer);
     UIFontClose(&title_font);
 
     while (SDL_PollEvent(evt)) {
@@ -128,7 +130,7 @@ int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
         if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_ESCAPE) return 0;
         if(UIButtonIsPressed(evt, &resumeButton)) return 0;
         if(UIButtonIsPressed(evt, &settingsButton)) {
-            int code = UIPollScreen(SettingsScreen, renderer, evt, ui);
+            int code = UIPollScreen(SettingsScreen, ctx, evt);
             if(code == -1) return -1;
         }
     }
@@ -136,29 +138,30 @@ int PauseScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     return 69;
 }
 
-int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
+int SettingsScreen(void* context, SDL_Event* evt)
 {
-    SCREEN_HEADER; // Ensure this is defined elsewhere.
+    Context* ctx = context;
+    SCREEN_HEADER(ctx);
     const char* title = "Settings";
     UIFont title_font = {0};
     UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
     int text_w, text_h;
     TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
     
-    size_t centerX = (ui->ctx->screen_width - buttonsWidth) / 2;
+    size_t centerX = (ctx->screen_width - buttonsWidth) / 2;
     size_t padding = 20;
     size_t btn_index = 0;
     UIButton fullscreenButton = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .x = centerX,
-        .y = NEXT_BUTTON_Y(ui->ctx->screen_height, buttonsHeight, padding, btn_index++),
-        .label = (ui->ctx->fullscreen) ? "Window" : "Fullscreen"
+        .y = NEXT_BUTTON_Y(ctx->screen_height, buttonsHeight, padding, btn_index++),
+        .label = (ctx->fullscreen) ? "Window" : "Fullscreen"
     };
     
     static float sensitivity = 30;
     UISlider sensitivitySlider = {0};
     UISliderInit(&sensitivitySlider, 
-            (ui->ctx->screen_width - buttonsWidth) / 2,
+            (ctx->screen_width - buttonsWidth) / 2,
             (fullscreenButton.y + fullscreenButton.h + padding) + padding,
             buttonsWidth, 15, 0, 100, sensitivity, 
             UI_COLOR_GRAY, UI_COLOR_RED);
@@ -167,7 +170,7 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     static float render_distance = 20;
     UISlider renderDistanceSlider = {0};
     UISliderInit(&renderDistanceSlider, 
-            (ui->ctx->screen_width - buttonsWidth) / 2,
+            (ctx->screen_width - buttonsWidth) / 2,
             sensitivitySlider.y + fullscreenButton.h + padding,
             buttonsWidth, 15, 10, 50, render_distance, 
             UI_COLOR_GRAY, UI_COLOR_RED);
@@ -177,9 +180,9 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
     btn_index++;
     btn_index++;
     UIButton backButton = {
-        BUTTON_DEFAULTS,
+        BUTTON_DEFAULTS(ctx),
         .x = centerX,
-        .y = NEXT_BUTTON_Y(ui->ctx->screen_height, buttonsHeight, padding, btn_index++),
+        .y = NEXT_BUTTON_Y(ctx->screen_height, buttonsHeight, padding, btn_index++),
         .label = "Back"
     };
     
@@ -201,33 +204,33 @@ int SettingsScreen(SDL_Renderer* renderer, SDL_Event* evt, UI* ui)
         }
         
         if (UIButtonIsPressed(evt, &fullscreenButton)) {
-            SetFullscreen(ui->ctx, !ui->ctx->fullscreen);
-            fullscreenButton.label = (ui->ctx->fullscreen) ? "Window" : "Fullscreen";
+            SetFullscreen(ctx, !ctx->fullscreen);
+            fullscreenButton.label = (ctx->fullscreen) ? "Window" : "Fullscreen";
         }
     }
     
     sensitivity = sensitivitySlider.value;
-    ui->ctx->mouse_sensitivity = sensitivity / 100;
+    ctx->mouse_sensitivity = sensitivity / 100;
 
     render_distance = renderDistanceSlider.value;
-    ui->ctx->render_distance = render_distance;
+    ctx->render_distance = render_distance;
     
     // Rendering starts here
-    SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);
+    SDL_RenderClear(ctx->renderer);
     
-    UITextRender(renderer, title, (ui->ctx->screen_width - text_w) / 2, SCREEN_TITLE_Y(ui->ctx->screen_height), &title_font);
+    UITextRender(ctx->renderer, title, (ctx->screen_width - text_w) / 2, SCREEN_TITLE_Y(ctx->screen_height), &title_font);
     UIButtonOnHover(evt, &fullscreenButton);
-    UIButtonRender(renderer, &fullscreenButton);
+    UIButtonRender(ctx->renderer, &fullscreenButton);
     UIButtonOnHover(evt, &backButton);
-    UIButtonRender(renderer, &backButton);
+    UIButtonRender(ctx->renderer, &backButton);
 
-    UITextRender(renderer, "Sensitivity", sensitivitySlider.x, sensitivitySlider.y-sensitivitySlider.h - ui->font->size/2, ui->font);
-    UISliderRender(renderer, &sensitivitySlider);
-    UITextRender(renderer, "Render Distance", renderDistanceSlider.x, renderDistanceSlider.y-renderDistanceSlider.h - ui->font->size/2, ui->font);
-    UISliderRender(renderer, &renderDistanceSlider);
+    UITextRender(ctx->renderer, "Sensitivity", sensitivitySlider.x, sensitivitySlider.y-sensitivitySlider.h - ctx->ui.font->size/2, ctx->ui.font);
+    UISliderRender(ctx->renderer, &sensitivitySlider);
+    UITextRender(ctx->renderer, "Render Distance", renderDistanceSlider.x, renderDistanceSlider.y-renderDistanceSlider.h - ctx->ui.font->size/2, ctx->ui.font);
+    UISliderRender(ctx->renderer, &renderDistanceSlider);
     
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(ctx->renderer);
     UIFontClose(&title_font);
     
     return result;

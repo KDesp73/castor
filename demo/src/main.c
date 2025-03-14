@@ -47,16 +47,12 @@ void loop(Context* ctx) {
 
     static UIFont global = {0};
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
-    static UI ui = {0};
-    UIOpen(&ui, ctx, &global);
-
-    UIToast toast = {0};
-    UIToastInit(&toast, "Hello World!", 5000);
+    UIOpen(&ctx->ui, &global);
 
     Animation keyAnim = LoadAnimation(ctx->renderer, "assets/animations/key.png", 32, 32, 50);
 
     ctx->running = false;
-    if (UI_POLL_SCREEN(StartScreen, ctx->renderer, &event, &ui)) goto exit;
+    if (UI_POLL_SCREEN(StartScreen, ctx, &event)) goto exit;
     ctx->running = true;
 
     bool paused = false;
@@ -70,16 +66,15 @@ void loop(Context* ctx) {
             if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                 if (!paused) {
                     paused = true;
-                    int result = UI_POLL_SCREEN(PauseScreen, ctx->renderer, &event, &ui);
+                    int result = UI_POLL_SCREEN(PauseScreen, ctx, &event);
                     if (result == 0) {
                         paused = false;
-                        // Flush remaining ESC key events to prevent immediate re-pause
                         SDL_Event e;
                         while (SDL_PollEvent(&e)) {
                             if (e.type == SDL_KEYDOWN && e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-                                continue; // Discard ESC keydown events
+                                continue;
                             }
-                            SDL_PushEvent(&e); // Re-queue other events
+                            SDL_PushEvent(&e);
                         }
                     } else if (result == -1) {
                         goto exit;
@@ -108,9 +103,10 @@ void loop(Context* ctx) {
             CastWalls(ctx->renderer, ctx);
             CastSprites(ctx->renderer, ctx);
             RenderCrosshair(ctx->renderer, ctx->screen_width, ctx->screen_height);
-            UIToastRender(ctx->renderer, &global, &toast, ctx->screen_width, ctx->screen_height);
 
             UpdateEntities(ctx, ctx->frame_time / 1000.0f);
+            ProcessEvents(ctx);
+            UIUpdate(&ctx->ui, ctx);
 
             if (Inventory.keyAquired) {
                 UpdateAnimation(&keyAnim, SDL_GetTicks());
@@ -125,7 +121,6 @@ void loop(Context* ctx) {
 
 exit:
     FreeAnimation(&keyAnim);
-    UIClose(&ui);
 }
 
 int main(int argc, char** argv)
