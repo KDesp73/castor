@@ -33,6 +33,7 @@ typedef struct Entity {
     float hitbox;
     void (*move)(MOVEMENT_DEFINITION);
     Path default_path;
+    size_t index;
 } Entity;
 typedef void (*EntityMovement)(MOVEMENT_DEFINITION);
 

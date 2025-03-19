@@ -19,6 +19,8 @@ typedef struct {
     size_t texture_id;
     float scale;
     bool collision;
+    bool is_animation;
+    size_t index;
 } Sprite;
 
 Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision);

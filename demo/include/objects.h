@@ -8,7 +8,8 @@ enum {
     SPRITE_GOBLIN,
     SPRITE_SKELETON,
     SPRITE_EYE,
-    SPRITE_MUSHROOM
+    SPRITE_MUSHROOM,
+    SPRITE_KEY
 };
 
 #define ENTITY_GOBLIN(x, y)   \
@@ -104,6 +105,18 @@ enum {
         2,                    \
         true                  \
     )
+
+#define ITEM_KEY(x, y)   \
+    ItemNew(                      \
+        SpriteNew(                \
+            x+0.5, y+0.5,         \
+            -7,                   \
+            SPRITE_KEY,           \
+            0.5,                  \
+            false                 \
+        )                        \
+    )
+
 
 
 #endif // OBJECTS_H

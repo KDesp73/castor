@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_clipboard.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_scancode.h>
@@ -95,6 +96,11 @@ void loop(Context* ctx) {
                 }
             } else if (key == SDL_SCANCODE_K) {
                 Inventory.keyAquired = !Inventory.keyAquired;
+            } else if (key == SDL_SCANCODE_C) {
+                char buffer[64];
+                snprintf(buffer, 64, "(%.0f, %.0f)", ctx->player->X, ctx->player->Y);
+                printf("%s\n", buffer);
+                SDL_SetClipboardText(buffer);
             }
 
             SDL_SetRenderDrawColor(ctx->renderer, 30, 30, 30, 255);

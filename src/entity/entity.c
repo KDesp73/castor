@@ -37,6 +37,7 @@ Entity* EntityNew(
         .length = 0,
         .index = 0
     };
+    e->index = -1;
 
     return e;
 }
@@ -44,7 +45,6 @@ Entity* EntityNew(
 void EntityFree(Entity** e)
 {
     if(*e){
-        SpriteFree(&(*e)->sprite);
         free(*e);
         *e = NULL;
     }

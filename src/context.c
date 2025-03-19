@@ -1,6 +1,7 @@
 #include "context.h"
 #include "entity.h"
 #include "event.h"
+#include "item.h"
 #include "map.h"
 #include "sprite.h"
 #include "textures.h"
@@ -57,6 +58,7 @@ void ContextFree(Context* ctx)
         FreeTextures(ctx);
         FreeSprites(ctx);
         FreeEntities(ctx);
+        FreeItems(ctx);
         FreeEvents(ctx);
         UIClose(&ctx->ui);
         MapFree(ctx->map, ctx->map_height);
@@ -105,6 +107,15 @@ void FreeEntities(Context* ctx)
         }
     }
 }
+void FreeItems(Context* ctx)
+{
+    for(size_t i = 0; i < ctx->item_count; i++){
+        if(ctx->items[i]){
+            ItemFree(&ctx->items[i]);
+        }
+    }
+}
+
 void FreeEvents(Context* ctx)
 {
     for(size_t i = 0; i < ctx->event_count; i++){
@@ -133,6 +144,7 @@ void AppendSprite(Context* ctx, Sprite* sprite)
 {
     if(ctx->sprite_count >= MAX_SPRITES) return;
 
+    sprite->index = ctx->sprite_count;
     ctx->sprites[ctx->sprite_count++] = sprite;
 }
 
@@ -143,7 +155,19 @@ void AppendEntity(Context* ctx, Entity* entity)
     AppendSprite(ctx, entity->sprite);
     entity->sprite = ctx->sprites[ctx->sprite_count - 1];
 
+    entity->index = ctx->entity_count;
     ctx->entities[ctx->entity_count++] = entity;
+}
+
+void AppendItem(Context* ctx, Item* item)
+{
+    if (ctx->sprite_count >= MAX_ITEMS) return;
+
+    AppendSprite(ctx, item->sprite);
+    item->sprite = ctx->sprites[ctx->sprite_count - 1];
+
+    item->index = ctx->item_count;
+    ctx->items[ctx->item_count++] = item;
 }
 
 void AppendEvent(Context* ctx, Event* evt)
@@ -215,4 +239,71 @@ void ProcessEvents(Context* ctx)
             ev->last_processed = now;
         }
     }
+}
+
+void RemoveSprite(Context* ctx, const Sprite* sprite)
+{
+    size_t index = sprite->index;
+    if (index >= ctx->sprite_count) {
+        fprintf(stderr, "Error: Invalid sprite index!\n");
+        return;
+    }
+
+    // Free the sprite memory if needed
+    free(ctx->sprites[index]);
+
+    // Shift sprites left
+    for (size_t i = index; i < ctx->sprite_count - 1; i++) {
+        ctx->sprites[i] = ctx->sprites[i + 1];
+    }
+
+    // Clear the last slot
+    ctx->sprites[ctx->sprite_count - 1] = NULL;
+
+    // Decrease count
+    ctx->sprite_count--;
+}
+
+void RemoveEntity(Context* ctx, const Entity* entity)
+{
+    size_t index = entity->index;
+    if (index >= ctx->entity_count) {
+        fprintf(stderr, "Error: Invalid entity index!\n");
+        return;
+    }
+
+    // Remove associated sprite if available
+    if (entity->sprite) {
+        RemoveSprite(ctx, entity->sprite); // Remove the sprite associated with the entity
+    }
+
+    // Shift entities left
+    for (size_t i = index; i < ctx->entity_count - 1; i++) {
+        ctx->entities[i] = ctx->entities[i + 1];
+    }
+
+    ctx->entities[ctx->entity_count - 1] = NULL;
+    ctx->entity_count--;
+}
+
+void RemoveItem(Context* ctx, const Item* item)
+{
+    size_t index = item->index;
+    if (index >= ctx->item_count) {
+        fprintf(stderr, "Error: Invalid item index!\n");
+        return;
+    }
+
+    // Remove associated sprite if available
+    if (item->sprite) {
+        RemoveSprite(ctx, item->sprite); // Remove the sprite associated with the item
+    }
+
+    // Shift items left
+    for (size_t i = index; i < ctx->item_count - 1; i++) {
+        ctx->items[i] = ctx->items[i + 1];
+    }
+
+    ctx->items[ctx->item_count - 1] = NULL;
+    ctx->item_count--;
 }

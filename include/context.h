@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "event.h"
+#include "item.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
@@ -62,6 +63,9 @@ typedef struct {
     #define MAX_ENTITIES 16
     Entity* entities[MAX_ENTITIES];
     size_t entity_count;
+    #define MAX_ITEMS 32
+    Item* items[MAX_ITEMS];
+    size_t item_count;
     #define MAX_EVENTS 128
     Event* events[MAX_EVENTS];
     size_t event_count;
@@ -84,6 +88,7 @@ void ContextFree(Context* ctx);
 void FreeTextures(Context* ctx);
 void FreeSprites(Context* ctx);
 void FreeEntities(Context* ctx);
+void FreeItems(Context* ctx);
 void FreeEvents(Context* ctx);
 
 void LoadLevelMap(Context* ctx, const char* path);
@@ -91,6 +96,7 @@ void LoadTextures(Context* ctx);
 
 void AppendSprite(Context* ctx, Sprite* sprite);
 void AppendEntity(Context* ctx, Entity* entity);
+void AppendItem(Context* ctx, Item* item);
 void AppendEvent(Context* ctx, Event* evt);
 
 int** ExportSearchMap(Context* ctx);
@@ -99,5 +105,9 @@ void ProcessEvents(Context* ctx);
 
 int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms);
 void CleanupThreads(Context* ctx);
+
+void RemoveSprite(Context* ctx, const Sprite* sprite);
+void RemoveEntity(Context* ctx, const Entity* entity);
+void RemoveItem(Context* ctx, const Item* item);
 
 #endif // CONTEXT_H

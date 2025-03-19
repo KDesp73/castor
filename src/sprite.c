@@ -29,6 +29,7 @@ Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool
     s->texture_id = textureId;
     s->scale = scale;
     s->collision = collision;
+    s->index = -1;
 
     return s;
 }

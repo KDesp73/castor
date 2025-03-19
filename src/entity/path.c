@@ -30,28 +30,19 @@ Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLe
         }
     }
 
+    // Initialize the path with the start position
     result.path[result.length][0] = x;
     result.path[result.length][1] = y;
     result.length++;
     visited[(int)startX][(int)startY] = true;
 
-    int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+    int directions[4][2] = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}}; // Up, Right, Down, Left
 
     int maxSteps = 1000;
     int stepCount = 0;
 
     while (stepCount < maxSteps && result.length < targetLength) {
-        for (int i = 0; i < 4; i++) {
-            int j = rand() % 4;
-            int tempX = directions[i][0];
-            int tempY = directions[i][1];
-            directions[i][0] = directions[j][0];
-            directions[i][1] = directions[j][1];
-            directions[j][0] = tempX;
-            directions[j][1] = tempY;
-        }
-
-        // Try each direction in random order
+        // Try to move in each of the 4 directions (up, right, down, left)
         bool moved = false;
         for (int i = 0; i < 4; i++) {
             int newX = (int)(x - 0.5f) + directions[i][0]; // Convert to grid coordinates
@@ -59,13 +50,13 @@ Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLe
 
             // Check if the new point is walkable and not visited
             if (IsWalkable(map, newX, newY, mapW, mapH) && !visited[newX][newY]) {
-                // Add the new point to the path (centered)
-                result.path[result.length][0] = (float)newX + 0.5f;
+                // Add the new point to the path
+                result.path[result.length][0] = (float)newX + 0.5f; // Center the point
                 result.path[result.length][1] = (float)newY + 0.5f;
                 result.length++;
-                visited[newX][newY] = true;
 
-                // Move to the new point (centered)
+                // Mark as visited and move to the new point
+                visited[newX][newY] = true;
                 x = (float)newX + 0.5f;
                 y = (float)newY + 0.5f;
                 moved = true;

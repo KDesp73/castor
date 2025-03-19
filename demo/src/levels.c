@@ -37,13 +37,14 @@ void Level2(Context* ctx)
     AppendSprite(ctx, SPRITE_BARREL(9, 2));
     AppendSprite(ctx, SPRITE_LAMP(5, 10));
     AppendSprite(ctx, SPRITE_COLUMN(4, 4));
-    // AppendEntity(ctx, ENTITY_GOBLIN(2, 2));
-    // // AppendEntity(ctx, ENTITY_SKELETON(10, 10));
-    // // AppendEntity(ctx, ENTITY_EYE(14, 2));
-    // AppendEntity(ctx, ENTITY_MUSHROOM(12, 12));
+
+    AppendEntity(ctx, ENTITY_EYE(14, 3));
+
+    AppendItem(ctx, ITEM_KEY(10, 10));
 
     AppendEvent(ctx, EventNew(ctx, true, 1000, trigger1, action1));
-    // AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction));
+    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
+    AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction));
     
     GivePaths(ctx);
 }
