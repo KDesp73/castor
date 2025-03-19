@@ -25,7 +25,7 @@ enum {
         0.5,                  \
         0.5,                  \
         4,                    \
-        10.0f,                \
+        1.0f,                 \
         MoveSmoothAStar       \
     )
 #define ENTITY_SKELETON(x, y) \
@@ -42,7 +42,7 @@ enum {
         0.7,                  \
         0.4,                  \
         4,                    \
-        10.0f,                \
+        1.0f,                 \
         MoveSmoothAStar       \
     )
 #define ENTITY_MUSHROOM(x, y) \
@@ -59,7 +59,7 @@ enum {
         0.3,                  \
         0.4,                  \
         6,                    \
-        10.0f,                \
+        1.0f,                 \
         MoveSmoothAStar       \
     )
 #define ENTITY_EYE(x, y)      \
@@ -76,7 +76,7 @@ enum {
         0.4,                  \
         0.6,                  \
         5,                    \
-        10.0f,                \
+        1.0f,                 \
         MoveSmoothAStar       \
     )
 

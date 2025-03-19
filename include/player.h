@@ -11,7 +11,6 @@ void PlayerInit(Player* player, double speed, double angle, double x, double y);
 Player* PlayerNew(double speed, double angle, double x, double y);
 void PlayerFree(Player** player);
 
-
 Player PlayerStore(const Player* player);
 void PlayerLoad(Player* player, Player stored);
 

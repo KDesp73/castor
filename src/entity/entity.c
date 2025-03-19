@@ -5,7 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Entity* EntityNew(Sprite* sprite, float speed, size_t health, float strength, float toughness, size_t detectionRange, float hitbox, EntityMovement move)
+Entity* EntityNew(
+    Sprite* sprite, 
+    float speed, 
+    size_t health, 
+    float strength, 
+    float toughness, 
+    size_t detectionRange, 
+    float hitbox, 
+    EntityMovement move)
 {
     assert(sprite);
     assert(strength > 0 && strength < 1);
@@ -36,6 +44,7 @@ Entity* EntityNew(Sprite* sprite, float speed, size_t health, float strength, fl
 void EntityFree(Entity** e)
 {
     if(*e){
+        SpriteFree(&(*e)->sprite);
         free(*e);
         *e = NULL;
     }
@@ -48,7 +57,9 @@ void EntityTakeDamage(Entity* e, size_t damage)
         return;
     }
 
-    e->health -= (1 - e->toughness) * damage;
+    float damageTaken = damage - e->toughness * damage;
+    printf("Damage taken: %f\n", damageTaken);
+    e->health -= damageTaken;
 }
 
 #include <stdio.h>

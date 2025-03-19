@@ -60,6 +60,7 @@ void ContextFree(Context* ctx)
         FreeEvents(ctx);
         UIClose(&ctx->ui);
         MapFree(ctx->map, ctx->map_height);
+        CleanupThreads(ctx);
 
         if (ctx->renderer) {
             SDL_DestroyRenderer(ctx->renderer);
@@ -157,12 +158,14 @@ int** ExportSearchMap(Context* ctx)
     int** res = MapCreate(ctx->map_height, ctx->map_width);
     if (!res) return NULL;
 
-    for (size_t i = 0; i < ctx->map_width; i++) {
-        for (size_t j = 0; j < ctx->map_height; j++) {
+    // Fill based on original map
+    for (size_t j = 0; j < ctx->map_height; j++) {
+        for (size_t i = 0; i < ctx->map_width; i++) {
             res[j][i] = (ctx->map[j][i] != 0) ? 1 : 0;
         }
     }
 
+    // Mark sprite collisions
     for (size_t k = 0; k < ctx->sprite_count; k++) {
         Sprite* sprite = ctx->sprites[k];
 
@@ -184,8 +187,16 @@ void UpdateEntities(Context* ctx, float deltaTime)
     int** map = ExportSearchMap(ctx);
     
     for (size_t i = 0; i < ctx->entity_count; i++) {
-        if (ctx->entities[i]->move) {  // Ensure move function is not NULL
-            ctx->entities[i]->move(ctx->entities[i], (const int**)map, ctx->map_width, ctx->map_height, ctx->player, deltaTime);
+        Entity* e = ctx->entities[i];
+        if(!e) continue;
+        if(e->health <= 0) {
+            // TODO: Proper death method
+            EntityFree(&e);
+            continue;
+        }
+
+        if (e->move) {
+            e->move(e, (const int**)map, ctx->map_width, ctx->map_height, ctx->player, deltaTime);
         }
     }
 
@@ -194,7 +205,14 @@ void UpdateEntities(Context* ctx, float deltaTime)
 
 void ProcessEvents(Context* ctx)
 {
-    for(size_t i = 0; i < ctx->entity_count; i++) {
-        EventProcess(ctx->events[i]);
+    Uint32 now = SDL_GetTicks();
+
+    for(size_t i = 0; i < ctx->event_count; i++) {
+        Event* ev = ctx->events[i];
+
+        if (now - ev->last_processed >= ev->cooldown) {
+            EventProcess(ev);
+            ev->last_processed = now;
+        }
     }
 }

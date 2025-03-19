@@ -16,6 +16,7 @@ static size_t buttonsHeight = 40;
     .h = buttonsHeight, \
     .color = UI_COLOR_RED, \
     .default_color = UI_COLOR_RED, \
+    .disabled_color = UI_COLOR_GRAY, \
     .onhover = UI_COLOR_MAROON, \
     .font = ctx->ui.font
 
@@ -155,8 +156,11 @@ int SettingsScreen(void* context, SDL_Event* evt)
         BUTTON_DEFAULTS(ctx),
         .x = centerX,
         .y = NEXT_BUTTON_Y(ctx->screen_height, buttonsHeight, padding, btn_index++),
-        .label = (ctx->fullscreen) ? "Window" : "Fullscreen"
+        .label = (ctx->fullscreen) ? "Window" : "Fullscreen",
     };
+    // NOTE: Fullscreen button disabled because of known SDL bug
+    fullscreenButton.disabled = true;
+    fullscreenButton.color = fullscreenButton.disabled_color;
     
     static float sensitivity = 30;
     UISlider sensitivitySlider = {0};

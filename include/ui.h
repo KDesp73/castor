@@ -54,7 +54,9 @@ typedef struct {
     UIFont* font;
     SDL_Color color;
     SDL_Color default_color;
+    SDL_Color disabled_color;
     SDL_Color onhover;
+    bool disabled;
 } UIButton;
 void UIButtonRender(SDL_Renderer* renderer, UIButton* btn);
 int UIButtonIsPressed(SDL_Event *event, UIButton* btn);

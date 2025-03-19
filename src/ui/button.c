@@ -12,6 +12,7 @@ void UIButtonRender(SDL_Renderer* renderer, UIButton* btn)
 
 int UIButtonIsPressed(SDL_Event *event, UIButton* btn)
 {
+    if(btn->disabled) return 0;
     if (event->type == SDL_MOUSEBUTTONDOWN) {
         return UIButtonIsHovered(event, btn);
     }
@@ -27,6 +28,7 @@ int UIButtonIsHovered(SDL_Event *event, UIButton* btn)
 
 void UIButtonOnHover(SDL_Event* event, UIButton* btn)
 {
+    if(btn->disabled) return;
     if (UIButtonIsHovered(event, btn)) {
         btn->color = btn->onhover; // Set hover color
     } else {

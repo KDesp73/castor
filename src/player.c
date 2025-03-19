@@ -1,4 +1,5 @@
 #include "player.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 void PlayerInit(Player* player, double speed, double angle, double x, double y)
@@ -44,3 +45,4 @@ void PlayerLoad(Player* player, Player stored)
     player->angleX = stored.angleX;
     player->speed = stored.speed;
 }
+

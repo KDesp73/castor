@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "event.h"
 #include "player.h"
+#include "sound.h"
 #include "sprite.h"
 #include "ui.h"
 #include <SDL2/SDL_render.h>
@@ -13,10 +14,6 @@
 #define MAX_MAP_WIDTH  64
 #define MAX_MAP_HEIGHT 64
 
-#define MAX_TEXTURES 32
-#define MAX_SPRITES 32
-#define MAX_ENTITIES 16
-#define MAX_EVENTS 128
 
 #define DEFAULT_SCREEN_WIDTH 1280
 #define DEFAULT_SCREEN_HEIGHT 720
@@ -42,6 +39,7 @@ typedef struct {
 
     // RayCasting
     float* z_buffer;
+    #define MAX_TEXTURES 32
     SDL_Texture* textures[MAX_TEXTURES];
     bool textures_loaded;
     size_t floor_texture_index;
@@ -58,12 +56,20 @@ typedef struct {
     int** map;
     size_t map_width;
     size_t map_height;
+    #define MAX_SPRITES 32
     Sprite* sprites[MAX_SPRITES];
     size_t sprite_count;
+    #define MAX_ENTITIES 16
     Entity* entities[MAX_ENTITIES];
     size_t entity_count;
+    #define MAX_EVENTS 128
     Event* events[MAX_EVENTS];
     size_t event_count;
+
+    // Sound
+    #define MAX_SOUND_THREADS 32
+    SoundThread sound_threads[MAX_SOUND_THREADS];
+    size_t sound_thread_count;
 
     // UI
     UI ui;
@@ -91,5 +97,7 @@ int** ExportSearchMap(Context* ctx);
 void UpdateEntities(Context* ctx, float deltaTime);
 void ProcessEvents(Context* ctx);
 
+int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms);
+void CleanupThreads(Context* ctx);
 
 #endif // CONTEXT_H

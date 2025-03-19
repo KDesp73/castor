@@ -108,6 +108,10 @@ void loop(Context* ctx) {
             ProcessEvents(ctx);
             UIUpdate(&ctx->ui, ctx);
 
+            EVERY_MS(soundCleanupTimer, 15000, {
+                CleanupThreads(ctx);
+            });
+
             if (Inventory.keyAquired) {
                 UpdateAnimation(&keyAnim, SDL_GetTicks());
                 RenderAnimation(ctx->renderer, &keyAnim, 10, 10, keyAnim.currentFrame);

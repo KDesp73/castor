@@ -34,7 +34,8 @@ int **MapCreate(size_t rows, size_t cols)
 void MapFree(int **map, size_t rows)
 {
     if(!map) return;
-    for (size_t i = 0; i < rows; i++) free(map[i]);
+    for (size_t i = 0; i < rows; i++) 
+        free(map[i]);
     free(map);
 }
 

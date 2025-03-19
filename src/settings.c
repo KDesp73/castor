@@ -1,12 +1,14 @@
 #include "settings.h"
 #include "context.h"
+#include "textures.h"
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
 
 void SetFullscreen(Context* ctx, bool fullscreen)
 {
-    if (!ctx || !ctx->window) {
-        fprintf(stderr, "Error: Invalid context or window!\n");
+    if (!ctx || !ctx->window || !ctx->renderer) {
+        fprintf(stderr, "Error: Invalid context, window, or renderer!\n");
         return;
     }
 
@@ -26,5 +28,27 @@ void SetFullscreen(Context* ctx, bool fullscreen)
         SDL_SetWindowSize(ctx->window, ctx->screen_width, ctx->screen_height);
     }
 
-    ctx->fullscreen = !ctx->fullscreen;
+    // Let SDL process events to avoid race condition
+    SDL_PumpEvents();
+    SDL_Delay(50); 
+
+    // Clear and destroy old renderer
+    SDL_RenderClear(ctx->renderer);
+    SDL_RenderPresent(ctx->renderer);
+    SDL_DestroyRenderer(ctx->renderer);
+    ctx->renderer = NULL;
+
+    ctx->renderer = SDL_CreateRenderer(ctx->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!ctx->renderer) {
+        fprintf(stderr, "Error recreating renderer: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    SDL_RenderSetLogicalSize(ctx->renderer, ctx->screen_width, ctx->screen_height);
+
+    ctx->fullscreen = fullscreen;
+
+    LoadTextures(ctx);
+
+    printf("Fullscreen toggle complete.\n");
 }

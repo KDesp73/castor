@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Iinclude -I../include
-LDFLAGS = -L.. -l:libraycasting.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm
+LDFLAGS = -L.. -l:libraycasting.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm -lSDL2_mixer
 
 # Directories
 SRC_DIR = src

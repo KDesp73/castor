@@ -3,6 +3,7 @@
 
 #include "player.h"
 #include "sprite.h"
+#include <SDL2/SDL_stdinc.h>
 
 #define MAX_PATH_LENGTH 200
 
@@ -25,7 +26,7 @@ void PathPrint(const Path path);
 typedef struct Entity {
     Sprite* sprite;
     float speed;
-    size_t health;
+    int health;
     float strength; // 0..1
     float toughness; // 0..1
     size_t detection_range; // number of tiles
@@ -57,5 +58,14 @@ DECLARE_MOVEMENT(MoveChase);
 DECLARE_MOVEMENT(MoveAStar);
 DECLARE_MOVEMENT(MoveSmoothAStar);
 
+typedef struct {
+    float x, y;          // Position on screen
+    float vx, vy;        // Velocity for floating effect
+    int damage;          // Damage amount
+    float angle;         // Random angle
+    float scale;         // Random size
+    Uint32 spawn_time;   // Time when spawned
+    Uint32 lifetime;     // Duration in ms
+} DamageNumber;
 
 #endif // ENTITY_H

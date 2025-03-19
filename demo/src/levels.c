@@ -2,6 +2,7 @@
 #include "context.h"
 #include "entity.h"
 #include "event.h"
+#include "events.h"
 #include "map.h"
 #include "sprite.h"
 #include "objects.h"
@@ -28,25 +29,6 @@ void Level1(Context* ctx)
 }
 
 // Trigger once the player enters the (4,8) square
-bool trigger1(Event* evt)
-{
-    Context* ctx = evt->ctx;
-    Player* player = ctx->player;
-
-    return (
-        (player->X >= 4 && player->X < 5) &&
-        (player->Y >= 8 && player->Y < 9)
-    );
-}
-
-void action1(Event* evt)
-{
-    Context* ctx = evt->ctx;
-
-    UIToast toast = {0};
-    UIToastInit(&toast, "Entered (4, 8) square", 2000);
-    UIAppendToast(&ctx->ui, toast);
-}
 
 void Level2(Context* ctx)
 {
@@ -56,12 +38,12 @@ void Level2(Context* ctx)
     AppendSprite(ctx, SPRITE_LAMP(5, 10));
     AppendSprite(ctx, SPRITE_COLUMN(4, 4));
     // AppendEntity(ctx, ENTITY_GOBLIN(2, 2));
-    // AppendEntity(ctx, ENTITY_SKELETON(10, 10));
-    // AppendEntity(ctx, ENTITY_EYE(14, 2));
-    AppendEntity(ctx, ENTITY_MUSHROOM(12, 12));
+    // // AppendEntity(ctx, ENTITY_SKELETON(10, 10));
+    // // AppendEntity(ctx, ENTITY_EYE(14, 2));
+    // AppendEntity(ctx, ENTITY_MUSHROOM(12, 12));
 
-    Event* event = EventNew(ctx, false, trigger1, action1);
-    AppendEvent(ctx, event);
+    AppendEvent(ctx, EventNew(ctx, true, 1000, trigger1, action1));
+    // AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction));
     
     GivePaths(ctx);
 }

@@ -23,6 +23,16 @@
         SDL_Delay(FRAME_DELAY - ctx->frame_time); \
     } 
 
+#define EVERY_MS(name, interval, code)                       \
+    do {                                                     \
+        static Uint32 __timer_##name = 0;                    \
+        Uint32 __now_##name = SDL_GetTicks();                \
+        if ((__now_##name - __timer_##name) >= (interval)) { \
+            __timer_##name = __now_##name;                   \
+            code;                                            \
+        }                                                    \
+    } while (0)
+
 bool EngineInit(Context* ctx);
 void EngineClose(Context* ctx);
 

@@ -1,9 +1,11 @@
 #include "engine.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 
 bool EngineInit(Context* ctx)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
         return false;
     }
@@ -23,6 +25,12 @@ bool EngineInit(Context* ctx)
         return false;
     }
 
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        SDL_Quit();
+        return false;
+    }
+
     return true;
 }
 
@@ -31,6 +39,7 @@ void EngineClose(Context* ctx)
     ContextFree(ctx);
     TTF_Quit();
     IMG_Quit();
+    Mix_CloseAudio();
     SDL_Quit();
 }
 
