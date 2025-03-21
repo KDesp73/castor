@@ -6,7 +6,6 @@
 #include "map.h"
 #include "sprite.h"
 #include "objects.h"
-#include "ui.h"
 
 static void GivePaths(Context* ctx)
 {
