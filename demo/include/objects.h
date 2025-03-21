@@ -9,7 +9,8 @@ enum {
     SPRITE_SKELETON,
     SPRITE_EYE,
     SPRITE_MUSHROOM,
-    SPRITE_KEY
+    SPRITE_KEY,
+    SPRITE_GLASSES,
 };
 
 #define ENTITY_GOBLIN(x, y)   \
@@ -27,7 +28,8 @@ enum {
         0.5,                  \
         4,                    \
         1.0f,                 \
-        MoveSmoothAStar       \
+        MoveSmoothAStar,      \
+        "goblin"              \
     )
 #define ENTITY_SKELETON(x, y) \
     EntityNew(                \
@@ -44,7 +46,8 @@ enum {
         0.4,                  \
         4,                    \
         1.0f,                 \
-        MoveSmoothAStar       \
+        MoveSmoothAStar,      \
+        "skeleton"            \
     )
 #define ENTITY_MUSHROOM(x, y) \
     EntityNew(                \
@@ -61,7 +64,8 @@ enum {
         0.4,                  \
         6,                    \
         1.0f,                 \
-        MoveSmoothAStar       \
+        MoveSmoothAStar,      \
+        "mushroom"            \
     )
 #define ENTITY_EYE(x, y)      \
     EntityNew(                \
@@ -78,7 +82,8 @@ enum {
         0.6,                  \
         5,                    \
         1.0f,                 \
-        MoveSmoothAStar       \
+        MoveSmoothAStar,      \
+        "eye"                 \
     )
 
 #define SPRITE_COLUMN(x, y)   \
@@ -106,17 +111,29 @@ enum {
         true                  \
     )
 
-#define ITEM_KEY(x, y)   \
-    ItemNew(                      \
-        SpriteNew(                \
-            x+0.5, y+0.5,         \
-            -7,                   \
-            SPRITE_KEY,           \
-            0.5,                  \
-            false                 \
-        )                        \
+#define ITEM_KEY(x, y)        \
+    ItemNew(                  \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            -7,               \
+            SPRITE_KEY,       \
+            0.5,              \
+            false             \
+        ),                    \
+        "key"                 \
     )
 
+#define ITEM_GLASSES(x, y)    \
+    ItemNew(                  \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            -7,               \
+            SPRITE_GLASSES,   \
+            0.5,              \
+            false             \
+        ),                    \
+        "glasses"             \
+    )
 
 
 #endif // OBJECTS_H

@@ -34,6 +34,7 @@ typedef struct Entity {
     void (*move)(MOVEMENT_DEFINITION);
     Path default_path;
     size_t index;
+    char id[16];
 } Entity;
 typedef void (*EntityMovement)(MOVEMENT_DEFINITION);
 
@@ -45,12 +46,13 @@ Entity* EntityNew(
     float toughness, 
     size_t detectionRange, 
     float hitbox, 
-    EntityMovement move
+    EntityMovement move,
+    const char* id
 );
 void EntityFree(Entity** e);
 void EntityFollowDefaultPath(Entity* entity, float deltaTime);
 
-void EntityTakeDamage(Entity* e, size_t damage);
+float EntityTakeDamage(Entity* e, size_t damage);
 float EntityDealDamage(const Entity* e);
 
 

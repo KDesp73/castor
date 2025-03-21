@@ -1,9 +1,11 @@
 #include "entity.h"
+#include "astar.h"
 #include "sprite.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Entity* EntityNew(
     Sprite* sprite, 
@@ -13,11 +15,13 @@ Entity* EntityNew(
     float toughness, 
     size_t detectionRange, 
     float hitbox, 
-    EntityMovement move)
+    EntityMovement move,
+    const char* id)
 {
     assert(sprite);
     assert(strength > 0 && strength < 1);
     assert(toughness > 0 && toughness < 1);
+    assert(id && strlen(id) > 0);
 
     Entity* e = malloc(sizeof(Entity));
     if(!e) {
@@ -38,6 +42,7 @@ Entity* EntityNew(
         .index = 0
     };
     e->index = -1;
+    strncpy(e->id, id, 16);
 
     return e;
 }
@@ -50,16 +55,16 @@ void EntityFree(Entity** e)
     }
 }
 
-void EntityTakeDamage(Entity* e, size_t damage)
+float EntityTakeDamage(Entity* e, size_t damage)
 {
     if(e->health - (1 - e->toughness) * damage < 0) {
         e->health = 0;
-        return;
+        return INF;
     }
 
     float damageTaken = damage - e->toughness * damage;
-    printf("Damage taken: %f\n", damageTaken);
     e->health -= damageTaken;
+    return damageTaken;
 }
 
 #include <stdio.h>

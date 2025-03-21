@@ -51,7 +51,7 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
         return -1;
     }
 
-    if (ctx->sound_thread_count >= MAX_SOUND_THREADS) {
+    if (ctx->sound.thread_count >= MAX_SOUND_THREADS) {
         CleanupThreads(ctx);
         return 1;
     }
@@ -75,11 +75,11 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
         return -1;
     }
 
-    ctx->sound_threads[ctx->sound_thread_count].thread = thread;
-    ctx->sound_threads[ctx->sound_thread_count].file = data->file;
-    ctx->sound_threads[ctx->sound_thread_count].duration_ms = data->duration_ms;
-    ctx->sound_threads[ctx->sound_thread_count].volume = data->volume;
-    ctx->sound_thread_count++;
+    ctx->sound.threads[ctx->sound.thread_count].thread = thread;
+    ctx->sound.threads[ctx->sound.thread_count].file = data->file;
+    ctx->sound.threads[ctx->sound.thread_count].duration_ms = data->duration_ms;
+    ctx->sound.threads[ctx->sound.thread_count].volume = data->volume;
+    ctx->sound.thread_count++;
 
     return 0;
 }
@@ -88,18 +88,18 @@ void CleanupThreads(Context* ctx)
 {
     int new_count = 0;
 
-    for (int i = 0; i < ctx->sound_thread_count; ++i) {
-        if (ctx->sound_threads[i].thread != NULL) {
+    for (int i = 0; i < ctx->sound.thread_count; ++i) {
+        if (ctx->sound.threads[i].thread != NULL) {
             int status;
-            SDL_WaitThread(ctx->sound_threads[i].thread, &status);
+            SDL_WaitThread(ctx->sound.threads[i].thread, &status);
 
-            ctx->sound_threads[i].thread = NULL;
+            ctx->sound.threads[i].thread = NULL;
 
             if (status == 0) {
-                ctx->sound_threads[new_count++] = ctx->sound_threads[i];
+                ctx->sound.threads[new_count++] = ctx->sound.threads[i];
             }
         }
     }
 
-    ctx->sound_thread_count = new_count;
+    ctx->sound.thread_count = new_count;
 }

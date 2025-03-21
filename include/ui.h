@@ -1,6 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
+#include "entity.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
@@ -96,6 +97,9 @@ typedef struct {
     // In-game ui elements
     UIToast toasts[MAX_TOASTS];
     size_t toast_count;
+    #define MAX_DAMAGE_NUMBERS 16
+    DamageNumber damage_numbers[MAX_DAMAGE_NUMBERS];
+    size_t damage_number_count;
 } UI;
 void UIOpen(UI* ui, UIFont* font);
 void UIUpdate(UI* ui, void* context);

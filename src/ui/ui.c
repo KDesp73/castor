@@ -16,7 +16,7 @@ void UIUpdate(UI* ui, void* context)
         if (toast.active) {
             Uint32 elapsed_time = SDL_GetTicks() - toast.start_time;
             if (elapsed_time < toast.duration) {
-                UIToastRender(ctx->renderer, ui->font, &toast, ctx->screen_width, ctx->screen_height);
+                UIToastRender(ctx->sdl.renderer, ui->font, &toast, ctx->sdl.screen_width, ctx->sdl.screen_height);
             } else {
                 toast.active = false;
             }

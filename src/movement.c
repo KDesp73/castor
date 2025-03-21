@@ -6,8 +6,8 @@
 
 void MoveFront(Context* ctx)
 {
-    float moveX = cos(ctx->player->angleX * M_PI / 180.0);
-    float moveY = sin(ctx->player->angleX * M_PI / 180.0);
+    float moveX = cos(ctx->level.player->angleX * M_PI / 180.0);
+    float moveY = sin(ctx->level.player->angleX * M_PI / 180.0);
     
     // Normalize the vector
     float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
@@ -15,20 +15,20 @@ void MoveFront(Context* ctx)
     moveY /= length;  // Normalize
 
     // Scale by speed
-    moveX *= ctx->player->speed;
-    moveY *= ctx->player->speed;
+    moveX *= ctx->level.player->speed;
+    moveY *= ctx->level.player->speed;
 
     // Check for collision and move if no collision
-    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
-        ctx->player->X += moveX;
-        ctx->player->Y += moveY;
+    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+        ctx->level.player->X += moveX;
+        ctx->level.player->Y += moveY;
     }
 }
 
 void MoveBack(Context* ctx)
 {
-    float moveX = cos(ctx->player->angleX * M_PI / 180.0) * -1;
-    float moveY = sin(ctx->player->angleX * M_PI / 180.0) * -1;
+    float moveX = cos(ctx->level.player->angleX * M_PI / 180.0) * -1;
+    float moveY = sin(ctx->level.player->angleX * M_PI / 180.0) * -1;
 
     // Normalize the vector
     float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
@@ -36,21 +36,21 @@ void MoveBack(Context* ctx)
     moveY /= length;  // Normalize
 
     // Scale by speed
-    moveX *= ctx->player->speed;
-    moveY *= ctx->player->speed;
+    moveX *= ctx->level.player->speed;
+    moveY *= ctx->level.player->speed;
 
     // Check for collision and move if no collision
-    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
-        ctx->player->X += moveX;
-        ctx->player->Y += moveY;
+    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+        ctx->level.player->X += moveX;
+        ctx->level.player->Y += moveY;
     }
 }
 
 void MoveLeft(Context* ctx)
 {
     // Calculate the perpendicular direction (90 degrees counterclockwise)
-    float moveX = cos((ctx->player->angleX - 90) * M_PI / 180.0);
-    float moveY = sin((ctx->player->angleX - 90) * M_PI / 180.0);
+    float moveX = cos((ctx->level.player->angleX - 90) * M_PI / 180.0);
+    float moveY = sin((ctx->level.player->angleX - 90) * M_PI / 180.0);
 
     // Normalize the vector
     float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
@@ -58,21 +58,21 @@ void MoveLeft(Context* ctx)
     moveY /= length;  // Normalize
 
     // Scale by speed
-    moveX *= ctx->player->speed;
-    moveY *= ctx->player->speed;
+    moveX *= ctx->level.player->speed;
+    moveY *= ctx->level.player->speed;
 
     // Check for collision and move if no collision
-    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
-        ctx->player->X += moveX;
-        ctx->player->Y += moveY;
+    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+        ctx->level.player->X += moveX;
+        ctx->level.player->Y += moveY;
     }
 }
 
 void MoveRight(Context* ctx)
 {
     // Calculate the perpendicular direction (90 degrees clockwise)
-    float moveX = cos((ctx->player->angleX + 90) * M_PI / 180.0);
-    float moveY = sin((ctx->player->angleX + 90) * M_PI / 180.0);
+    float moveX = cos((ctx->level.player->angleX + 90) * M_PI / 180.0);
+    float moveY = sin((ctx->level.player->angleX + 90) * M_PI / 180.0);
 
     // Normalize the vector
     float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
@@ -80,31 +80,31 @@ void MoveRight(Context* ctx)
     moveY /= length;  // Normalize
 
     // Scale by speed
-    moveX *= ctx->player->speed;
-    moveY *= ctx->player->speed;
+    moveX *= ctx->level.player->speed;
+    moveY *= ctx->level.player->speed;
 
     // Check for collision and move if no collision
-    if (!CheckCollision(ctx->player->X + moveX, ctx->player->Y + moveY, ctx)) {
-        ctx->player->X += moveX;
-        ctx->player->Y += moveY;
+    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+        ctx->level.player->X += moveX;
+        ctx->level.player->Y += moveY;
     }
 }
 
 void RotateX(Context* ctx, double delta)
 {
-    ctx->player->angleX += delta;
-    if (ctx->player->angleX >= 360) ctx->player->angleX -= 360;
+    ctx->level.player->angleX += delta;
+    if (ctx->level.player->angleX >= 360) ctx->level.player->angleX -= 360;
 }
 
 #define ANGLE_Y_CUTOFF 100
 void RotateY(Context *ctx, double delta)
 {
-    ctx->player->angleY -= delta;
+    ctx->level.player->angleY -= delta;
 
-    if (ctx->player->angleY < -ANGLE_Y_CUTOFF)
-        ctx->player->angleY = -ANGLE_Y_CUTOFF;
-    else if (ctx->player->angleY > ANGLE_Y_CUTOFF)
-        ctx->player->angleY = ANGLE_Y_CUTOFF;
+    if (ctx->level.player->angleY < -ANGLE_Y_CUTOFF)
+        ctx->level.player->angleY = -ANGLE_Y_CUTOFF;
+    else if (ctx->level.player->angleY > ANGLE_Y_CUTOFF)
+        ctx->level.player->angleY = ANGLE_Y_CUTOFF;
 }
 
 bool CheckCollision(float newX, float newY, const Context* ctx)
@@ -113,11 +113,11 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     int mapX = (int)newX;
     int mapY = (int)newY;
 
-    if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
+    if (mapX < 0 || mapX >= ctx->level.map_width || mapY < 0 || mapY >= ctx->level.map_height) {
         return true;  // Collision with map boundaries
     }
 
-    int tile = ctx->map[mapY][mapX];
+    int tile = ctx->level.map[mapY][mapX];
     if (tile > 0) {
         // Allow some error margin in collision with tiles
         if (COLLISION_TOLERANCE > 0) {
@@ -137,8 +137,8 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     }
 
     // Check collision with sprites
-    for (int i = 0; i < ctx->sprite_count; i++) {
-        Sprite* sprite = ctx->sprites[i];
+    for (int i = 0; i < ctx->level.sprite_count; i++) {
+        Sprite* sprite = ctx->level.sprites[i];
 
         // Skip sprites without collision
         if (!sprite->collision) continue;
@@ -176,11 +176,11 @@ Uint8 HandleInput(Context* ctx)
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
     if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->mouse_sensitivity);
+        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity);
     }
 
     if (yrel != 0) {
-        RotateY(ctx, ((ctx->mouse_inverted) ? -yrel : yrel) * (ctx->mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
+        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
     }
 
     if (keys[SDL_SCANCODE_W]) {

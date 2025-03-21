@@ -15,12 +15,12 @@
 
 #define FRAME_DELAY ((float)1000/TARGET_FPS)
 
-#define FPS_START(ctx) ctx->frame_start = SDL_GetTicks()
+#define FPS_START(ctx) ctx->engine.frame_start = SDL_GetTicks()
 
 #define FPS_END(ctx) \
-    ctx->frame_time = SDL_GetTicks() - ctx->frame_start; \
-    if (ctx->frame_time < FRAME_DELAY) { \
-        SDL_Delay(FRAME_DELAY - ctx->frame_time); \
+    ctx->engine.frame_time = SDL_GetTicks() - ctx->engine.frame_start; \
+    if (ctx->engine.frame_time < FRAME_DELAY) { \
+        SDL_Delay(FRAME_DELAY - ctx->engine.frame_time); \
     } 
 
 #define EVERY_MS(name, interval, code)                       \

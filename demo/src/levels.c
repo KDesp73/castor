@@ -11,13 +11,13 @@
 static void GivePaths(Context* ctx)
 {
     int** map = ExportSearchMap(ctx);
-    for (size_t i = 0; i < ctx->entity_count; i++) {
-        if(ctx->entities[i]->default_path.length == 0) {
-            ctx->entities[i]->default_path = 
-                GenerateRandomLoopPath(map, ctx->map_width, ctx->map_height, 12, ctx->entities[i]->sprite->x, ctx->entities[i]->sprite->y);
+    for (size_t i = 0; i < ctx->level.entity_count; i++) {
+        if(ctx->level.entities[i]->default_path.length == 0) {
+            ctx->level.entities[i]->default_path = 
+                GenerateRandomLoopPath(map, ctx->level.map_width, ctx->level.map_height, 12, ctx->level.entities[i]->sprite->x, ctx->level.entities[i]->sprite->y);
         }
     }
-    MapFree(map, ctx->map_height);
+    MapFree(map, ctx->level.map_height);
 
 }
 
@@ -38,8 +38,9 @@ void Level2(Context* ctx)
     AppendSprite(ctx, SPRITE_LAMP(5, 10));
     AppendSprite(ctx, SPRITE_COLUMN(4, 4));
 
-    AppendEntity(ctx, ENTITY_EYE(14, 3));
+    // AppendEntity(ctx, ENTITY_EYE(14, 3));
 
+    AppendItem(ctx, ITEM_GLASSES(13, 10));
     AppendItem(ctx, ITEM_KEY(10, 10));
 
     AppendEvent(ctx, EventNew(ctx, true, 1000, trigger1, action1));

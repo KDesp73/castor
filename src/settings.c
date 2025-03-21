@@ -7,7 +7,7 @@
 
 void SetFullscreen(Context* ctx, bool fullscreen)
 {
-    if (!ctx || !ctx->window || !ctx->renderer) {
+    if (!ctx || !ctx->sdl.window || !ctx->sdl.renderer) {
         fprintf(stderr, "Error: Invalid context, window, or renderer!\n");
         return;
     }
@@ -15,17 +15,17 @@ void SetFullscreen(Context* ctx, bool fullscreen)
     if (fullscreen) {
         SDL_DisplayMode displayMode;
         if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0) {
-            ctx->screen_width = displayMode.w;
-            ctx->screen_height = displayMode.h;
-            printf("Entering fullscreen mode: %d x %d\n", ctx->screen_width, ctx->screen_height);
+            ctx->sdl.screen_width = displayMode.w;
+            ctx->sdl.screen_height = displayMode.h;
+            printf("Entering fullscreen mode: %d x %d\n", ctx->sdl.screen_width, ctx->sdl.screen_height);
         }
-        SDL_SetWindowFullscreen(ctx->window, SDL_WINDOW_FULLSCREEN);
+        SDL_SetWindowFullscreen(ctx->sdl.window, SDL_WINDOW_FULLSCREEN);
     } else {
         printf("Exiting fullscreen mode\n");
-        ctx->screen_width = DEFAULT_SCREEN_WIDTH;
-        ctx->screen_height = DEFAULT_SCREEN_HEIGHT;
-        SDL_SetWindowFullscreen(ctx->window, 0);
-        SDL_SetWindowSize(ctx->window, ctx->screen_width, ctx->screen_height);
+        ctx->sdl.screen_width = DEFAULT_SCREEN_WIDTH;
+        ctx->sdl.screen_height = DEFAULT_SCREEN_HEIGHT;
+        SDL_SetWindowFullscreen(ctx->sdl.window, 0);
+        SDL_SetWindowSize(ctx->sdl.window, ctx->sdl.screen_width, ctx->sdl.screen_height);
     }
 
     // Let SDL process events to avoid race condition
@@ -33,20 +33,20 @@ void SetFullscreen(Context* ctx, bool fullscreen)
     SDL_Delay(50); 
 
     // Clear and destroy old renderer
-    SDL_RenderClear(ctx->renderer);
-    SDL_RenderPresent(ctx->renderer);
-    SDL_DestroyRenderer(ctx->renderer);
-    ctx->renderer = NULL;
+    SDL_RenderClear(ctx->sdl.renderer);
+    SDL_RenderPresent(ctx->sdl.renderer);
+    SDL_DestroyRenderer(ctx->sdl.renderer);
+    ctx->sdl.renderer = NULL;
 
-    ctx->renderer = SDL_CreateRenderer(ctx->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!ctx->renderer) {
+    ctx->sdl.renderer = SDL_CreateRenderer(ctx->sdl.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!ctx->sdl.renderer) {
         fprintf(stderr, "Error recreating renderer: %s\n", SDL_GetError());
         exit(1);
     }
 
-    SDL_RenderSetLogicalSize(ctx->renderer, ctx->screen_width, ctx->screen_height);
+    SDL_RenderSetLogicalSize(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
 
-    ctx->fullscreen = fullscreen;
+    ctx->settings.fullscreen = fullscreen;
 
     LoadTextures(ctx);
 

@@ -1,5 +1,7 @@
 #include "events.h"
 #include "context.h"
+#include "ingame-ui.h"
+#include "inventory.h"
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
@@ -25,8 +27,8 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
     FLOATP(normAngleY);
 
     // Iterate through entities to check if within range and facing the player
-    for (size_t i = 0; i < ctx->entity_count; ++i) {
-        Entity* entity = ctx->entities[i];
+    for (size_t i = 0; i < ctx->level.entity_count; ++i) {
+        Entity* entity = ctx->level.entities[i];
 
         if (entity == NULL || entity->sprite == NULL) {
             continue; // Skip invalid entities or entities without sprites
@@ -58,7 +60,7 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
 bool PlayerAttackTrigger(Event* evt)
 {
     Context* ctx = evt->ctx;
-    Player* player = ctx->player;
+    Player* player = ctx->level.player;
     
     return PlayerIsAttacking(player, ctx); // Returns true if the player is attacking
 }
@@ -66,11 +68,11 @@ bool PlayerAttackTrigger(Event* evt)
 void PlayerAttackAction(Event* evt)
 {
     Context* ctx = evt->ctx;
-    Player* player = ctx->player;
+    Player* player = ctx->level.player;
 
     // Iterate through entities to apply damage
-    for (size_t i = 0; i < ctx->entity_count; ++i) {
-        Entity* entity = ctx->entities[i];
+    for (size_t i = 0; i < ctx->level.entity_count; ++i) {
+        Entity* entity = ctx->level.entities[i];
 
         if (entity == NULL || entity->sprite == NULL) {
             continue; // Skip invalid entities or entities without sprites
@@ -81,7 +83,8 @@ void PlayerAttackAction(Event* evt)
             player->Y >= entity->sprite->y - 1 && player->Y <= entity->sprite->y + 1) {
 
             // Apply damage and play sound
-            EntityTakeDamage(entity, 30);
+            float damage = EntityTakeDamage(entity, 30);
+            AddDamageNumber(ctx, entity->sprite->x, entity->sprite->y, damage);
             PlaySound(ctx, "./assets/sounds/sword-hit.mp3", 20, 200);
 
             // If the entity is dead, remove it
@@ -97,7 +100,7 @@ void PlayerAttackAction(Event* evt)
 bool trigger1(Event* evt)
 {
     Context* ctx = evt->ctx;
-    Player* player = ctx->player;
+    Player* player = ctx->level.player;
 
     return (
         (player->X >= 4 && player->X < 5) &&
@@ -114,10 +117,18 @@ void action1(Event* evt)
     UIAppendToast(&ctx->ui, toast);
 }
 
+static void AddToInventory(const Item* item)
+{
+    if(!strcmp("key", item->id)) {
+        INV.key = true;
+    } else if(!strcmp("sword", item->id)) {
+        INV.sword = true;
+    } else if(!strcmp("glasses", item->id)) {
+        INV.glasses = true;
+    }
+}
 
-
-
-#define TOUCH_DISTANCE 0.5f
+#define TOUCH_DISTANCE 0.8f
 static bool PlayerTouchingSprite(const Player* player, const Sprite* sprite)
 {
     if (!player || !sprite) return false;
@@ -131,13 +142,13 @@ static bool PlayerTouchingSprite(const Player* player, const Sprite* sprite)
 static bool CheckItemPickup(Context* ctx)
 {
     bool picked_up = false;
-    for (size_t i = 0; i < ctx->item_count; i++) {
-        Item* item = ctx->items[i];
+    for (int i = ctx->level.item_count - 1; i >= 0; i--) {
+        Item* item = ctx->level.items[i];
         Sprite* sprite = item->sprite;
 
-        if (PlayerTouchingSprite(ctx->player, sprite)) {
+        if (PlayerTouchingSprite(ctx->level.player, sprite)) {
+            AddToInventory(item);
             RemoveItem(ctx, item);
-            i--;
             picked_up = true;
         }
     }
@@ -154,6 +165,5 @@ bool PickItemTrigger(Event* evt)
 void PickItemAction(Event* evt)
 {
     // Since the picking-up is happening in the trigger we can do nothing here
-    printf("Picked up an item!\n");
-    // TODO: Add the item to an inventory
+    InventoryPrint(INV);
 }

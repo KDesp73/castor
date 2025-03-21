@@ -13,21 +13,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 bool ConstructRenderer(Context* ctx)
 {
-    ctx->window = SDL_CreateWindow(
+    ctx->sdl.window = SDL_CreateWindow(
             ctx->game_name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-            ctx->screen_width, ctx->screen_height, SDL_WINDOW_SHOWN);
+            ctx->sdl.screen_width, ctx->sdl.screen_height, SDL_WINDOW_SHOWN);
 
-    if(!ctx->window) {
+    if(!ctx->sdl.window) {
         fprintf(stderr, "Could not create window\n");
         return false;
     }
 
-    ctx->renderer = SDL_CreateRenderer(ctx->window, -1, SDL_RENDERER_ACCELERATED);
+    ctx->sdl.renderer = SDL_CreateRenderer(ctx->sdl.window, -1, SDL_RENDERER_ACCELERATED);
 
-    if(!ctx->renderer) {
+    if(!ctx->sdl.renderer) {
         fprintf(stderr, "Could not create renderer\n");
         return false;
     }
@@ -37,41 +38,41 @@ bool ConstructRenderer(Context* ctx)
 
 void ContextInit(Context* ctx)
 {
-    ctx->running = true;
-    ctx->fov = 60;
-    ctx->screen_width = DEFAULT_SCREEN_WIDTH;
-    ctx->screen_height = DEFAULT_SCREEN_HEIGHT;
-    ctx->texture_width = 64;
-    ctx->texture_height = 64;
-    ctx->mouse_sensitivity = 0.25;
-    ctx->mouse_inverted = true;
-    ctx->render_distance = 20.0f;
+    ctx->engine.running = true;
+    ctx->settings.fov = 60;
+    ctx->sdl.screen_width = DEFAULT_SCREEN_WIDTH;
+    ctx->sdl.screen_height = DEFAULT_SCREEN_HEIGHT;
+    ctx->raycaster.texture_width = 64;
+    ctx->raycaster.texture_height = 64;
+    ctx->settings.mouse_sensitivity = 0.25;
+    ctx->settings.mouse_inverted = true;
+    ctx->settings.render_distance = 20.0f;
 
-    ctx->enable_fog = true;
-    ctx->fog_distance = 10;
+    ctx->settings.enable_fog = true;
+    ctx->settings.fog_distance = 10;
 }
 
 void ContextFree(Context* ctx)
 {
     if (ctx) {
-        PlayerFree(&ctx->player);
+        PlayerFree(&ctx->level.player);
         FreeTextures(ctx);
         FreeSprites(ctx);
         FreeEntities(ctx);
         FreeItems(ctx);
         FreeEvents(ctx);
         UIClose(&ctx->ui);
-        MapFree(ctx->map, ctx->map_height);
+        MapFree(ctx->level.map, ctx->level.map_height);
         CleanupThreads(ctx);
 
-        if (ctx->renderer) {
-            SDL_DestroyRenderer(ctx->renderer);
-            ctx->renderer = NULL;
+        if (ctx->sdl.renderer) {
+            SDL_DestroyRenderer(ctx->sdl.renderer);
+            ctx->sdl.renderer = NULL;
         }
 
-        if (ctx->window) {
-            SDL_DestroyWindow(ctx->window);
-            ctx->window = NULL;
+        if (ctx->sdl.window) {
+            SDL_DestroyWindow(ctx->sdl.window);
+            ctx->sdl.window = NULL;
         }
     }
 }
@@ -79,48 +80,48 @@ void ContextFree(Context* ctx)
 void FreeTextures(Context* ctx)
 {
     for(size_t i = 0; i < MAX_TEXTURES; i++) {
-        if(ctx->textures[i] != NULL) {
-            SDL_DestroyTexture(ctx->textures[i]); 
-            ctx->textures[i] = NULL;
+        if(ctx->raycaster.textures[i] != NULL) {
+            SDL_DestroyTexture(ctx->raycaster.textures[i]); 
+            ctx->raycaster.textures[i] = NULL;
         }
-        if(ctx->sprite_textures[i] != NULL) {
-            SDL_DestroyTexture(ctx->sprite_textures[i]); 
-            ctx->sprite_textures[i] = NULL;
+        if(ctx->raycaster.sprite_textures[i] != NULL) {
+            SDL_DestroyTexture(ctx->raycaster.sprite_textures[i]); 
+            ctx->raycaster.sprite_textures[i] = NULL;
         }
     }
-    ctx->textures_loaded = false;
-    ctx->sprites_loaded = false;
+    ctx->raycaster.textures_loaded = false;
+    ctx->raycaster.sprites_loaded = false;
 }
 void FreeSprites(Context* ctx)
 {
-    for(size_t i = 0; i < ctx->sprite_count; i++){
-        if(ctx->sprites[i]){
-            SpriteFree(&ctx->sprites[i]);
+    for(size_t i = 0; i < ctx->level.sprite_count; i++){
+        if(ctx->level.sprites[i]){
+            SpriteFree(&ctx->level.sprites[i]);
         }
     }
 }
 void FreeEntities(Context* ctx)
 {
-    for(size_t i = 0; i < ctx->entity_count; i++){
-        if(ctx->entities[i]){
-            EntityFree(&ctx->entities[i]);
+    for(size_t i = 0; i < ctx->level.entity_count; i++){
+        if(ctx->level.entities[i]){
+            EntityFree(&ctx->level.entities[i]);
         }
     }
 }
 void FreeItems(Context* ctx)
 {
-    for(size_t i = 0; i < ctx->item_count; i++){
-        if(ctx->items[i]){
-            ItemFree(&ctx->items[i]);
+    for(size_t i = 0; i < ctx->level.item_count; i++){
+        if(ctx->level.items[i]){
+            ItemFree(&ctx->level.items[i]);
         }
     }
 }
 
 void FreeEvents(Context* ctx)
 {
-    for(size_t i = 0; i < ctx->event_count; i++){
-        if(ctx->events[i]){
-            EventFree(&ctx->events[i]);
+    for(size_t i = 0; i < ctx->level.event_count; i++){
+        if(ctx->level.events[i]){
+            EventFree(&ctx->level.events[i]);
         }
     }
 }
@@ -129,75 +130,76 @@ void FreeEvents(Context* ctx)
 
 void LoadLevelMap(Context* ctx, const char* path)
 {
-    ctx->map = MapLoad(&ctx->map_height, &ctx->map_width, path);
+    ctx->level.map = MapLoad(&ctx->level.map_height, &ctx->level.map_width, path);
 }
 
 void LoadTextures(Context* ctx)
 {
-    TexturesLoad(ctx->renderer, ctx->textures, TEXTURES_LIST_FILE);
-    ctx->textures_loaded = true;
-    TexturesLoad(ctx->renderer, ctx->sprite_textures, SPRITES_LIST_FILE);
-    ctx->sprites_loaded = true;
+    TexturesLoad(ctx->sdl.renderer, ctx->raycaster.textures, TEXTURES_LIST_FILE);
+    ctx->raycaster.textures_loaded = true;
+    TexturesLoad(ctx->sdl.renderer, ctx->raycaster.sprite_textures, SPRITES_LIST_FILE);
+    ctx->raycaster.sprites_loaded = true;
 }
 
 void AppendSprite(Context* ctx, Sprite* sprite)
 {
-    if(ctx->sprite_count >= MAX_SPRITES) return;
+    if (ctx->level.sprite_count >= MAX_SPRITES) return;
 
-    sprite->index = ctx->sprite_count;
-    ctx->sprites[ctx->sprite_count++] = sprite;
+    sprite->index = ctx->level.sprite_count;
+    ctx->level.sprites[ctx->level.sprite_count++] = sprite;
+    printf("Appended sprite at index: %zu\n", sprite->index);
 }
 
 void AppendEntity(Context* ctx, Entity* entity)
 {
-    if (ctx->entity_count >= MAX_ENTITIES) return;
+    if (ctx->level.entity_count >= MAX_ENTITIES) return;
 
     AppendSprite(ctx, entity->sprite);
-    entity->sprite = ctx->sprites[ctx->sprite_count - 1];
 
-    entity->index = ctx->entity_count;
-    ctx->entities[ctx->entity_count++] = entity;
+    entity->index = ctx->level.entity_count;
+    ctx->level.entities[ctx->level.entity_count++] = entity;
+    printf("Appended entity '%s' at index: %zu\n", entity->id, entity->index);
 }
 
 void AppendItem(Context* ctx, Item* item)
 {
-    if (ctx->sprite_count >= MAX_ITEMS) return;
+    if (ctx->level.item_count >= MAX_ITEMS) return;
 
     AppendSprite(ctx, item->sprite);
-    item->sprite = ctx->sprites[ctx->sprite_count - 1];
 
-    item->index = ctx->item_count;
-    ctx->items[ctx->item_count++] = item;
+    item->index = ctx->level.item_count;
+    ctx->level.items[ctx->level.item_count++] = item;
+    printf("Appended item '%s' at index: %zu\n", item->id, item->index);
 }
 
 void AppendEvent(Context* ctx, Event* evt)
 {
-    if(ctx->event_count >= MAX_EVENTS) return;
+    if(ctx->level.event_count >= MAX_EVENTS) return;
 
-    ctx->events[ctx->event_count++] = evt;
+    ctx->level.events[ctx->level.event_count++] = evt;
 }
 
 int** ExportSearchMap(Context* ctx)
 {
-    int** res = MapCreate(ctx->map_height, ctx->map_width);
+    int** res = MapCreate(ctx->level.map_height, ctx->level.map_width);
     if (!res) return NULL;
 
     // Fill based on original map
-    for (size_t j = 0; j < ctx->map_height; j++) {
-        for (size_t i = 0; i < ctx->map_width; i++) {
-            res[j][i] = (ctx->map[j][i] != 0) ? 1 : 0;
+    for (size_t j = 0; j < ctx->level.map_height; j++) {
+        for (size_t i = 0; i < ctx->level.map_width; i++) {
+            res[j][i] = (ctx->level.map[j][i] != 0) ? 1 : 0;
         }
     }
 
     // Mark sprite collisions
-    for (size_t k = 0; k < ctx->sprite_count; k++) {
-        Sprite* sprite = ctx->sprites[k];
+    for (size_t k = 0; k < ctx->level.sprite_count; k++) {
+        Sprite* sprite = ctx->level.sprites[k];
 
         if (sprite->collision) {
             int gridX = (int)floor(sprite->x);
             int gridY = (int)floor(sprite->y);
 
-            if (gridX >= 0 && gridX < ctx->map_width && gridY >= 0 && gridY < ctx->map_height) {
+            if (gridX >= 0 && gridX < ctx->level.map_width && gridY >= 0 && gridY < ctx->level.map_height) {
                 res[gridY][gridX] = 1;
             }
         }
@@ -210,8 +212,8 @@ void UpdateEntities(Context* ctx, float deltaTime)
 {
     int** map = ExportSearchMap(ctx);
     
-    for (size_t i = 0; i < ctx->entity_count; i++) {
-        Entity* e = ctx->entities[i];
+    for (size_t i = 0; i < ctx->level.entity_count; i++) {
+        Entity* e = ctx->level.entities[i];
         if(!e) continue;
         if(e->health <= 0) {
             // TODO: Proper death method
@@ -220,19 +222,19 @@ void UpdateEntities(Context* ctx, float deltaTime)
         }
 
         if (e->move) {
-            e->move(e, (const int**)map, ctx->map_width, ctx->map_height, ctx->player, deltaTime);
+            e->move(e, (const int**)map, ctx->level.map_width, ctx->level.map_height, ctx->level.player, deltaTime);
         }
     }
 
-    MapFree(map, ctx->map_height);
+    MapFree(map, ctx->level.map_height);
 }
 
 void ProcessEvents(Context* ctx)
 {
     Uint32 now = SDL_GetTicks();
 
-    for(size_t i = 0; i < ctx->event_count; i++) {
-        Event* ev = ctx->events[i];
+    for(size_t i = 0; i < ctx->level.event_count; i++) {
+        Event* ev = ctx->level.events[i];
 
         if (now - ev->last_processed >= ev->cooldown) {
             EventProcess(ev);
@@ -243,67 +245,108 @@ void ProcessEvents(Context* ctx)
 
 void RemoveSprite(Context* ctx, const Sprite* sprite)
 {
+    assert(ctx);
+    assert(sprite);
+
     size_t index = sprite->index;
-    if (index >= ctx->sprite_count) {
+    printf("Removing sprite from index: %zu\n", index);
+    if (index >= ctx->level.sprite_count) {
         fprintf(stderr, "Error: Invalid sprite index!\n");
         return;
     }
 
-    // Free the sprite memory if needed
-    free(ctx->sprites[index]);
+    SpriteFree(&ctx->level.sprites[index]);
 
     // Shift sprites left
-    for (size_t i = index; i < ctx->sprite_count - 1; i++) {
-        ctx->sprites[i] = ctx->sprites[i + 1];
+    for (size_t i = index; i < ctx->level.sprite_count - 1; i++) {
+        ctx->level.sprites[i] = ctx->level.sprites[i + 1];
+        ctx->level.sprites[i]->index = i;
     }
 
-    // Clear the last slot
-    ctx->sprites[ctx->sprite_count - 1] = NULL;
-
-    // Decrease count
-    ctx->sprite_count--;
+    ctx->level.sprites[ctx->level.sprite_count - 1] = NULL;
+    ctx->level.sprite_count--;
 }
 
 void RemoveEntity(Context* ctx, const Entity* entity)
 {
+    assert(ctx);
+    assert(entity);
+
     size_t index = entity->index;
-    if (index >= ctx->entity_count) {
+    printf("Removing entity '%s' from index: %zu\n", entity->id, index);
+    if (index >= ctx->level.entity_count) {
         fprintf(stderr, "Error: Invalid entity index!\n");
         return;
     }
 
     // Remove associated sprite if available
     if (entity->sprite) {
-        RemoveSprite(ctx, entity->sprite); // Remove the sprite associated with the entity
+        RemoveSprite(ctx, entity->sprite);
     }
+    EntityFree(&ctx->level.entities[index]);
 
     // Shift entities left
-    for (size_t i = index; i < ctx->entity_count - 1; i++) {
-        ctx->entities[i] = ctx->entities[i + 1];
+    for (size_t i = index; i < ctx->level.entity_count - 1; i++) {
+        ctx->level.entities[i] = ctx->level.entities[i + 1];
+        ctx->level.entities[i]->index = i;
     }
 
-    ctx->entities[ctx->entity_count - 1] = NULL;
-    ctx->entity_count--;
+    ctx->level.entities[ctx->level.entity_count - 1] = NULL;
+    ctx->level.entity_count--;
 }
 
 void RemoveItem(Context* ctx, const Item* item)
 {
+    assert(ctx);
+    assert(item);
+
     size_t index = item->index;
-    if (index >= ctx->item_count) {
+    printf("Removing item '%s' from index: %zu\n", item->id, index);
+    if (index >= ctx->level.item_count) {
         fprintf(stderr, "Error: Invalid item index!\n");
         return;
     }
 
-    // Remove associated sprite if available
     if (item->sprite) {
-        RemoveSprite(ctx, item->sprite); // Remove the sprite associated with the item
+        RemoveSprite(ctx, item->sprite);
+    }
+    ItemFree(&ctx->level.items[index]);
+
+    for (size_t i = index; i < ctx->level.item_count - 1; i++) {
+        if (ctx->level.items[i + 1]) {
+            ctx->level.items[i] = ctx->level.items[i + 1];
+            ctx->level.items[i]->index = i;
+        } else {
+            ctx->level.items[i] = NULL;
+        }
     }
 
-    // Shift items left
-    for (size_t i = index; i < ctx->item_count - 1; i++) {
-        ctx->items[i] = ctx->items[i + 1];
-    }
+    ctx->level.items[ctx->level.item_count - 1] = NULL;
+    ctx->level.item_count--;
+}
 
-    ctx->items[ctx->item_count - 1] = NULL;
-    ctx->item_count--;
+static float PseudoRandomValue(uintptr_t seed)
+{
+    seed = (seed ^ 0xDEADBEEF) + (seed << 4);
+    seed = seed ^ (seed >> 7);
+    return (float)(seed % 1000) / 1000.0f;
+}
+
+void ItemsIdle(Context* ctx, float elapsedTime)
+{
+    float baseAmplitude = 1.0f;
+    float baseSpeed = 2.0f;
+
+    for (size_t i = 0; i < ctx->level.item_count; i++) {
+        Item* item = ctx->level.items[i];
+        if (item && item->sprite) {
+            uintptr_t seed = (uintptr_t)item;
+            float amplitude = baseAmplitude * (0.75f + 0.5f * PseudoRandomValue(seed));
+            float speed = baseSpeed * (0.75f + 0.5f * PseudoRandomValue(seed + 1234));
+            float phase = 2.0f * M_PI * PseudoRandomValue(seed + 5678);
+
+            float offset = sinf(elapsedTime * speed + phase) * amplitude;
+            item->sprite->z = item->baseZ + offset;
+        }
+    }
 }

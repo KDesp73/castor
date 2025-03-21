@@ -47,34 +47,34 @@ static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, floa
 void CastWalls(SDL_Renderer *renderer, Context* ctx)
 {
     // Ensure the Z-buffer is allocated
-    if (ctx->z_buffer == NULL) {
-        ctx->z_buffer = (float*)malloc(ctx->screen_width * sizeof(float));
+    if (ctx->raycaster.z_buffer == NULL) {
+        ctx->raycaster.z_buffer = (float*)malloc(ctx->sdl.screen_width * sizeof(float));
     }
 
-    for (int x = 0; x < ctx->screen_width; x++) {
-        float rayAngle = (ctx->player->angleX - ctx->fov / 2.0) + ((float)x / ctx->screen_width) * ctx->fov;
+    for (int x = 0; x < ctx->sdl.screen_width; x++) {
+        float rayAngle = (ctx->level.player->angleX - ctx->settings.fov / 2.0) + ((float)x / ctx->sdl.screen_width) * ctx->settings.fov;
         float rayX = cos(rayAngle * M_PI / 180.0);
         float rayY = sin(rayAngle * M_PI / 180.0);
 
         float distance = 0.1;
         float stepSize = 0.01; // NOTE: IMPORTANT!
-        float hitX = ctx->player->X, hitY = ctx->player->Y;
+        float hitX = ctx->level.player->X, hitY = ctx->level.player->Y;
         bool hitWall = false;
         int tile = TILE_EMPTY;
 
-        while (!hitWall && distance < ctx->render_distance) {
-            hitX = ctx->player->X + rayX * distance;
-            hitY = ctx->player->Y + rayY * distance;
+        while (!hitWall && distance < ctx->settings.render_distance) {
+            hitX = ctx->level.player->X + rayX * distance;
+            hitY = ctx->level.player->Y + rayY * distance;
 
             int mapX = (int)floor(hitX);
             int mapY = (int)floor(hitY);
 
-            if (mapX < 0 || mapX >= ctx->map_width || mapY < 0 || mapY >= ctx->map_height) {
+            if (mapX < 0 || mapX >= ctx->level.map_width || mapY < 0 || mapY >= ctx->level.map_height) {
                 hitWall = true;
                 break;
             }
 
-            tile = ctx->map[mapY][mapX];
+            tile = ctx->level.map[mapY][mapX];
             if (tile > 0) {
                 hitWall = true;
                 break;
@@ -84,29 +84,29 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
         }
 
         // Precise fisheye correction
-        float correctedDistance = distance * cos((x - ctx->screen_width / 2.0) * (ctx->fov / ctx->screen_width) * M_PI / 180.0);
+        float correctedDistance = distance * cos((x - ctx->sdl.screen_width / 2.0) * (ctx->settings.fov / ctx->sdl.screen_width) * M_PI / 180.0);
 
         // Populate the Z-buffer with the corrected distance
-        ctx->z_buffer[x] = correctedDistance;
+        ctx->raycaster.z_buffer[x] = correctedDistance;
 
-        int wallHeight = (int)(ctx->screen_height / correctedDistance);
-        int verticalOffset = (int)(ctx->player->angleY * 5.0);
+        int wallHeight = (int)(ctx->sdl.screen_height / correctedDistance);
+        int verticalOffset = (int)(ctx->level.player->angleY * 5.0);
 
-        int wallTop = (ctx->screen_height / 2) - wallHeight - verticalOffset;
-        int wallBottom = (ctx->screen_height / 2) + wallHeight - verticalOffset;
-        if (hitWall && ctx->textures[tile-1] != NULL) {
+        int wallTop = (ctx->sdl.screen_height / 2) - wallHeight - verticalOffset;
+        int wallBottom = (ctx->sdl.screen_height / 2) + wallHeight - verticalOffset;
+        if (hitWall && ctx->raycaster.textures[tile-1] != NULL) {
             // Precise texture coordinate calculation
             float texCoordinate = CalculateTextureCoordinate(hitX, hitY, rayX, rayY);
 
             // Ensure smooth texture mapping
-            int texX = (int)(texCoordinate * (ctx->texture_width - 1));
-            texX = fmax(0, fmin(texX, ctx->texture_width - 1));
+            int texX = (int)(texCoordinate * (ctx->raycaster.texture_width - 1));
+            texX = fmax(0, fmin(texX, ctx->raycaster.texture_width - 1));
 
             SDL_Rect srcRect = { 
                 texX,  // Precise X coordinate 
                 0,     // Full texture height 
                 1,     // Single pixel width
-                ctx->texture_height 
+                ctx->raycaster.texture_height 
             };
 
             SDL_Rect dstRect = { 
@@ -116,7 +116,7 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
                 wallBottom - wallTop 
             };
 
-            SDL_RenderCopy(renderer, ctx->textures[tile-1], &srcRect, &dstRect);
+            SDL_RenderCopy(renderer, ctx->raycaster.textures[tile-1], &srcRect, &dstRect);
         } else {
             switch (tile) {
                 case 1: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_RED)); break;
@@ -153,26 +153,26 @@ static Uint32* getPixels(SDL_Renderer* renderer, SDL_Texture* texture, int* W, i
 
 void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
 {
-    if (!ctx->textures[ctx->ceiling_texture_index] || !ctx->textures[ctx->floor_texture_index]) return;
+    if (!ctx->raycaster.textures[ctx->raycaster.ceiling_texture_index] || !ctx->raycaster.textures[ctx->raycaster.floor_texture_index]) return;
 
     const float playerHeight = 0.5f;  // Player's eye level
     const float textureScale = 1.0f;  // Texture density
 
     // Player direction vectors
-    float angleRad    = ctx->player->angleX * M_PI / 180.0f;
+    float angleRad    = ctx->level.player->angleX * M_PI / 180.0f;
     float dirX        = cosf(angleRad);  // Player direction X
     float dirY        = sinf(angleRad);  // Player direction Y
-    float aspectRatio = (float) ctx->screen_width / ctx->screen_height;
-    float fov_rad     = ctx->fov * M_PI / 180.0f;
+    float aspectRatio = (float) ctx->sdl.screen_width / ctx->sdl.screen_height;
+    float fov_rad     = ctx->settings.fov * M_PI / 180.0f;
     float planeScale  = tanf(fov_rad / 2.0f) * aspectRatio;
     float planeX      = -dirY * planeScale;  // Right vector X (flipped sign)
     float planeY      = dirX * planeScale;   // Right vector Y (flipped sign)
 
-    int horizon = (ctx->screen_height / 2) - (int)(ctx->player->angleY * 5);
+    int horizon = (ctx->sdl.screen_height / 2) - (int)(ctx->level.player->angleY * 5);
 
     // Create screen texture for pixel access
     SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
-            SDL_TEXTUREACCESS_STREAMING, ctx->screen_width, ctx->screen_height);
+            SDL_TEXTUREACCESS_STREAMING, ctx->sdl.screen_width, ctx->sdl.screen_height);
     if (!screenTexture) return;
 
     Uint32 *pixels;
@@ -180,34 +180,34 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
     SDL_LockTexture(screenTexture, NULL, (void**)&pixels, &pitch);
 
     int floorW, floorH, ceilW, ceilH;
-    Uint32* floorPixels = getPixels(renderer, ctx->textures[ctx->floor_texture_index], &floorW, &floorH);
-    Uint32* ceilingPixels = getPixels(renderer, ctx->textures[ctx->ceiling_texture_index], &ceilW, &ceilH);
+    Uint32* floorPixels = getPixels(renderer, ctx->raycaster.textures[ctx->raycaster.floor_texture_index], &floorW, &floorH);
+    Uint32* ceilingPixels = getPixels(renderer, ctx->raycaster.textures[ctx->raycaster.ceiling_texture_index], &ceilW, &ceilH);
 
-    for (int y = 0; y < ctx->screen_height; y++) {
+    for (int y = 0; y < ctx->sdl.screen_height; y++) {
         if (y == horizon) continue;
 
         bool isFloor = y > horizon;
         float vertPos = isFloor ? (y - horizon) : (horizon - y);
-        float rowDistance = (playerHeight * ctx->screen_height) / (1e-5f + vertPos);
+        float rowDistance = (playerHeight * ctx->sdl.screen_height) / (1e-5f + vertPos);
 
         // Static position calculation
         float floorStepX = rowDistance * (dirX - planeX);
         float floorStepY = rowDistance * (dirY - planeY);
 
         // Texture stepping (perspective correct)
-        float texStepX = rowDistance * (2.0f * planeX) / ctx->screen_width;
-        float texStepY = rowDistance * (2.0f * planeY) / ctx->screen_width;
+        float texStepX = rowDistance * (2.0f * planeX) / ctx->sdl.screen_width;
+        float texStepY = rowDistance * (2.0f * planeY) / ctx->sdl.screen_width;
 
         // Initial texture coordinates
-        float floorX = ctx->player->X + floorStepX * 2.0f; // Correct
-        float floorY = ctx->player->Y + floorStepY;
+        float floorX = ctx->level.player->X + floorStepX * 2.0f; // Correct
+        float floorY = ctx->level.player->Y + floorStepY;
 
         // Texture selection
         Uint32 *texPixels = isFloor ? floorPixels : ceilingPixels;
         int texW = isFloor ? floorW : ceilW;
         int texH = isFloor ? floorH : ceilH;
 
-        for (int x = 0; x < ctx->screen_width; x++) {
+        for (int x = 0; x < ctx->sdl.screen_width; x++) {
             // Calculate texture coordinates
             int texX = (int)(floorX * texW * textureScale) % texW;
             int texY = (int)(floorY * texH * textureScale) % texH;
@@ -233,7 +233,7 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
 
 static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, double planeX, double planeY) 
 {
-    SDL_Texture* spriteTexture = ctx->sprite_textures[sprite.texture_id];
+    SDL_Texture* spriteTexture = ctx->raycaster.sprite_textures[sprite.texture_id];
     if (!spriteTexture) return false;
 
     // Get texture dimensions and calculate aspect ratio
@@ -242,8 +242,8 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
     float aspect_ratio = (float)texW / texH;  // Preserve aspect ratio
 
     // Translate sprite position
-    double spriteX = sprite.x - ctx->player->X;
-    double spriteY = sprite.y - ctx->player->Y;
+    double spriteX = sprite.x - ctx->level.player->X;
+    double spriteY = sprite.y - ctx->level.player->Y;
 
     // Transform to camera space
     double invDet = 1.0 / (planeX * dirY - dirX * planeY);
@@ -252,18 +252,18 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
     if (transformY <= 0.01) return false;
 
     // Calculate sprite height based on distance and scale
-    int spriteHeight = abs((int)(ctx->screen_height / transformY * sprite.scale));
+    int spriteHeight = abs((int)(ctx->sdl.screen_height / transformY * sprite.scale));
     int spriteWidth = (int)(spriteHeight * aspect_ratio);  // Width derived from height and aspect ratio
 
     // Skip rendering if too small
     if (spriteHeight < 2 || spriteWidth < 2) return false;;
 
     // Calculate screen position
-    int spriteScreenX = (int)(ctx->screen_width / 2 * (1 + transformX / transformY));
+    int spriteScreenX = (int)(ctx->sdl.screen_width / 2 * (1 + transformX / transformY));
 
     // Vertical positioning
     double verticalOffset = sprite.z / transformY;
-    int baseScreenY = (int)(ctx->screen_height / 2 - ctx->player->angleY * 5 - verticalOffset * 100);
+    int baseScreenY = (int)(ctx->sdl.screen_height / 2 - ctx->level.player->angleY * 5 - verticalOffset * 100);
 
     // Calculate drawing bounds
     int drawStartX = spriteScreenX - spriteWidth / 2;
@@ -275,7 +275,7 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
     SDL_SetTextureBlendMode(spriteTexture, SDL_BLENDMODE_BLEND);
     for (int x = drawStartX; x < drawEndX; x++) {
         // Skip if the stripe is outside the screen or occluded by the z-buffer
-        if (x < 0 || x >= ctx->screen_width || transformY >= ctx->z_buffer[x]) continue;
+        if (x < 0 || x >= ctx->sdl.screen_width || transformY >= ctx->raycaster.z_buffer[x]) continue;
 
         // Calculate texture X coordinate proportionally
         int texX = (int)((x - drawStartX) * (float)texW / (drawEndX - drawStartX));
@@ -284,7 +284,7 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
         // Render the entire vertical stripe (no clamping for height)
         SDL_Rect srcRect = {texX, 0, 1, texH};
         SDL_Rect destRect = {x, drawStartY, 1, drawEndY - drawStartY};
-        SDL_RenderCopy(ctx->renderer, spriteTexture, &srcRect, &destRect);
+        SDL_RenderCopy(ctx->sdl.renderer, spriteTexture, &srcRect, &destRect);
     }
 
     return true;
@@ -292,25 +292,25 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
 
 void CastSprites(SDL_Renderer* renderer, Context* ctx)
 {
-    Player* player = ctx->player;
+    Player* player = ctx->level.player;
 
     // Precompute camera vectors
     double dirX = cos(player->angleX * M_PI / 180.0);
     double dirY = sin(player->angleX * M_PI / 180.0);
-    double planeX = -dirY * tan(ctx->fov * M_PI / 360.0);
-    double planeY = dirX * tan(ctx->fov * M_PI / 360.0);
+    double planeX = -dirY * tan(ctx->settings.fov * M_PI / 360.0);
+    double planeY = dirX * tan(ctx->settings.fov * M_PI / 360.0);
 
-    for (int i = 0; i < ctx->sprite_count; i++) {
-        Sprite* sprite = ctx->sprites[i];
+    for (int i = 0; i < ctx->level.sprite_count; i++) {
+        Sprite* sprite = ctx->level.sprites[i];
         double dx = sprite->x - player->X;
         double dy = sprite->y - player->Y;
         sprite->distance = dx * dx + dy * dy;
     }
 
-    qsort(ctx->sprites, ctx->sprite_count, sizeof(Sprite*), SpriteCmp);
+    qsort(ctx->level.sprites, ctx->level.sprite_count, sizeof(Sprite*), SpriteCmp);
 
-    for (int i = 0; i < ctx->sprite_count; i++) {
-        Sprite* sprite = ctx->sprites[i];
+    for (int i = 0; i < ctx->level.sprite_count; i++) {
+        Sprite* sprite = ctx->level.sprites[i];
         if(!renderSprite(ctx, *sprite, dirX, dirY, planeX, planeY)) continue;
     }
 }
