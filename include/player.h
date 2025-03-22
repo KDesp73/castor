@@ -3,12 +3,13 @@
 
 typedef struct {
     double speed;
+    double angleDelta;
     double angleX, angleY;
     double X, Y;
 } Player;
 
-void PlayerInit(Player* player, double speed, double angle, double x, double y);
-Player* PlayerNew(double speed, double angle, double x, double y);
+void PlayerInit(Player* player, double speed, double angleDelta, double angle, double x, double y);
+Player* PlayerNew(double speed, double angleDelta, double angle, double x, double y);
 void PlayerFree(Player** player);
 
 Player PlayerStore(const Player* player);

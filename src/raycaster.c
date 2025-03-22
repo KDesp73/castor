@@ -4,6 +4,7 @@
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_render.h>
 
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -153,20 +154,30 @@ static Uint32* getPixels(SDL_Renderer* renderer, SDL_Texture* texture, int* W, i
 
 void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
 {
-    if (!ctx->raycaster.textures[ctx->raycaster.ceiling_texture_index] || !ctx->raycaster.textures[ctx->raycaster.floor_texture_index]) return;
+    if (
+        !ctx->raycaster.textures[ctx->raycaster.ceiling_texture_index] ||
+        !ctx->raycaster.textures[ctx->raycaster.floor_texture_index]
+    ) return;
+
+
 
     const float playerHeight = 0.5f;  // Player's eye level
     const float textureScale = 1.0f;  // Texture density
 
     // Player direction vectors
-    float angleRad    = ctx->level.player->angleX * M_PI / 180.0f;
+    float angle       = ctx->level.player->angleX;
+    float angleRad    = angle * M_PI / 180.0f;
     float dirX        = cosf(angleRad);  // Player direction X
     float dirY        = sinf(angleRad);  // Player direction Y
     float aspectRatio = (float) ctx->sdl.screen_width / ctx->sdl.screen_height;
     float fov_rad     = ctx->settings.fov * M_PI / 180.0f;
     float planeScale  = tanf(fov_rad / 2.0f) * aspectRatio;
-    float planeX      = -dirY * planeScale;  // Right vector X (flipped sign)
-    float planeY      = dirX * planeScale;   // Right vector Y (flipped sign)
+    float planeX      = -dirY * planeScale;
+    float planeY      = dirX * planeScale;
+
+    printf("angle: %f\n", angle);
+    printf("dirX: %f\n", dirX);
+    printf("dirY: %f\n", dirY);
 
     int horizon = (ctx->sdl.screen_height / 2) - (int)(ctx->level.player->angleY * 5);
 

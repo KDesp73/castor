@@ -118,3 +118,27 @@ void RenderCrosshair(SDL_Renderer* renderer, int screen_width, int screen_height
         SDL_RenderDrawLine(renderer, centerX + i, centerY + gap, centerX + i, centerY + size);
     }
 }
+
+void RenderHealthBar(SDL_Renderer* renderer, int x, int y, int width, int height, int currentHealth, int maxHealth)
+{
+    // Clamp health values
+    if (currentHealth < 0) currentHealth = 0;
+    if (currentHealth > maxHealth) currentHealth = maxHealth;
+
+    // Background (black)
+    SDL_Rect bgRect = { x, y, width, height };
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Health bar (red)
+    float healthPercent = (float)currentHealth / (float)maxHealth;
+    int healthWidth = (int)(width * healthPercent);
+
+    SDL_Rect healthRect = { x, y, healthWidth, height };
+    SDL_SetRenderDrawColor(renderer, 200, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &healthRect);
+
+    // Optional: Border (white)
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &bgRect);
+}

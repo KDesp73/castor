@@ -3,6 +3,7 @@
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "player.h"
+#include "screens.h"
 #include "sound.h"
 #include "sprite.h"
 #include <stdbool.h>
@@ -97,26 +98,6 @@ void PlayerAttackAction(Event* evt)
     }
 }
 
-bool trigger1(Event* evt)
-{
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
-
-    return (
-        (player->X >= 4 && player->X < 5) &&
-        (player->Y >= 8 && player->Y < 9)
-    );
-}
-
-void action1(Event* evt)
-{
-    Context* ctx = evt->ctx;
-
-    UIToast toast = {0};
-    UIToastInit(&toast, "Entered (4, 8) square", 2000);
-    UIAppendToast(&ctx->ui, toast);
-}
-
 static void AddToInventory(const Item* item)
 {
     if(!strcmp("key", item->id)) {
@@ -128,7 +109,7 @@ static void AddToInventory(const Item* item)
     }
 }
 
-#define TOUCH_DISTANCE 0.8f
+#define TOUCH_DISTANCE 1.0f
 static bool PlayerTouchingSprite(const Player* player, const Sprite* sprite)
 {
     if (!player || !sprite) return false;
@@ -164,6 +145,27 @@ bool PickItemTrigger(Event* evt)
 
 void PickItemAction(Event* evt)
 {
-    // Since the picking-up is happening in the trigger we can do nothing here
+    // Since the picking-up is happening 
+    // in the trigger we can do nothing here
     InventoryPrint(INV);
+}
+
+
+void DoorTooltipAction(Event* evt)
+{
+    Context* ctx = evt->ctx;
+
+    UIToast toast = {0};
+    UIToastInit(&toast, "Press [E] to unlock", 2000);
+    UIAppendToast(&ctx->ui, toast);
+}
+
+void DoorKeyAction(Event* evt)
+{
+    Context* ctx = evt->ctx;
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+    if (keys[SDL_SCANCODE_E]) {
+        ctx->level.next = true;
+    }
 }

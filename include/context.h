@@ -62,6 +62,9 @@ typedef struct {
 
     // Level
     struct {
+        int index;
+        bool next;
+
         Player* player;
         int** map;
         size_t map_width;
@@ -115,6 +118,7 @@ void ProcessEvents(Context* ctx);
 void RemoveEntity(Context* ctx, const Entity* entity);
 void RemoveItem(Context* ctx, const Item* item);
 void ItemsIdle(Context* ctx, float elapsedTime);
+void FreeLevel(Context* ctx);
 
 // Sound
 int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms);

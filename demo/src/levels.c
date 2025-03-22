@@ -20,14 +20,23 @@ static void GivePaths(Context* ctx)
 
 }
 
+void Level0(Context* ctx)
+{
+    LoadLevelMap(ctx, "levels/0.lvl");
+
+    AppendItem(ctx, ITEM_KEY(10, 10));
+
+    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
+    AppendEvent(ctx, EventNew(ctx, false, 300, Door0Trigger, DoorTooltipAction));
+    AppendEvent(ctx, EventNew(ctx, false, 100, Door0Trigger, DoorKeyAction));
+}
+
 void Level1(Context* ctx)
 {
     LoadLevelMap(ctx, "levels/1.lvl");
     
     AppendSprite(ctx, SPRITE_COLUMN(9, 9));
 }
-
-// Trigger once the player enters the (4,8) square
 
 void Level2(Context* ctx)
 {
@@ -39,12 +48,14 @@ void Level2(Context* ctx)
 
     // AppendEntity(ctx, ENTITY_EYE(14, 3));
 
-    AppendItem(ctx, ITEM_GLASSES(13, 10));
     AppendItem(ctx, ITEM_KEY(10, 10));
+    AppendItem(ctx, ITEM_GLASSES(13, 10));
 
-    AppendEvent(ctx, EventNew(ctx, true, 1000, trigger1, action1));
     AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
     AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction));
+    AppendEvent(ctx, EventNew(ctx, false, 300, Door2Trigger, DoorTooltipAction));
+    AppendEvent(ctx, EventNew(ctx, false, 100, Door2Trigger, DoorKeyAction));
+
     
     GivePaths(ctx);
 }

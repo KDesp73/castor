@@ -126,6 +126,14 @@ void FreeEvents(Context* ctx)
     }
 }
 
+void FreeLevel(Context* ctx)
+{
+    FreeSprites(ctx);
+    MapFree(ctx->level.map, ctx->level.map_height);
+    FreeEntities(ctx);
+    FreeEvents(ctx);
+    FreeItems(ctx);
+}
 
 
 void LoadLevelMap(Context* ctx, const char* path)
@@ -235,6 +243,7 @@ void ProcessEvents(Context* ctx)
 
     for(size_t i = 0; i < ctx->level.event_count; i++) {
         Event* ev = ctx->level.events[i];
+        if(!ev) continue;
 
         if (now - ev->last_processed >= ev->cooldown) {
             EventProcess(ev);
@@ -332,7 +341,7 @@ static float PseudoRandomValue(uintptr_t seed)
     return (float)(seed % 1000) / 1000.0f;
 }
 
-void ItemsIdle(Context* ctx, float elapsedTime)
+void ItemsIdle(Context* ctx, float deltaTime)
 {
     float baseAmplitude = 1.0f;
     float baseSpeed = 2.0f;
@@ -345,7 +354,7 @@ void ItemsIdle(Context* ctx, float elapsedTime)
             float speed = baseSpeed * (0.75f + 0.5f * PseudoRandomValue(seed + 1234));
             float phase = 2.0f * M_PI * PseudoRandomValue(seed + 5678);
 
-            float offset = sinf(elapsedTime * speed + phase) * amplitude;
+            float offset = sinf(deltaTime * speed + phase) * amplitude;
             item->sprite->z = item->baseZ + offset;
         }
     }

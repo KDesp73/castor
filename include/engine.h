@@ -15,7 +15,12 @@
 
 #define FRAME_DELAY ((float)1000/TARGET_FPS)
 
-#define FPS_START(ctx) ctx->engine.frame_start = SDL_GetTicks()
+#define FPS_START(ctx) \
+    Uint32 currentTicks = SDL_GetTicks(); \
+    float deltaTime = (currentTicks - ctx->engine.frame_start) / 1000.0f; \
+    if (deltaTime > 0.05f) deltaTime = 0.05f; /* Cap at 50ms (20 FPS min) */ \
+    ctx->engine.frame_start = currentTicks;
+
 
 #define FPS_END(ctx) \
     ctx->engine.frame_time = SDL_GetTicks() - ctx->engine.frame_start; \

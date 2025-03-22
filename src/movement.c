@@ -4,102 +4,88 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_stdinc.h>
 
-void MoveFront(Context* ctx)
+void MoveFront(Context* ctx, float deltaTime)
 {
     float moveX = cos(ctx->level.player->angleX * M_PI / 180.0);
     float moveY = sin(ctx->level.player->angleX * M_PI / 180.0);
-    
-    // Normalize the vector
-    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
-    moveX /= length;  // Normalize
-    moveY /= length;  // Normalize
 
-    // Scale by speed
-    moveX *= ctx->level.player->speed;
-    moveY *= ctx->level.player->speed;
+    float length = sqrt(moveX * moveX + moveY * moveY);
+    moveX /= length;
+    moveY /= length;
 
-    // Check for collision and move if no collision
+    moveX *= ctx->level.player->speed * deltaTime;
+    moveY *= ctx->level.player->speed * deltaTime;
+
     if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveBack(Context* ctx)
+void MoveBack(Context* ctx, float deltaTime)
 {
     float moveX = cos(ctx->level.player->angleX * M_PI / 180.0) * -1;
     float moveY = sin(ctx->level.player->angleX * M_PI / 180.0) * -1;
 
-    // Normalize the vector
-    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
-    moveX /= length;  // Normalize
-    moveY /= length;  // Normalize
+    float length = sqrt(moveX * moveX + moveY * moveY);
+    moveX /= length;
+    moveY /= length;
 
-    // Scale by speed
-    moveX *= ctx->level.player->speed;
-    moveY *= ctx->level.player->speed;
+    moveX *= ctx->level.player->speed * deltaTime;
+    moveY *= ctx->level.player->speed * deltaTime;
 
-    // Check for collision and move if no collision
     if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveLeft(Context* ctx)
+void MoveLeft(Context* ctx, float deltaTime)
 {
-    // Calculate the perpendicular direction (90 degrees counterclockwise)
     float moveX = cos((ctx->level.player->angleX - 90) * M_PI / 180.0);
     float moveY = sin((ctx->level.player->angleX - 90) * M_PI / 180.0);
 
-    // Normalize the vector
-    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
-    moveX /= length;  // Normalize
-    moveY /= length;  // Normalize
+    float length = sqrt(moveX * moveX + moveY * moveY);
+    moveX /= length;
+    moveY /= length;
 
-    // Scale by speed
-    moveX *= ctx->level.player->speed;
-    moveY *= ctx->level.player->speed;
+    moveX *= ctx->level.player->speed * deltaTime;
+    moveY *= ctx->level.player->speed * deltaTime;
 
-    // Check for collision and move if no collision
     if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveRight(Context* ctx)
+void MoveRight(Context* ctx, float deltaTime)
 {
-    // Calculate the perpendicular direction (90 degrees clockwise)
     float moveX = cos((ctx->level.player->angleX + 90) * M_PI / 180.0);
     float moveY = sin((ctx->level.player->angleX + 90) * M_PI / 180.0);
 
-    // Normalize the vector
-    float length = sqrt(moveX * moveX + moveY * moveY);  // Length of the vector
-    moveX /= length;  // Normalize
-    moveY /= length;  // Normalize
+    float length = sqrt(moveX * moveX + moveY * moveY);
+    moveX /= length;
+    moveY /= length;
 
-    // Scale by speed
-    moveX *= ctx->level.player->speed;
-    moveY *= ctx->level.player->speed;
+    moveX *= ctx->level.player->speed * deltaTime;
+    moveY *= ctx->level.player->speed * deltaTime;
 
-    // Check for collision and move if no collision
     if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void RotateX(Context* ctx, double delta)
+void RotateX(Context* ctx, double delta, float deltaTime)
 {
-    ctx->level.player->angleX += delta;
+    ctx->level.player->angleX += delta * deltaTime;
     if (ctx->level.player->angleX >= 360) ctx->level.player->angleX -= 360;
 }
 
 #define ANGLE_Y_CUTOFF 100
-void RotateY(Context *ctx, double delta)
+void RotateY(Context *ctx, double delta, float deltaTime)
 {
-    ctx->level.player->angleY -= delta;
+    ctx->level.player->angleY -= delta * deltaTime;
 
     if (ctx->level.player->angleY < -ANGLE_Y_CUTOFF)
         ctx->level.player->angleY = -ANGLE_Y_CUTOFF;
@@ -158,60 +144,4 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
     }
 
     return false;  // No collision
-}
-
-#define IF_PRESSED_RETURN(key) \
-    if (keys[key]) return key 
-
-
-Uint8 HandleInput(Context* ctx)
-{
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-    // Lock the cursor in the center of the screen
-    SDL_ShowCursor(SDL_FALSE); // Hide the cursor
-    SDL_SetRelativeMouseMode(SDL_TRUE); // Make the mouse movement relative to the window
-
-    int xrel, yrel;
-    SDL_GetRelativeMouseState(&xrel, &yrel);
-
-    if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity);
-    }
-
-    if (yrel != 0) {
-        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity + 0.15)); // More sensitivity on the y-axis
-    }
-
-    if (keys[SDL_SCANCODE_W]) {
-        MoveFront(ctx);
-    }
-    if (keys[SDL_SCANCODE_S]) {
-        MoveBack(ctx);
-    }
-    if(keys[SDL_SCANCODE_A]) {
-        MoveLeft(ctx);
-    }
-    if(keys[SDL_SCANCODE_D]) {
-        MoveRight(ctx);
-    }
-
-#define ANGLE_DELTA 2.5
-    if(keys[SDL_SCANCODE_UP]) {
-        RotateY(ctx, ANGLE_DELTA * 2);
-    }
-    if(keys[SDL_SCANCODE_DOWN]) {
-        RotateY(ctx, -ANGLE_DELTA * 2);
-    }
-    if(keys[SDL_SCANCODE_LEFT]) {
-        RotateX(ctx, -ANGLE_DELTA);
-    }
-    if(keys[SDL_SCANCODE_RIGHT]) {
-        RotateX(ctx, ANGLE_DELTA);
-    }
-
-    for(size_t i = 4; i < 83; i++)
-        IF_PRESSED_RETURN(i);
-
-    return 0;
 }

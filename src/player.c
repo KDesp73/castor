@@ -2,20 +2,21 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void PlayerInit(Player* player, double speed, double angle, double x, double y)
+void PlayerInit(Player* player, double speed, double angleDelta, double angle, double x, double y)
 {
     player->speed = speed;
+    player->angleDelta = angleDelta;
     player->angleX = angle;
     player->angleY = 0;
     player->X = x;
     player->Y = y;
 }
 
-Player* PlayerNew(double speed, double angle, double x, double y)
+Player* PlayerNew(double speed, double angleDelta, double angle, double x, double y)
 {
     Player* result = (Player*) malloc(sizeof(Player));
 
-    PlayerInit(result, speed, angle, x, y);
+    PlayerInit(result, speed, angleDelta, angle, x, y);
 
     return result;
 }
