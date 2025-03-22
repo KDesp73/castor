@@ -8,6 +8,8 @@ int SpriteCmp(const void* a, const void* b)
     const Sprite* spriteA = *(const Sprite**)a;
     const Sprite* spriteB = *(const Sprite**)b;
 
+    if(!spriteA || !spriteB) return 0;
+
     if (spriteA->distance < spriteB->distance) return 1; // Farther comes first
     if (spriteA->distance > spriteB->distance) return -1; // Closer comes last
     return 0;

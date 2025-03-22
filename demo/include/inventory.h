@@ -12,5 +12,6 @@ typedef struct {
 extern Inventory INV;
 
 void InventoryPrint(Inventory inv);
+static inline void InventoryClear() { INV = (Inventory){0}; }
 
 #endif // INVENTORY_H

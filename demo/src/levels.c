@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "event.h"
 #include "events.h"
+#include "inventory.h"
 #include "map.h"
 #include "sprite.h"
 #include "objects.h"
@@ -22,6 +23,7 @@ static void GivePaths(Context* ctx)
 
 void Level0(Context* ctx)
 {
+    InventoryClear();
     LoadLevelMap(ctx, "levels/0.lvl");
 
     AppendItem(ctx, ITEM_KEY(10, 10));
@@ -33,13 +35,20 @@ void Level0(Context* ctx)
 
 void Level1(Context* ctx)
 {
+    InventoryClear();
     LoadLevelMap(ctx, "levels/1.lvl");
     
     AppendSprite(ctx, SPRITE_COLUMN(9, 9));
+    AppendItem(ctx, ITEM_KEY(12, 3));
+
+    AppendEvent(ctx, EventNew(ctx, false, 300, Door1Trigger, DoorTooltipAction));
+    AppendEvent(ctx, EventNew(ctx, false, 100, Door1Trigger, DoorKeyAction));
+    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
 }
 
 void Level2(Context* ctx)
 {
+    InventoryClear();
     LoadLevelMap(ctx, "levels/2.lvl");
 
     AppendSprite(ctx, SPRITE_BARREL(9, 2));
@@ -62,12 +71,14 @@ void Level2(Context* ctx)
 
 void Level3(Context* ctx)
 {
+    InventoryClear();
     LoadLevelMap(ctx, "levels/3.lvl");
     
 }
 
 void Level4(Context* ctx)
 {
+    InventoryClear();
     LoadLevelMap(ctx, "levels/4.lvl");
     
 }

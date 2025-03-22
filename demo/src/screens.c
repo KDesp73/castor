@@ -271,6 +271,7 @@ int LoadingScreen(void* context, SDL_Event* evt)
             break;
         }
 
+        if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_RETURN) return 0;
         if (UIButtonIsPressed(evt, &continueButton)) {
             return 0;
         }

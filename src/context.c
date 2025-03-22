@@ -99,6 +99,7 @@ void FreeSprites(Context* ctx)
             SpriteFree(&ctx->level.sprites[i]);
         }
     }
+    ctx->level.sprite_count = 0;
 }
 void FreeEntities(Context* ctx)
 {
@@ -107,6 +108,7 @@ void FreeEntities(Context* ctx)
             EntityFree(&ctx->level.entities[i]);
         }
     }
+    ctx->level.entity_count = 0;
 }
 void FreeItems(Context* ctx)
 {
@@ -115,6 +117,7 @@ void FreeItems(Context* ctx)
             ItemFree(&ctx->level.items[i]);
         }
     }
+    ctx->level.item_count = 0;
 }
 
 void FreeEvents(Context* ctx)
@@ -124,6 +127,7 @@ void FreeEvents(Context* ctx)
             EventFree(&ctx->level.events[i]);
         }
     }
+    ctx->level.event_count = 0;
 }
 
 void FreeLevel(Context* ctx)
@@ -202,6 +206,7 @@ int** ExportSearchMap(Context* ctx)
     // Mark sprite collisions
     for (size_t k = 0; k < ctx->level.sprite_count; k++) {
         Sprite* sprite = ctx->level.sprites[k];
+        if(!sprite) continue;
 
         if (sprite->collision) {
             int gridX = (int)floor(sprite->x);

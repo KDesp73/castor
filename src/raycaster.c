@@ -313,6 +313,7 @@ void CastSprites(SDL_Renderer* renderer, Context* ctx)
 
     for (int i = 0; i < ctx->level.sprite_count; i++) {
         Sprite* sprite = ctx->level.sprites[i];
+        if(!sprite) continue;
         double dx = sprite->x - player->X;
         double dy = sprite->y - player->Y;
         sprite->distance = dx * dx + dy * dy;
