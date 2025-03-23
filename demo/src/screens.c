@@ -289,3 +289,54 @@ int LoadingScreen(void* context, SDL_Event* evt)
 
     return result;
 }
+
+int FailScreen(void* context, SDL_Event* evt)
+{
+    Context* ctx = context;
+    SCREEN_HEADER(ctx);
+    const char* title = "You died";
+    UIFont title_font = {0};
+    UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
+    int text_w, text_h;
+    TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
+    
+    size_t centerX = (ctx->sdl.screen_width - buttonsWidth) / 2;
+    size_t padding = 20;
+    size_t btn_index = 0;
+    UIButton continueButton = {
+        BUTTON_DEFAULTS(ctx),
+        .x = centerX,
+        .y = NEXT_BUTTON_Y(ctx->sdl.screen_height, buttonsHeight, padding, btn_index++),
+        .label = "Continue"
+    };
+
+    int result = 69;
+    
+    // Handle all events
+    SDL_Event event;
+    if(!evt) evt = &event;
+    while (SDL_PollEvent(evt)) {
+        if (evt->type == SDL_QUIT) {
+            result = -1;
+            break;
+        }
+
+        if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_RETURN) return 0;
+        if (UIButtonIsPressed(evt, &continueButton)) {
+            return 0;
+        }
+    }
+    
+    SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
+    SDL_RenderClear(ctx->sdl.renderer);
+    
+    UITextRender(ctx->sdl.renderer, title, (ctx->sdl.screen_width - text_w) / 2, SCREEN_TITLE_Y(ctx->sdl.screen_height), &title_font);
+    UIButtonOnHover(evt, &continueButton);
+    UIButtonRender(ctx->sdl.renderer, &continueButton);
+
+    SDL_RenderPresent(ctx->sdl.renderer);
+    UIFontClose(&title_font);
+
+    return result;
+}
+

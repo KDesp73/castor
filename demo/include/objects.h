@@ -17,7 +17,7 @@ enum {
     EntityNew(                \
         SpriteNew(            \
             x+0.5, y+0.5,     \
-            SPRITE_DOWN,      \
+            0,                \
             SPRITE_GOBLIN,    \
             3,                \
             false             \
@@ -31,11 +31,12 @@ enum {
         MoveSmoothAStar,      \
         "goblin"              \
     )
+
 #define ENTITY_SKELETON(x, y) \
     EntityNew(                \
         SpriteNew(            \
             x+0.5, y+0.5,     \
-            SPRITE_DOWN,      \
+            0,                \
             SPRITE_SKELETON,  \
             3,                \
             false             \
@@ -49,11 +50,12 @@ enum {
         MoveSmoothAStar,      \
         "skeleton"            \
     )
+
 #define ENTITY_MUSHROOM(x, y) \
     EntityNew(                \
         SpriteNew(            \
             x+0.5, y+0.5,     \
-            SPRITE_DOWN,      \
+            0,                \
             SPRITE_MUSHROOM,  \
             3,                \
             false             \
@@ -67,11 +69,12 @@ enum {
         MoveSmoothAStar,      \
         "mushroom"            \
     )
+
 #define ENTITY_EYE(x, y)      \
     EntityNew(                \
         SpriteNew(            \
             x+0.5, y+0.5,     \
-            SPRITE_DOWN,      \
+            0,                \
             SPRITE_EYE,       \
             3,                \
             false             \

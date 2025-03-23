@@ -67,6 +67,12 @@ float EntityTakeDamage(Entity* e, size_t damage)
     return damageTaken;
 }
 
+#define BASE_DAMAGE 20
+float EntityDealDamage(const Entity* e)
+{
+    return e->strength * BASE_DAMAGE;
+}
+
 #include <stdio.h>
 #include <math.h>
 

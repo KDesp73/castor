@@ -47,3 +47,9 @@ void PlayerLoad(Player* player, Player stored)
     player->speed = stored.speed;
 }
 
+void PlayerPlace(Player* player, double x, double y, double angle)
+{
+    player->X = x;
+    player->Y = y;
+    player->angleX = angle;
+}

@@ -9,6 +9,9 @@
 bool PlayerAttackTrigger(Event* evt);
 void PlayerAttackAction(Event* evt);
 
+bool EnemyAttackTrigger(Event* evt);
+void EnemyAttackAction(Event* evt);
+
 bool PickItemTrigger(Event* evt);
 void PickItemAction(Event* evt);
 

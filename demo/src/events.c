@@ -1,5 +1,7 @@
 #include "events.h"
 #include "context.h"
+#include "entity.h"
+#include "game_player.h"
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "player.h"
@@ -167,5 +169,40 @@ void DoorKeyAction(Event* evt)
 
     if (keys[SDL_SCANCODE_E]) {
         ctx->level.next = true;
+    }
+}
+
+bool EnemyAttackTrigger(Event* evt)
+{
+    Context* ctx = evt->ctx;
+    Player* player = ctx->level.player;
+
+    // Iterate through entities to apply damage
+    for (size_t i = 0; i < ctx->level.entity_count; ++i) {
+        Entity* entity = ctx->level.entities[i];
+
+        if (entity == NULL || entity->sprite == NULL) {
+            continue; // Skip invalid entities or entities without sprites
+        }
+
+        // Check if the player is in attack range of the entity
+        if (player->X >= entity->sprite->x - MIN_STOP_DISTANCE && player->X <= entity->sprite->x + MIN_STOP_DISTANCE &&
+            player->Y >= entity->sprite->y - MIN_STOP_DISTANCE && player->Y <= entity->sprite->y + MIN_STOP_DISTANCE) {
+
+            float damage = EntityDealDamage(entity);
+            PLR.health -= damage;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void EnemyAttackAction(Event* evt)
+{
+    Context* ctx = evt->ctx;
+    if(PLR.health <= 0) {
+        ctx->level.fail = true;
     }
 }

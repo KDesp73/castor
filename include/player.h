@@ -13,6 +13,7 @@ Player* PlayerNew(double speed, double angleDelta, double angle, double x, doubl
 void PlayerFree(Player** player);
 
 Player PlayerStore(const Player* player);
+void PlayerPlace(Player* player, double x, double y, double angle);
 void PlayerLoad(Player* player, Player stored);
 
 #endif // PLAYER_H

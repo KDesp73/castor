@@ -64,6 +64,7 @@ typedef struct {
     struct {
         int index;
         bool next;
+        bool fail;
 
         Player* player;
         int** map;
