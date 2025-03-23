@@ -45,7 +45,6 @@ void RemoveItem(Context* ctx, const Item* item)
     assert(item);
 
     size_t index = item->index;
-    printf("Removing item '%s' from index: %zu\n", item->id, index);
     if (index >= ctx->level.item_count) {
         fprintf(stderr, "Error: Invalid item index!\n");
         return;
@@ -57,12 +56,10 @@ void RemoveItem(Context* ctx, const Item* item)
     ItemFree(&ctx->level.items[index]);
 
     for (size_t i = index; i < ctx->level.item_count - 1; i++) {
-        if (ctx->level.items[i + 1]) {
-            ctx->level.items[i] = ctx->level.items[i + 1];
+        ctx->level.items[i] = ctx->level.items[i + 1];
+
+        if(ctx->level.items[i])
             ctx->level.items[i]->index = i;
-        } else {
-            ctx->level.items[i] = NULL;
-        }
     }
 
     ctx->level.items[ctx->level.item_count - 1] = NULL;

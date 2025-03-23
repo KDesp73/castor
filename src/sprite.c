@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int SpriteCmp(const void* a, const void* b)
 {
@@ -15,7 +16,7 @@ int SpriteCmp(const void* a, const void* b)
     return 0;
 }
 
-Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision)
+Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id)
 {
     assert(textureId >= 0);
 
@@ -32,6 +33,7 @@ Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool
     s->scale = scale;
     s->collision = collision;
     s->index = -1;
+    strncpy(s->id, id, 16);
 
     return s;
 }

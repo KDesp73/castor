@@ -135,6 +135,7 @@ static bool CheckItemPickup(Context* ctx)
             AddToInventory(item);
             RemoveItem(ctx, item);
             picked_up = true;
+            break;
         }
     }
     return picked_up;
@@ -151,7 +152,6 @@ void PickItemAction(Event* evt)
 {
     // Since the picking-up is happening 
     // in the trigger we can do nothing here
-    InventoryPrint(INV);
 }
 
 

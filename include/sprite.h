@@ -21,9 +21,10 @@ typedef struct {
     bool collision;
     bool is_animation;
     size_t index;
+    char id[16];
 } Sprite;
 
-Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision);
+Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id);
 void SpriteFree(Sprite** s);
 
 int SpriteCmp(const void* a, const void* b);

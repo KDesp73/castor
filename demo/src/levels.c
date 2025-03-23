@@ -50,6 +50,8 @@ void Level0(Context* ctx)
     PlayerPlace(ctx->level.player, 4, 6, 65);
 
     AppendItem(ctx, ITEM_KEY(10, 10));
+    AppendItem(ctx, ITEM_SWORD(5, 10));
+    AppendItem(ctx, ITEM_GLASSES(10, 5));
 
     AppendEvent(ctx, EventNew(ctx, false, 300, Door0Trigger, DoorTooltipAction));
     AppendEvent(ctx, EventNew(ctx, false, 100, Door0Trigger, DoorKeyAction));

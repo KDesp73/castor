@@ -21,7 +21,8 @@ enum {
             0,                \
             SPRITE_GOBLIN,    \
             3,                \
-            false             \
+            false,            \
+            "s_goblin" \
         ),                    \
         6.0f,                 \
         100,                  \
@@ -40,7 +41,8 @@ enum {
             0,                \
             SPRITE_SKELETON,  \
             3,                \
-            false             \
+            false,            \
+            "s_skeleton" \
         ),                    \
         7.0f,                 \
         100,                  \
@@ -59,7 +61,8 @@ enum {
             0,                \
             SPRITE_MUSHROOM,  \
             3,                \
-            false             \
+            false,            \
+            "s_mushroom" \
         ),                    \
         3.0f,                 \
         100,                  \
@@ -78,7 +81,8 @@ enum {
             0,                \
             SPRITE_EYE,       \
             3,                \
-            false             \
+            false,            \
+            "s_eye" \
             ),                \
         5.0f,                 \
         100,                  \
@@ -96,7 +100,8 @@ enum {
         SPRITE_MIDDLE,        \
         SPRITE_COLUMN,        \
         2,                    \
-        true                  \
+        true,                 \
+        "s_column" \
     )
 #define SPRITE_LAMP(x, y)     \
     SpriteNew(                \
@@ -104,7 +109,8 @@ enum {
         SPRITE_UP,            \
         SPRITE_LAMP,          \
         2,                    \
-        false                 \
+        false,                \
+        "s_lamp" \
     )
 #define SPRITE_BARREL(x, y)   \
     SpriteNew(                \
@@ -112,7 +118,8 @@ enum {
         SPRITE_DOWN,          \
         SPRITE_BARREL,        \
         2,                    \
-        true                  \
+        true,                 \
+        "s_barrel" \
     )
 
 #define ITEM_KEY(x, y)        \
@@ -122,7 +129,8 @@ enum {
             -7,               \
             SPRITE_KEY,       \
             0.5,              \
-            false             \
+            false,            \
+            "s_key" \
         ),                    \
         "key"                 \
     )
@@ -134,7 +142,8 @@ enum {
             -7,               \
             SPRITE_GLASSES,   \
             0.5,              \
-            false             \
+            false,            \
+            "s_glasses" \
         ),                    \
         "glasses"             \
     )
@@ -146,7 +155,8 @@ enum {
             -7,               \
             SPRITE_SWORD,   \
             0.5,              \
-            false             \
+            false,            \
+            "s_sword" \
         ),                    \
         "sword"             \
     )

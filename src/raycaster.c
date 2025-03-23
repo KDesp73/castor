@@ -1,5 +1,6 @@
 #include "raycaster.h"
 #include "context.h"
+#include "sprite.h"
 #include "ui.h"
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_render.h>
@@ -7,6 +8,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 
 static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, float rayY)
@@ -311,18 +313,21 @@ void CastSprites(SDL_Renderer* renderer, Context* ctx)
     double planeX = -dirY * tan(ctx->settings.fov * M_PI / 360.0);
     double planeY = dirX * tan(ctx->settings.fov * M_PI / 360.0);
 
+    Sprite* list[ctx->level.sprite_count];
+    memcpy(list, ctx->level.sprites, ctx->level.sprite_count * sizeof(Sprite*));
+
     for (int i = 0; i < ctx->level.sprite_count; i++) {
-        Sprite* sprite = ctx->level.sprites[i];
+        Sprite* sprite = list[i];
         if(!sprite) continue;
         double dx = sprite->x - player->X;
         double dy = sprite->y - player->Y;
         sprite->distance = dx * dx + dy * dy;
     }
 
-    qsort(ctx->level.sprites, ctx->level.sprite_count, sizeof(Sprite*), SpriteCmp);
+    qsort(list, ctx->level.sprite_count, sizeof(Sprite*), SpriteCmp);
 
     for (int i = 0; i < ctx->level.sprite_count; i++) {
-        Sprite* sprite = ctx->level.sprites[i];
+        Sprite* sprite = list[i];
         if(!renderSprite(ctx, *sprite, dirX, dirY, planeX, planeY)) continue;
     }
 }
