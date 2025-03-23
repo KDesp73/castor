@@ -1,11 +1,10 @@
-#include "cli.h"
-#include "game_player.h"
-#include "settings.h"
 #define TARGET_FPS 60
 
 #include "animation.h"
+#include "cli.h"
 #include "context.h"
 #include "engine.h"
+#include "game_player.h"
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "level.h"
@@ -14,6 +13,7 @@
 #include "player.h"
 #include "raycaster.h"
 #include "screens.h"
+#include "settings.h"
 #include "ui.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_clipboard.h>
@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <time.h>
 
-Uint8 HandleInput(Context* ctx, float elapsedTime);
+Uint8 HandleInput(Context* ctx, float deltaTime);
 void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
 void HandleLevelTransition(Context* ctx, SDL_Event* event);
 void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime);
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
     return EngineMain(argc, argv);
 }
 
-Uint8 HandleInput(Context* ctx, float elapsedTime)
+Uint8 HandleInput(Context* ctx, float deltaTime)
 {
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     SDL_ShowCursor(SDL_FALSE);
@@ -129,37 +129,37 @@ Uint8 HandleInput(Context* ctx, float elapsedTime)
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
     if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * 100, elapsedTime);
+        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * 100, deltaTime);
     }
 
     if (yrel != 0) {
-        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity*100 + 0.15), elapsedTime);
+        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity*100 + 0.15), deltaTime);
     }
 
     if (keys[SDL_SCANCODE_W]) {
-        MoveFront(ctx, elapsedTime);
+        MoveFront(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_S]) {
-        MoveBack(ctx, elapsedTime);
+        MoveBack(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_A]) {
-        MoveLeft(ctx, elapsedTime);
+        MoveLeft(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_D]) {
-        MoveRight(ctx, elapsedTime);
+        MoveRight(ctx, deltaTime);
     }
 
     if (keys[SDL_SCANCODE_UP]) {
-        RotateY(ctx, ctx->level.player->angleDelta, elapsedTime);
+        RotateY(ctx, ctx->level.player->angleDelta, deltaTime);
     }
     if (keys[SDL_SCANCODE_DOWN]) {
-        RotateY(ctx, -ctx->level.player->angleDelta * 2, elapsedTime);
+        RotateY(ctx, -ctx->level.player->angleDelta * 2, deltaTime);
     }
     if (keys[SDL_SCANCODE_LEFT]) {
-        RotateX(ctx, -ctx->level.player->angleDelta, elapsedTime);
+        RotateX(ctx, -ctx->level.player->angleDelta, deltaTime);
     }
     if (keys[SDL_SCANCODE_RIGHT]) {
-        RotateX(ctx, ctx->level.player->angleDelta, elapsedTime);
+        RotateX(ctx, ctx->level.player->angleDelta, deltaTime);
     }
 
     // For debugging

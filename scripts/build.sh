@@ -11,6 +11,8 @@ build() {
 
 build "builder"
 build "demo"
+build "launcher"
 
 mv ./builder/lvl .
 mv ./demo/game .
+mv ./launcher/launch .
