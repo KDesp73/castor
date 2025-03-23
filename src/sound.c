@@ -19,7 +19,7 @@ static int PlaySoundThread(void* data)
 
     Mix_Chunk* sound = Mix_LoadWAV(soundData->file);
     if (!sound) {
-        printf("Failed to load sound! SDL_mixer Error: %s\n", Mix_GetError());
+        fprintf(stderr, "Failed to load sound! SDL_mixer Error: %s\n", Mix_GetError());
         free(soundData);
         return 1;
     }
@@ -28,7 +28,7 @@ static int PlaySoundThread(void* data)
 
     int channel = Mix_PlayChannel(-1, sound, 0);
     if (channel == -1) {
-        printf("Failed to play sound! SDL_mixer Error: %s\n", Mix_GetError());
+        fprintf(stderr, "Failed to play sound! SDL_mixer Error: %s\n", Mix_GetError());
         Mix_FreeChunk(sound);
         free(soundData);
         return 1;
@@ -58,7 +58,7 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
 
     SoundThreadData* data = (SoundThreadData*)malloc(sizeof(SoundThreadData));
     if (!data) {
-        printf("Failed to allocate memory for sound data!\n");
+        fprintf(stderr, "Failed to allocate memory for sound data!\n");
         return -1;
     }
 
@@ -70,7 +70,7 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
     // Create the thread and pass the struct pointer as the argument
     SDL_Thread* thread = SDL_CreateThread(PlaySoundThread, "SoundThread", data);
     if (!thread) {
-        printf("Failed to create thread! SDL Error: %s\n", SDL_GetError());
+        fprintf(stderr, "Failed to create thread! SDL Error: %s\n", SDL_GetError());
         free(data);  // Free the allocated memory if thread creation fails
         return -1;
     }

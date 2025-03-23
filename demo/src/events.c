@@ -11,61 +11,52 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define ATTACK_RANGE 3.5f
+#define ATTACK_RANGE 4.0f
 #define FACE_THRESHOLD 0.8f
 #define FLOATP(x) printf(#x ": %f\n", x);
 
 static bool PlayerIsAttacking(Player* player, Context* ctx)
 {
-    bool attacking = false;
+    // Check if attack button is pressed (space or left mouse button)
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[SDL_SCANCODE_SPACE]) {
-        attacking = true;
-    }
-
     Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
-    if ((mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-        attacking = true;
+    bool attacking = keys[SDL_SCANCODE_SPACE] || (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT));
+
+    if (!attacking) {
+        return false;
     }
 
-    if(!attacking) return false;
+    // Calculate player direction vector based on angle
+    float dirX = cosf(player->angleX * M_PI / 180.0f);
+    float dirY = sinf(player->angleX * M_PI / 180.0f);
 
-    // Normalize player direction vector
-    float playerDirLength = sqrtf(player->angleX * player->angleX + player->angleY * player->angleY);
-    if (playerDirLength == 0) return false; // Avoid division by zero
-    float normAngleX = player->angleX / playerDirLength;
-    float normAngleY = player->angleY / playerDirLength;
-    FLOATP(normAngleY);
-
-    // Iterate through entities to check if within range and facing the player
+    // Iterate through entities
     for (size_t i = 0; i < ctx->level.entity_count; ++i) {
         Entity* entity = ctx->level.entities[i];
 
-        if (entity == NULL || entity->sprite == NULL) {
-            continue; // Skip invalid entities or entities without sprites
-        }
+        if (!entity || !entity->sprite) continue;
 
-        // Calculate distance to the entity
+        // Compute vector from player to entity
         float dx = entity->sprite->x - player->X;
         float dy = entity->sprite->y - player->Y;
         float distance = sqrtf(dx * dx + dy * dy);
-        if (distance > ATTACK_RANGE) {
-            continue; // Skip if the entity is too far
-        }
 
-        // Normalize entity direction
-        dx /= distance;
-        dy /= distance;
+        if (distance > ATTACK_RANGE) continue; // Entity too far
 
-        // Dot product to check if facing the entity
-        float dot = dx * normAngleX + dy * normAngleY;
-        FLOATP(dot);
+        // Normalize direction to entity
+        float normDx = dx / distance;
+        float normDy = dy / distance;
+
+        // Dot product to see if entity is in front
+        float dot = dirX * normDx + dirY * normDy;
+
+        // Face threshold (cosine of the angle difference, e.g., 0.7 means ~45 degrees cone)
         if (dot > FACE_THRESHOLD) {
-            return true; // Player is attacking this entity
+            return true; // Attacking an entity within range & facing
         }
     }
 
-    return false; // No entities were attacked
+    return false;
 }
 
 bool PlayerAttackTrigger(Event* evt)
@@ -212,7 +203,22 @@ bool EnemyAttackTrigger(Event* evt)
 void EnemyAttackAction(Event* evt)
 {
     Context* ctx = evt->ctx;
+    PlaySound(ctx, "./assets/sounds/grunt.mp3", 50, 1000);
     if(PLR.health <= 0) {
         ctx->level.fail = true;
     }
+}
+
+bool GlitchTrigger(Event* evt)
+{
+    if(!INV.glasses) return false;
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    if (!keys[SDL_SCANCODE_X]) return false;
+
+    return true;
+}
+
+void GlitchAction(Event* evt)
+{
+    printf("GLITCH\n");    
 }

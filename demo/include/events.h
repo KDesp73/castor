@@ -15,6 +15,9 @@ void EnemyAttackAction(Event* evt);
 bool PickItemTrigger(Event* evt);
 void PickItemAction(Event* evt);
 
+bool GlitchTrigger(Event* evt);
+void GlitchAction(Event* evt);
+
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
     static inline bool Door##num##Trigger(Event* evt)          \
     {                                                          \

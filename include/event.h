@@ -9,11 +9,13 @@
 typedef struct Event{
     bool (*trigger)(struct Event* self);
     void (*action)(struct Event* self);
-    void* ctx;
+    void* ctx; // Reference to the global context
+    void* state; // Reference to a user-defined context
     bool trigger_once;
     bool triggered;
     Uint32 cooldown;
     Uint32 last_processed;
+    int index;
 } Event;
 
 typedef bool (*EventTrigger)(struct Event* self);

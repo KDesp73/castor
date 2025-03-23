@@ -40,7 +40,14 @@ static void GivePaths(Context* ctx)
     do { \
         AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction)); \
-        AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 2000, EnemyAttackTrigger, EnemyAttackAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 100, GlitchTrigger, GlitchAction)); \
+    } while(0)
+
+#define LEVEL_DOOR_EVENTS(index) \
+    do { \
+        AppendEvent(ctx, EventNew(ctx, false, 300, Door##index##Trigger, DoorTooltipAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 100, Door##index##Trigger, DoorKeyAction)); \
     } while(0)
 
 void Level0(Context* ctx)
@@ -53,8 +60,7 @@ void Level0(Context* ctx)
     AppendItem(ctx, ITEM_SWORD(5, 10));
     AppendItem(ctx, ITEM_GLASSES(10, 5));
 
-    AppendEvent(ctx, EventNew(ctx, false, 300, Door0Trigger, DoorTooltipAction));
-    AppendEvent(ctx, EventNew(ctx, false, 100, Door0Trigger, DoorKeyAction));
+    LEVEL_DOOR_EVENTS(0);
 
     LEVEL_COMMON_EVENTS();
 
@@ -72,8 +78,7 @@ void Level1(Context* ctx)
     AppendItem(ctx, ITEM_KEY(12, 3));
     AppendItem(ctx, ITEM_SWORD(2, 8));
 
-    AppendEvent(ctx, EventNew(ctx, false, 300, Door1Trigger, DoorTooltipAction));
-    AppendEvent(ctx, EventNew(ctx, false, 100, Door1Trigger, DoorKeyAction));
+    LEVEL_DOOR_EVENTS(1);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
@@ -92,10 +97,9 @@ void Level2(Context* ctx)
     AppendEntity(ctx, ENTITY_EYE(14, 3));
 
     AppendItem(ctx, ITEM_KEY(10, 10));
-    AppendItem(ctx, ITEM_GLASSES(13, 10));
+    AppendItem(ctx, ITEM_SWORD(13, 10));
 
-    AppendEvent(ctx, EventNew(ctx, false, 300, Door2Trigger, DoorTooltipAction));
-    AppendEvent(ctx, EventNew(ctx, false, 100, Door2Trigger, DoorKeyAction));
+    LEVEL_DOOR_EVENTS(2);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
@@ -109,8 +113,7 @@ void Level3(Context* ctx)
 
     AppendItem(ctx, ITEM_KEY(5, 13));
 
-    AppendEvent(ctx, EventNew(ctx, false, 300, Door3Trigger, DoorTooltipAction));
-    AppendEvent(ctx, EventNew(ctx, false, 100, Door3Trigger, DoorKeyAction));
+    LEVEL_DOOR_EVENTS(3);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
