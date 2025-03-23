@@ -86,6 +86,7 @@ typedef struct {
 
     // Sound
     struct {
+        int volume;
         #define MAX_SOUND_THREADS 32
         SoundThread threads[MAX_SOUND_THREADS];
         size_t thread_count;

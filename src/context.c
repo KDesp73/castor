@@ -23,6 +23,8 @@ void ContextInit(Context* ctx)
 
     ctx->settings.enable_fog = true;
     ctx->settings.fog_distance = 10;
+
+    ctx->sound.volume = 50;
 }
 
 void ContextFree(Context* ctx)

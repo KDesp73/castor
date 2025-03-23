@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Displaying sword as a weapon when equipped
 - Adding on-screen sprites once items are equipped
 - Hints between levels
 

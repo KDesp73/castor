@@ -120,6 +120,7 @@ void setup(Context* ctx)
     ctx->settings.mouse_sensitivity = 0.3;
     ctx->settings.fullscreen = false;
     ctx->level.index = args.level;
+    ctx->sound.volume = 70;
 
     LoadLevel(ctx, Level(ctx->level.index));
     SetFullscreen(ctx, args.fullscreen);
@@ -201,7 +202,7 @@ void RenderFrame(Context* ctx)
     }
 
     RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
-    RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 30, 100, 20, PLR.health, PLR.maxHealth);
+    RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 45, 150, 30, PLR.health, PLR.maxHealth);
     RenderDamageNumbers(ctx);
     UIRender(&ctx->ui, ctx);
 

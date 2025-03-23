@@ -89,7 +89,7 @@ void PlayerAttackAction(Event* evt)
             // Apply damage and play sound
             float damage = EntityTakeDamage(entity, 30);
             AddDamageNumber(ctx, entity->sprite->x, entity->sprite->y, damage);
-            PlaySound(ctx, "./assets/sounds/sword-hit.mp3", 20, 200);
+            PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
 
             // If the entity is dead, remove it
             if (entity->health <= 0) {
@@ -203,7 +203,7 @@ bool EnemyAttackTrigger(Event* evt)
 void EnemyAttackAction(Event* evt)
 {
     Context* ctx = evt->ctx;
-    PlaySound(ctx, "./assets/sounds/grunt.mp3", 50, 1000);
+    PlaySound(ctx, "./assets/sounds/grunt.mp3", ctx->sound.volume, 1000);
     if(PLR.health <= 0) {
         ctx->level.fail = true;
     }
