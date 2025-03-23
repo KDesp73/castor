@@ -2,10 +2,12 @@
 #define ENGINE_H
 
 #include "context.h"
+#include "level.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
+#include <time.h>
 
 // NOTE: The macros below are used to set an upper limit on the FPS
 
@@ -40,5 +42,32 @@
 
 bool EngineInit(Context* ctx);
 void EngineClose(Context* ctx);
+
+// Defined by the developer
+extern void loop(Context* ctx);
+extern void setup(Context* ctx);
+
+static inline int EngineMain(int argc, char** argv)
+{
+    srand(time(NULL));
+
+    Context ctx = {0};
+    ContextInit(&ctx);
+
+    if(!EngineInit(&ctx)) {
+        EngineClose(&ctx);
+        return 1;
+    }
+
+    setup(&ctx);
+
+    LoadTextures(&ctx);
+
+    loop(&ctx);
+
+
+    EngineClose(&ctx);
+    return 0;
+}
 
 #endif // ENGINE_H

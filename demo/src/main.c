@@ -95,38 +95,28 @@ exit:
     FreeAnimation(&keyAnim);
 }
 
+static CliArgs args;
+
+void setup(Context* ctx)
+{
+    ctx->game_name = "RayCasting";
+    ctx->level.player = PlayerNew(10, 140, 0.0, 1.5, 1.5);
+    ctx->raycaster.texture_width = 64;
+    ctx->raycaster.texture_height = 64;
+    ctx->raycaster.floor_texture_index = 9;
+    ctx->raycaster.ceiling_texture_index = 7;
+    ctx->settings.mouse_sensitivity = 0.3;
+    ctx->settings.fullscreen = false;
+    ctx->level.index = args.level;
+
+    LoadLevel(ctx, Level(ctx->level.index));
+    SetFullscreen(ctx, args.fullscreen);
+}
+
 int main(int argc, char** argv)
 {
-    CliArgs args = ParseCliArgs(argc, argv);
-
-    srand(time(NULL));
-
-    Context ctx = {0};
-    ContextInit(&ctx);
-    ctx.game_name = "RayCasting";
-    ctx.level.player = PlayerNew(10, 140, 0.0, 1.5, 1.5);
-    ctx.raycaster.texture_width = 64;
-    ctx.raycaster.texture_height = 64;
-    ctx.raycaster.floor_texture_index = 9;
-    ctx.raycaster.ceiling_texture_index = 7;
-    ctx.settings.mouse_sensitivity = 0.3;
-    ctx.settings.fullscreen = false;
-    ctx.level.index = args.level;
-
-    if(!EngineInit(&ctx)) {
-        EngineClose(&ctx);
-        return 1;
-    }
-    LoadTextures(&ctx);
-
-    LoadLevel(&ctx, Level(ctx.level.index));
-    SetFullscreen(&ctx, args.fullscreen);
-
-    loop(&ctx);
-
-    printf("Closing...\n");
-    EngineClose(&ctx);
-    return 0;
+    args = ParseCliArgs(argc, argv);
+    return EngineMain(argc, argv);
 }
 
 Uint8 HandleInput(Context* ctx, float elapsedTime)
@@ -198,6 +188,7 @@ void RenderFrame(Context* ctx, Animation* keyAnim)
     SDL_RenderPresent(ctx->sdl.renderer);
 }
 
+// NOTE: Debugging method. Remove
 void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime)
 {
     if (key == SDL_SCANCODE_R) {
@@ -213,6 +204,8 @@ void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaT
         snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X, ctx->level.player->Y);
         printf("%s\n", buffer);
         SDL_SetClipboardText(buffer);
+    } else if(key == SDL_SCANCODE_K) {
+        INV.key = true;
     }
 }
 
@@ -247,7 +240,6 @@ void HandleEvent(Context* ctx, SDL_Event* event, bool* paused)
 
 void HandleLevelTransition(Context* ctx, SDL_Event* event)
 {
-    printf("Loading level %d...\n", ctx->level.index);
     FreeLevel(ctx);
     ctx->level.index++;
     LoadLevel(ctx, Level(ctx->level.index));
@@ -262,5 +254,4 @@ void HandleLevelFail(Context* ctx, SDL_Event* event)
 
     UI_POLL_SCREEN(FailScreen, ctx, event);
     ctx->level.fail = false;
-
 }
