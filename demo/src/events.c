@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define ATTACK_RANGE 4.0f
+#define ATTACK_RANGE 5.0f
 #define FACE_THRESHOLD 0.8f
 #define FLOATP(x) printf(#x ": %f\n", x);
 

@@ -188,6 +188,18 @@ void RenderFrame(Context* ctx)
 
     CastWalls(ctx->sdl.renderer, ctx);
     CastSprites(ctx->sdl.renderer, ctx);
+    
+    if(INV.sword) {
+        const Uint8 *keys = SDL_GetKeyboardState(NULL);
+        Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+        bool attacking = keys[SDL_SCANCODE_SPACE] || (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT));
+
+        if(!attacking)
+            RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 200, ctx->sdl.screen_height - 350, 0);
+        else
+            RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 300, ctx->sdl.screen_height - 150, -35);
+    }
+
     RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
     RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 30, 100, 20, PLR.health, PLR.maxHealth);
     RenderDamageNumbers(ctx);

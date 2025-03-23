@@ -34,6 +34,23 @@ void RenderImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y
     SDL_RenderCopy(renderer, image->texture, &srcRect, &dstRect);
 }
 
+void RenderRotatedImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y, double angle)
+{
+    SDL_Rect destRect = { x, y, image->w * scale, image->h * scale };
+
+    SDL_Point center = { image->w / 2, image->h / 2 };
+
+    SDL_RenderCopyEx(
+        renderer,        // Renderer
+        image->texture,  // Texture
+        NULL,            // Source rect (NULL = full texture)
+        &destRect,       // Destination rect
+        angle,           // Rotation angle in degrees (clockwise)
+        &center,         // Center of rotation (can be NULL = top-left)
+        SDL_FLIP_NONE    // No flipping
+    );
+}
+
 void FreeImage(Image* image)
 {
     if (image->texture) {

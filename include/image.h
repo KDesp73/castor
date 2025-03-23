@@ -8,6 +8,7 @@ typedef struct {
 } Image;
 Image LoadImage(SDL_Renderer* renderer, const char* path);
 void RenderImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y);
+void RenderRotatedImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y, double angle);
 void FreeImage(Image* image);
 
 
