@@ -1,4 +1,6 @@
+#include "cli.h"
 #include "game_player.h"
+#include "settings.h"
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -100,7 +102,6 @@ void RenderFrame(Context* ctx, Animation* keyAnim)
     UIRender(&ctx->ui, ctx);
 
     if (INV.key) {
-        UpdateAnimation(keyAnim, SDL_GetTicks());
         RenderAnimation(ctx->sdl.renderer, keyAnim, 10, 10, keyAnim->currentFrame);
     }
 
@@ -148,6 +149,7 @@ void loop(Context* ctx)
             ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
 
             UpdateDamageNumbers(ctx);
+            if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
 
             EVERY_MS(soundCleanupTimer, 15000, {
                 CleanupThreads(ctx);
@@ -165,6 +167,8 @@ exit:
 
 int main(int argc, char** argv)
 {
+    CliArgs args = ParseCliArgs(argc, argv);
+
     srand(time(NULL));
 
     Context ctx = {0};
@@ -177,7 +181,7 @@ int main(int argc, char** argv)
     ctx.raycaster.ceiling_texture_index = 7;
     ctx.settings.mouse_sensitivity = 0.3;
     ctx.settings.fullscreen = false;
-    ctx.level.index = 0;
+    ctx.level.index = args.level;
 
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);
@@ -186,7 +190,7 @@ int main(int argc, char** argv)
     LoadTextures(&ctx);
 
     LoadLevel(&ctx, Level(ctx.level.index));
-    // SetFullscreen(&ctx, true);
+    SetFullscreen(&ctx, args.fullscreen);
 
     loop(&ctx);
 

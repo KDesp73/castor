@@ -28,6 +28,7 @@ void PickItemAction(Event* evt);
 DECLARE_DOOR_TRIGGER(0, 8, 14);
 DECLARE_DOOR_TRIGGER(1, 9, 1);
 DECLARE_DOOR_TRIGGER(2, 1, 7);
+DECLARE_DOOR_TRIGGER(3, 11, 14);
 
 void DoorTooltipAction(Event* evt);
 void DoorKeyAction(Event* evt);

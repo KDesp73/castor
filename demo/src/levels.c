@@ -73,7 +73,11 @@ void Level3(Context* ctx)
 {
     InventoryClear();
     LoadLevelMap(ctx, "levels/3.lvl");
-    
+
+    AppendItem(ctx, ITEM_KEY(5, 13));
+    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
+    AppendEvent(ctx, EventNew(ctx, false, 300, Door3Trigger, DoorTooltipAction));
+    AppendEvent(ctx, EventNew(ctx, false, 100, Door3Trigger, DoorKeyAction));
 }
 
 void Level4(Context* ctx)
