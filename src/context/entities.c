@@ -11,7 +11,6 @@ void AppendEntity(Context* ctx, Entity* entity)
 
     entity->index = ctx->level.entity_count;
     ctx->level.entities[ctx->level.entity_count++] = entity;
-    printf("Appended entity '%s' at index: %zu\n", entity->id, entity->index);
 }
 
 void UpdateEntities(Context* ctx, float deltaTime)
@@ -41,7 +40,6 @@ void RemoveEntity(Context* ctx, const Entity* entity)
     assert(entity);
 
     size_t index = entity->index;
-    printf("Removing entity '%s' from index: %zu\n", entity->id, index);
     if (index >= ctx->level.entity_count) {
         fprintf(stderr, "Error: Invalid entity index!\n");
         return;
