@@ -102,7 +102,7 @@ typedef struct {
     size_t damage_number_count;
 } UI;
 void UIOpen(UI* ui, UIFont* font);
-void UIUpdate(UI* ui, void* context);
+void UIRender(UI* ui, void* context);
 void UIClose(UI* ui);
 
 void UIAppendToast(UI* ui, UIToast toast);

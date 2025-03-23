@@ -30,105 +30,130 @@
 Uint8 HandleInput(Context* ctx, float elapsedTime);
 
 
-void loop(Context* ctx) {
+void HandleEvent(Context* ctx, SDL_Event* event, bool* paused)
+{
+    if (event->type == SDL_QUIT) {
+        ctx->engine.running = false;
+    }
+
+    if (event->type == SDL_KEYDOWN && event->key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+        if (!(*paused)) {
+            *paused = true;
+            int result = UI_POLL_SCREEN(PauseScreen, ctx, event);
+
+            if (result == 0) {
+                *paused = false;
+
+                // Clear ESCAPE key press before resuming
+                SDL_Event e;
+                while (SDL_PollEvent(&e)) {
+                    if (e.type == SDL_KEYDOWN && e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                        continue;
+                    }
+                    SDL_PushEvent(&e);
+                }
+            } else if (result == -1) {
+                ctx->engine.running = false;
+            }
+        }
+    }
+}
+
+void HandleLevelTransition(Context* ctx, SDL_Event* event)
+{
+    printf("Loading level %d...\n", ctx->level.index);
+    FreeLevel(ctx);
+    ctx->level.index++;
+    LoadLevel(ctx, Level(ctx->level.index));
+    UI_POLL_SCREEN(LoadingScreen, ctx, event);
+    ctx->level.next = false;
+}
+
+void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime)
+{
+    if (key == SDL_SCANCODE_R) {
+        PlayerLoad(ctx->level.player, *stored_player);
+    } else if (key == SDL_SCANCODE_T) {
+        if (ctx->raycaster.textures_loaded) {
+            FreeTextures(ctx);
+        } else {
+            LoadTextures(ctx);
+        }
+    } else if (key == SDL_SCANCODE_C) {
+        char buffer[64];
+        snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X, ctx->level.player->Y);
+        printf("%s\n", buffer);
+        SDL_SetClipboardText(buffer);
+    }
+}
+
+void RenderFrame(Context* ctx, Animation* keyAnim)
+{
+    SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
+    SDL_RenderClear(ctx->sdl.renderer);
+
+    CastWalls(ctx->sdl.renderer, ctx);
+    CastSprites(ctx->sdl.renderer, ctx);
+    RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
+    RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 30, 100, 20, PLR.health, PLR.maxHealth);
+    RenderDamageNumbers(ctx);
+    UIRender(&ctx->ui, ctx);
+
+    if (INV.key) {
+        UpdateAnimation(keyAnim, SDL_GetTicks());
+        RenderAnimation(ctx->sdl.renderer, keyAnim, 10, 10, keyAnim->currentFrame);
+    }
+
+    SDL_RenderPresent(ctx->sdl.renderer);
+}
+
+void loop(Context* ctx)
+{
     if (!ctx || !ctx->level.player) {
         fprintf(stderr, "Error: Context or Player is NULL!\n");
         return;
     }
 
     Player stored_player = PlayerStore(ctx->level.player);
-
     SDL_Event event;
-
     static UIFont global = {0};
+
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
     UIOpen(&ctx->ui, &global);
 
     Animation keyAnim = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
 
+    // Start screen
     ctx->engine.running = false;
     if (UI_POLL_SCREEN(StartScreen, ctx, &event)) goto exit;
     ctx->engine.running = true;
 
     bool paused = false;
+
     while (ctx->engine.running) {
         FPS_START(ctx);
 
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                ctx->engine.running = false;
-            }
-            if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-                if (!paused) {
-                    paused = true;
-                    int result = UI_POLL_SCREEN(PauseScreen, ctx, &event);
-                    if (result == 0) {
-                        paused = false;
-                        SDL_Event e;
-                        while (SDL_PollEvent(&e)) {
-                            if (e.type == SDL_KEYDOWN && e.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-                                continue;
-                            }
-                            SDL_PushEvent(&e);
-                        }
-                    } else if (result == -1) {
-                        goto exit;
-                    }
-                }
-            }
+            HandleEvent(ctx, &event, &paused);
         }
 
-        if(ctx->level.next) {
-            printf("Loading level %d...\n", ctx->level.index);
-            FreeLevel(ctx);
-            ctx->level.index++;
-            LoadLevel(ctx, Level(ctx->level.index));
-            UI_POLL_SCREEN(LoadingScreen, ctx, &event);
-            ctx->level.next = false;
+        if (ctx->level.next) {
+            HandleLevelTransition(ctx, &event);
         } else if (!paused) {
             Uint8 key = HandleInput(ctx, deltaTime);
-            if (key == SDL_SCANCODE_R) {
-                PlayerLoad(ctx->level.player, stored_player);
-            } else if (key == SDL_SCANCODE_T) {
-                if (ctx->raycaster.textures_loaded) {
-                    FreeTextures(ctx);
-                } else {
-                    LoadTextures(ctx);
-                }
-            } else if (key == SDL_SCANCODE_C) {
-                char buffer[64];
-                snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X, ctx->level.player->Y);
-                printf("%s\n", buffer);
-                SDL_SetClipboardText(buffer);
-            }
-
-            SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
-            SDL_RenderClear(ctx->sdl.renderer);
-
-            // CastFloorAndCeiling(ctx->sdl.renderer, ctx);
-            CastWalls(ctx->sdl.renderer, ctx);
-            CastSprites(ctx->sdl.renderer, ctx);
-            RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
-            RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 30, 100, 20, PLR.health, PLR.maxHealth);
+            HandleKeyInput(ctx, key, &stored_player, deltaTime);
 
             UpdateEntities(ctx, deltaTime);
             ProcessEvents(ctx);
-            UIUpdate(&ctx->ui, ctx);
             ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
 
             UpdateDamageNumbers(ctx);
-            RenderDamageNumbers(ctx);
 
             EVERY_MS(soundCleanupTimer, 15000, {
                 CleanupThreads(ctx);
             });
 
-            if (INV.key) {
-                UpdateAnimation(&keyAnim, SDL_GetTicks());
-                RenderAnimation(ctx->sdl.renderer, &keyAnim, 10, 10, keyAnim.currentFrame);
-            }
-
-            SDL_RenderPresent(ctx->sdl.renderer);
+            RenderFrame(ctx, &keyAnim);
         }
 
         FPS_END(ctx);

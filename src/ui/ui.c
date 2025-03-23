@@ -6,7 +6,7 @@ void UIOpen(UI* ui, UIFont* font)
     ui->font = font;
 }
 
-void UIUpdate(UI* ui, void* context)
+void UIRender(UI* ui, void* context)
 {
     Context* ctx = context;
 
