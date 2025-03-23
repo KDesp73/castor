@@ -17,10 +17,18 @@
 
 static bool PlayerIsAttacking(Player* player, Context* ctx)
 {
-    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
-    if (!(mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-        return false;
+    bool attacking = false;
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    if (keys[SDL_SCANCODE_SPACE]) {
+        attacking = true;
     }
+
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    if ((mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+        attacking = true;
+    }
+
+    if(!attacking) return false;
 
     // Normalize player direction vector
     float playerDirLength = sqrtf(player->angleX * player->angleX + player->angleY * player->angleY);
@@ -160,7 +168,7 @@ void DoorTooltipAction(Event* evt)
     Context* ctx = evt->ctx;
 
     UIToast toast = {0};
-    UIToastInit(&toast, "Press [E] to unlock", 2000);
+    UIToastInit(&toast, "Press [E] to unlock", 2000, ctx->sdl.screen_width - 270, ctx->sdl.screen_height - 160);
     UIAppendToast(&ctx->ui, toast);
 }
 

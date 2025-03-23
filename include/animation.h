@@ -13,7 +13,7 @@ typedef struct {
 } Animation;
 
 Animation LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameWidth, int frameHeight, Uint32 rate);
-void RenderAnimation(SDL_Renderer *renderer, Animation *anim, int x, int y, int frameIndex);
+void RenderAnimation(SDL_Renderer *renderer, Animation *anim, float scale, int x, int y, int frameIndex);
 void UpdateAnimation(Animation *anim, Uint32 currentTime);
 void FreeAnimation(Animation *anim);
 

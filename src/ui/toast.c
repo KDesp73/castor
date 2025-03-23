@@ -1,12 +1,16 @@
 #include "ui.h"
+#include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 
-void UIToastInit(UIToast *toast, const char *message, int duration_ms)
+void UIToastInit(UIToast *toast, const char *message, int duration_ms, int x, int y)
 {
     strncpy(toast->message, message, sizeof(toast->message) - 1);
     toast->duration = duration_ms;
     toast->start_time = SDL_GetTicks();
     toast->active = true;
+    toast->x = x;
+    toast->y = y;
 }
 
 #define MAX_TOAST_LINES 10
@@ -61,10 +65,8 @@ void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int scr
 
     // Compute toast box dimensions
     int padding = 10;
-    int box_w = max_width + 2 * padding;
-    int box_h = (line_height * num_lines) + 2 * padding;
-    int box_x = screen_width - box_w - 20;  // 20px from right edge
-    int box_y = screen_height - box_h - 20; // 20px from bottom edge
+    int box_x = toast->x;
+    int box_y = toast->y;
 
     // Fade-in/out effect (500ms fade time)
     Uint8 alpha = 255;

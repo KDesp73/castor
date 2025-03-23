@@ -39,12 +39,12 @@ void UpdateAnimation(Animation *anim, Uint32 currentTime)
     }
 }
 
-void RenderAnimation(SDL_Renderer *renderer, Animation *anim, int x, int y, int frameIndex)
+void RenderAnimation(SDL_Renderer *renderer, Animation *anim, float scale, int x, int y, int frameIndex)
 {
     if (!anim || !anim->texture || frameIndex >= anim->totalFrames) return;
 
     SDL_Rect srcRect = { frameIndex * anim->frameWidth, 0, anim->frameWidth, anim->frameHeight };
-    SDL_Rect dstRect = { x, y, anim->frameWidth * 2, anim->frameHeight*2 };
+    SDL_Rect dstRect = { x, y, anim->frameWidth * scale, anim->frameHeight* scale};
 
     SDL_RenderCopy(renderer, anim->texture, &srcRect, &dstRect);
     anim->currentFrame = frameIndex;

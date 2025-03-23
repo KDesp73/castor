@@ -36,7 +36,6 @@ void AppendItem(Context* ctx, Item* item)
 
     item->index = ctx->level.item_count;
     ctx->level.items[ctx->level.item_count++] = item;
-    printf("Appended item '%s' at index: %zu\n", item->id, item->index);
 }
 
 void RemoveItem(Context* ctx, const Item* item)

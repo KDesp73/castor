@@ -69,9 +69,10 @@ typedef struct {
     Uint32 duration;
     Uint32 start_time;
     bool active;
+    int x, y;
 } UIToast;
 
-void UIToastInit(UIToast *toast, const char *message, int duration_ms);
+void UIToastInit(UIToast *toast, const char *message, int duration_ms, int x, int y);
 void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int screen_width, int screen_height);
 
 /* SLIDER */

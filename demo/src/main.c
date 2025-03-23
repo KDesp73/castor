@@ -1,3 +1,4 @@
+#include "image.h"
 #include "paths.h"
 #define TARGET_FPS 60
 
@@ -37,12 +38,10 @@ void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaT
 void RenderFrame(Context* ctx);
 void HandleLevelFail(Context* ctx, SDL_Event* event);
 
-#define MAX_ANIMATIONS 16
-struct {
-    Animation items[MAX_ANIMATIONS];
-    size_t count;
-} animation_list;
-
+static Animation keyAnim;
+static Image glassesImg;
+static Image swordImg;
+static Image invSquareImg;
 
 void loop(Context* ctx)
 {
@@ -58,9 +57,10 @@ void loop(Context* ctx)
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
     UIOpen(&ctx->ui, &global);
 
-    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
-    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/textures/sword.png", 32, 32, 0);
-    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/textures/glasses.png", 32, 32, 0);
+    keyAnim      = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
+    glassesImg   = LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
+    swordImg     = LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
+    invSquareImg = LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
 
     // Start screen
     ctx->engine.running = false;
@@ -89,7 +89,7 @@ void loop(Context* ctx)
             ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
 
             UpdateDamageNumbers(ctx);
-            if(INV.key) UpdateAnimation(&animation_list.items[0], SDL_GetTicks());
+            if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
 
             EVERY_MS(soundCleanupTimer, 15000, {
                 CleanupThreads(ctx);
@@ -102,9 +102,9 @@ void loop(Context* ctx)
     }
 
 exit:
-    for(size_t i = 0; i < animation_list.count; i++) {
-        FreeAnimation(&animation_list.items[i]);
-    }
+    FreeAnimation(&keyAnim);
+    FreeImage(&glassesImg);
+    FreeImage(&swordImg);
 }
 
 static CliArgs args;
@@ -141,11 +141,11 @@ Uint8 HandleInput(Context* ctx, float deltaTime)
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
     if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * 100, deltaTime);
+        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * 50, deltaTime);
     }
 
     if (yrel != 0) {
-        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity*100 + 0.15), deltaTime);
+        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity*50 + 0.15), deltaTime);
     }
 
     if (keys[SDL_SCANCODE_W]) {
@@ -193,17 +193,29 @@ void RenderFrame(Context* ctx)
     RenderDamageNumbers(ctx);
     UIRender(&ctx->ui, ctx);
 
+    float padding = 20.0f;
+    int keyX = ctx->sdl.screen_width - 1*(2*keyAnim.frameWidth+padding);
+    int keyY = ctx->sdl.screen_height - 2*keyAnim.frameHeight - padding;
+    int swordX = ctx->sdl.screen_width - 2*(2*swordImg.w+padding);
+    int swordY = ctx->sdl.screen_height - 2*swordImg.h - padding;
+    int glassesX = ctx->sdl.screen_width - 3*(2*glassesImg.w+padding);
+    int glassesY = ctx->sdl.screen_height - 2*glassesImg.w - padding;
+
+    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, keyX-8, keyY-8);
+    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, swordX-8, swordY-8);
+    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, glassesX-8, glassesY-8);
+
     if (INV.key) {
-        Animation* keyAnim = &animation_list.items[0];
-        RenderAnimation(ctx->sdl.renderer, keyAnim, 10, 10, keyAnim->currentFrame);
+        RenderAnimation(ctx->sdl.renderer, &keyAnim, 2,
+                keyX, keyY, keyAnim.currentFrame);
     }
     if(INV.sword) {
-        Animation* swordAnim = &animation_list.items[1];
-        RenderAnimation(ctx->sdl.renderer, swordAnim, 10, 80, swordAnim->currentFrame);
+        RenderImage(ctx->sdl.renderer, &swordImg, 2,
+                swordX, swordY);
     }
     if(INV.glasses) {
-        Animation* glassesAnim = &animation_list.items[2];
-        RenderAnimation(ctx->sdl.renderer, glassesAnim, 10, 150, glassesAnim->currentFrame);
+        RenderImage(ctx->sdl.renderer, &glassesImg, 2,
+                glassesX, glassesY);
     }
 
     SDL_RenderPresent(ctx->sdl.renderer);
