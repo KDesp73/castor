@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "paths.h"
 #include "settings.h"
 #include "ui.h"
 #include <SDL2/SDL_events.h>

@@ -62,10 +62,12 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
 
 bool PlayerAttackTrigger(Event* evt)
 {
+    if(!INV.sword) return false;
+
     Context* ctx = evt->ctx;
     Player* player = ctx->level.player;
     
-    return PlayerIsAttacking(player, ctx); // Returns true if the player is attacking
+    return PlayerIsAttacking(player, ctx);
 }
 
 void PlayerAttackAction(Event* evt)

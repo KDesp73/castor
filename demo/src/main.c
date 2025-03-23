@@ -1,3 +1,4 @@
+#include "paths.h"
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -33,8 +34,15 @@ Uint8 HandleInput(Context* ctx, float deltaTime);
 void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
 void HandleLevelTransition(Context* ctx, SDL_Event* event);
 void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime);
-void RenderFrame(Context* ctx, Animation* keyAnim);
+void RenderFrame(Context* ctx);
 void HandleLevelFail(Context* ctx, SDL_Event* event);
+
+#define MAX_ANIMATIONS 16
+struct {
+    Animation items[MAX_ANIMATIONS];
+    size_t count;
+} animation_list;
+
 
 void loop(Context* ctx)
 {
@@ -50,7 +58,9 @@ void loop(Context* ctx)
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
     UIOpen(&ctx->ui, &global);
 
-    Animation keyAnim = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
+    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
+    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/textures/sword.png", 32, 32, 0);
+    animation_list.items[animation_list.count++] = LoadAnimation(ctx->sdl.renderer, "assets/textures/glasses.png", 32, 32, 0);
 
     // Start screen
     ctx->engine.running = false;
@@ -79,20 +89,22 @@ void loop(Context* ctx)
             ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
 
             UpdateDamageNumbers(ctx);
-            if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
+            if(INV.key) UpdateAnimation(&animation_list.items[0], SDL_GetTicks());
 
             EVERY_MS(soundCleanupTimer, 15000, {
                 CleanupThreads(ctx);
             });
 
-            RenderFrame(ctx, &keyAnim);
+            RenderFrame(ctx);
         }
 
         FPS_END(ctx);
     }
 
 exit:
-    FreeAnimation(&keyAnim);
+    for(size_t i = 0; i < animation_list.count; i++) {
+        FreeAnimation(&animation_list.items[i]);
+    }
 }
 
 static CliArgs args;
@@ -169,7 +181,7 @@ Uint8 HandleInput(Context* ctx, float deltaTime)
     return 0;
 }
 
-void RenderFrame(Context* ctx, Animation* keyAnim)
+void RenderFrame(Context* ctx)
 {
     SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->sdl.renderer);
@@ -182,7 +194,16 @@ void RenderFrame(Context* ctx, Animation* keyAnim)
     UIRender(&ctx->ui, ctx);
 
     if (INV.key) {
+        Animation* keyAnim = &animation_list.items[0];
         RenderAnimation(ctx->sdl.renderer, keyAnim, 10, 10, keyAnim->currentFrame);
+    }
+    if(INV.sword) {
+        Animation* swordAnim = &animation_list.items[1];
+        RenderAnimation(ctx->sdl.renderer, swordAnim, 10, 80, swordAnim->currentFrame);
+    }
+    if(INV.glasses) {
+        Animation* glassesAnim = &animation_list.items[2];
+        RenderAnimation(ctx->sdl.renderer, glassesAnim, 10, 150, glassesAnim->currentFrame);
     }
 
     SDL_RenderPresent(ctx->sdl.renderer);

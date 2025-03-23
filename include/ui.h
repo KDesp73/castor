@@ -37,7 +37,6 @@
 #define UI_COLOR_PARAMS(color) color.r, color.g, color.b, color.a
 
 /* TEXT */
-#define UI_GLOBAL_FONT "./assets/fonts/FreeMonoBold.ttf"
 
 typedef struct {
     TTF_Font* ttf;

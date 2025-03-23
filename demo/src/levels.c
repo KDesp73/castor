@@ -36,6 +36,13 @@ static void GivePaths(Context* ctx)
         GivePaths(ctx); \
     } while(0)
 
+#define LEVEL_COMMON_EVENTS() \
+    do { \
+        AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction)); \
+    } while(0)
+
 void Level0(Context* ctx)
 {
     LEVEL_HEADER("levels/0.lvl");
@@ -44,9 +51,10 @@ void Level0(Context* ctx)
 
     AppendItem(ctx, ITEM_KEY(10, 10));
 
-    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
     AppendEvent(ctx, EventNew(ctx, false, 300, Door0Trigger, DoorTooltipAction));
     AppendEvent(ctx, EventNew(ctx, false, 100, Door0Trigger, DoorKeyAction));
+
+    LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
 }
@@ -58,13 +66,13 @@ void Level1(Context* ctx)
     PlayerPlace(ctx->level.player, 4, 6, 65);
     
     AppendSprite(ctx, SPRITE_COLUMN(9, 9));
-    AppendItem(ctx, ITEM_KEY(12, 3));
     AppendEntity(ctx, ENTITY_GOBLIN(3, 5));
+    AppendItem(ctx, ITEM_KEY(12, 3));
+    AppendItem(ctx, ITEM_SWORD(2, 8));
 
     AppendEvent(ctx, EventNew(ctx, false, 300, Door1Trigger, DoorTooltipAction));
     AppendEvent(ctx, EventNew(ctx, false, 100, Door1Trigger, DoorKeyAction));
-    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
-    AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction));
+    LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
 }
@@ -84,11 +92,9 @@ void Level2(Context* ctx)
     AppendItem(ctx, ITEM_KEY(10, 10));
     AppendItem(ctx, ITEM_GLASSES(13, 10));
 
-    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
-    AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction));
     AppendEvent(ctx, EventNew(ctx, false, 300, Door2Trigger, DoorTooltipAction));
     AppendEvent(ctx, EventNew(ctx, false, 100, Door2Trigger, DoorKeyAction));
-    AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction));
+    LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
 }
@@ -100,10 +106,10 @@ void Level3(Context* ctx)
     PlayerPlace(ctx->level.player, 4, 6, 65);
 
     AppendItem(ctx, ITEM_KEY(5, 13));
-    AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction));
+
     AppendEvent(ctx, EventNew(ctx, false, 300, Door3Trigger, DoorTooltipAction));
     AppendEvent(ctx, EventNew(ctx, false, 100, Door3Trigger, DoorKeyAction));
-    AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction));
+    LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
 }
@@ -118,7 +124,7 @@ void Level4(Context* ctx)
     AppendEntity(ctx, ENTITY_SKELETON(15, 19));
     AppendEntity(ctx, ENTITY_MUSHROOM(8, 23));
 
-    AppendEvent(ctx, EventNew(ctx, false, 1500, EnemyAttackTrigger, EnemyAttackAction));
+    LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
 }
