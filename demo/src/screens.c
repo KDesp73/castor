@@ -7,6 +7,7 @@
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_timer.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static size_t buttonsWidth = 120;
 static size_t buttonsHeight = 40;
@@ -240,23 +241,41 @@ int SettingsScreen(void* context, SDL_Event* evt)
     return result;
 }
 
+
+static const char* hints[] = {
+    "Tip: Use [WASD] keys to move around.",
+    "Hint: Press [E] to interact with doors",
+    "Remember: Keep an eye on your health bar at the bottom!",
+    "Collect keys to unlock new areas!",
+    "Find a sword to defend yourself",
+    "Pause the game anytime with [ESC].",
+    "Tip: Watch out for glitching textures… they might reveal secrets!"
+};
+static int hint_index = -1;
+
 int LoadingScreen(void* context, SDL_Event* evt)
 {
+    if(hint_index == -1)
+        hint_index = rand() % (sizeof(hints) / sizeof(hints[0]));
+
     Context* ctx = context;
     SCREEN_HEADER(ctx);
-    const char* title = "Loading...";
+    const char* title = "Next level";
     UIFont title_font = {0};
     UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
-    int text_w, text_h;
-    TTF_SizeText(title_font.ttf, title, &text_w, &text_h);
-    
+    int title_w, title_h;
+    TTF_SizeText(title_font.ttf, title, &title_w, &title_h);
+    const char* hint = hints[hint_index];
+    int hint_w, hint_h;
+    TTF_SizeText(ctx->ui.font->ttf, hint, &hint_w, &hint_h);
+
+
     size_t centerX = (ctx->sdl.screen_width - buttonsWidth) / 2;
     size_t padding = 20;
-    size_t btn_index = 0;
     UIButton continueButton = {
         BUTTON_DEFAULTS(ctx),
         .x = centerX,
-        .y = NEXT_BUTTON_Y(ctx->sdl.screen_height, buttonsHeight, padding, btn_index++),
+        .y = NEXT_BUTTON_Y(ctx->sdl.screen_height, buttonsHeight, padding, 2),
         .label = "Continue"
     };
 
@@ -271,8 +290,9 @@ int LoadingScreen(void* context, SDL_Event* evt)
             break;
         }
 
-        if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_RETURN) return 0;
-        if (UIButtonIsPressed(evt, &continueButton)) {
+        if ((evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_RETURN) ||
+                UIButtonIsPressed(evt, &continueButton)) {
+            hint_index = -1;
             return 0;
         }
     }
@@ -280,7 +300,8 @@ int LoadingScreen(void* context, SDL_Event* evt)
     SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->sdl.renderer);
     
-    UITextRender(ctx->sdl.renderer, title, (ctx->sdl.screen_width - text_w) / 2, SCREEN_TITLE_Y(ctx->sdl.screen_height), &title_font);
+    UITextRender(ctx->sdl.renderer, title, (ctx->sdl.screen_width - title_w) / 2, SCREEN_TITLE_Y(ctx->sdl.screen_height), &title_font);
+    UITextRender(ctx->sdl.renderer, hint, (ctx->sdl.screen_width - hint_w) / 2, NEXT_BUTTON_Y(ctx->sdl.screen_height, buttonsHeight, padding, 0), ctx->ui.font);
     UIButtonOnHover(evt, &continueButton);
     UIButtonRender(ctx->sdl.renderer, &continueButton);
 

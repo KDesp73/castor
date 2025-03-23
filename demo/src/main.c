@@ -243,7 +243,7 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
     FreeLevel(ctx);
     ctx->level.index++;
     LoadLevel(ctx, Level(ctx->level.index));
-    UI_POLL_SCREEN(LoadingScreen, ctx, event);
+    if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) exit(1); // FIXME: Not correct way to exit
     ctx->level.next = false;
 }
 
