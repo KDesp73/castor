@@ -42,9 +42,6 @@ static void GivePaths(Context* ctx)
         AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 2000, EnemyAttackTrigger, EnemyAttackAction)); \
-        Event* glitch = EventNew(ctx, false, 30000, GlitchTrigger, GlitchAction); \
-        strcpy(glitch->id, "glitch"); \
-        AppendEvent(ctx, glitch); \
     } while(0)
 
 #define LEVEL_DOOR_EVENTS(index) \
@@ -52,6 +49,12 @@ static void GivePaths(Context* ctx)
         AppendEvent(ctx, EventNew(ctx, false, 300, Door##index##Trigger, DoorTooltipAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 100, Door##index##Trigger, DoorKeyAction)); \
     } while(0)
+
+#define LEVEL_GLITCH_EVENT(index) \
+    Event* glitch = EventNew(ctx, false, 30000, GlitchTrigger, Glitch##index##Action); \
+    strcpy(glitch->id, "glitch"); \
+    AppendEvent(ctx, glitch);
+
 
 void Level0(Context* ctx)
 {
@@ -64,8 +67,9 @@ void Level0(Context* ctx)
     AppendItem(ctx, ITEM_GLASSES(10, 5));
 
     LEVEL_DOOR_EVENTS(0);
-
+    LEVEL_GLITCH_EVENT(0);
     LEVEL_COMMON_EVENTS();
+
 
     LEVEL_FOOTER();
 }

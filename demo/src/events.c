@@ -216,7 +216,3 @@ bool GlitchTrigger(Event* evt)
     return true;
 }
 
-void GlitchAction(Event* evt)
-{
-    GlitchActivated = true;
-}

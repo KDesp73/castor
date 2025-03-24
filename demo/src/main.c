@@ -1,4 +1,6 @@
 #include "events.h"
+#include "map.h"
+#include <string.h>
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -45,6 +47,7 @@ static Image glassesImg;
 static Image swordImg;
 static Image invSquareImg;
 
+static int** mapStored;
 
 static CliArgs args;
 bool GlitchActivated = false;
@@ -67,6 +70,9 @@ void setup(Context* ctx)
     ctx->sound.volume = 70;
 
     LoadLevel(ctx, Level(ctx->level.index));
+    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
+    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+
     SetFullscreen(ctx, args.fullscreen);
     LoadTextures(ctx);
 
@@ -217,7 +223,11 @@ void RenderFrame(Context* ctx)
     Event* glitch = SearchEvent(ctx, "glitch");
     if(INV.glasses && glitch) {
         RenderGlassesCooldown(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 85, 150, 30, SDL_GetTicks() - glitch->last_processed, glitch->cooldown);
-        if(SDL_GetTicks() - glitch->last_processed >= 10000) GlitchActivated = false;
+        if(SDL_GetTicks() - glitch->last_processed >= 10000) {
+            MapCpy(mapStored, ctx->level.map, ctx->level.map_width, ctx->level.map_height);
+
+            GlitchActivated = false;
+        }
     }
     RenderDamageNumbers(ctx);
     UIRender(&ctx->ui, ctx);
@@ -296,9 +306,16 @@ void HandleEvent(Context* ctx, SDL_Event* event, bool* paused)
 
 void HandleLevelTransition(Context* ctx, SDL_Event* event)
 {
+    MapFree(mapStored, ctx->level.map_height);
+
     FreeLevel(ctx);
     ctx->level.index++;
     LoadLevel(ctx, Level(ctx->level.index));
+
+    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
+    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+
+
     if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) 
         ctx->engine.running = false;
     ctx->level.next = false;
@@ -306,8 +323,13 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
 
 void HandleLevelFail(Context* ctx, SDL_Event* event)
 {
+    MapFree(mapStored, ctx->level.map_height);
+
     FreeLevel(ctx);
     LoadLevel(ctx, Level(1));
+
+    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
+    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
 
     if(UI_POLL_SCREEN(FailScreen, ctx, event))
         ctx->engine.running = false;

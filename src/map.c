@@ -119,3 +119,19 @@ int** MapLoad(size_t* rows, size_t* cols, const char* path)
     return map;
 }
 
+void MapCpy(int** src, int** dst, size_t w, size_t h)
+{
+    if (src == NULL || dst == NULL) {
+        return;
+    }
+    
+    for (size_t y = 0; y < h; y++) {
+        if (src[y] == NULL || dst[y] == NULL) {
+            continue;
+        }
+        
+        for (size_t x = 0; x < w; x++) {
+            dst[y][x] = src[y][x];
+        }
+    }
+}

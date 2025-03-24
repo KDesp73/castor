@@ -3,6 +3,7 @@
 
 #include "context.h"
 #include "event.h"
+#include "ingame-ui.h"
 #include "inventory.h"
 #include <stdbool.h>
 
@@ -15,8 +16,20 @@ void EnemyAttackAction(Event* evt);
 bool PickItemTrigger(Event* evt);
 void PickItemAction(Event* evt);
 
+
 bool GlitchTrigger(Event* evt);
-void GlitchAction(Event* evt);
+#define DECLARE_GLITCH_ACTION(num, code) \
+    static inline void Glitch##num##Action(Event* evt) \
+    { \
+        Context* ctx = evt->ctx; \
+        GlitchActivated = true; \
+        code \
+    }
+
+DECLARE_GLITCH_ACTION(0, {
+    ctx->level.map[3][12] = 0;
+})
+
 
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
     static inline bool Door##num##Trigger(Event* evt)          \
