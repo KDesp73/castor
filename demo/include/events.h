@@ -27,7 +27,8 @@ bool GlitchTrigger(Event* evt);
     }
 
 DECLARE_GLITCH_ACTION(0, {
-    ctx->level.map[3][12] = 0;
+    ctx->level.map[5][13] = 0;
+    ctx->level.map[13][9] = 0;
 })
 
 
@@ -44,12 +45,15 @@ DECLARE_GLITCH_ACTION(0, {
     }
 
 
-DECLARE_DOOR_TRIGGER(0, 8, 14);
+DECLARE_DOOR_TRIGGER(0, 7, 14);
 DECLARE_DOOR_TRIGGER(1, 9, 1);
 DECLARE_DOOR_TRIGGER(2, 1, 7);
 DECLARE_DOOR_TRIGGER(3, 11, 14);
 
 void DoorTooltipAction(Event* evt);
 void DoorKeyAction(Event* evt);
+
+bool GlassesTipTrigger(Event* evt);
+void GlassesTipAction(Event* evt);
 
 #endif // EVENTS_H

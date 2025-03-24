@@ -22,11 +22,11 @@ void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int scr
 
     Uint32 elapsed = SDL_GetTicks() - toast->start_time;
     if (elapsed > toast->duration) {
-        toast->active = false;  // Hide toast after time expires
+        toast->active = false;
         return;
     }
 
-    int max_width = screen_width / 3; // Toast max width is half the screen
+    int max_width = screen_width / 5;
     int line_height = TTF_FontHeight(font->ttf);
 
     // Word wrapping logic

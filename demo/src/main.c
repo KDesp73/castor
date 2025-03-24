@@ -67,7 +67,7 @@ void setup(Context* ctx)
     ctx->settings.mouse_sensitivity = 0.3;
     ctx->settings.fullscreen = false;
     ctx->level.index = args.level;
-    ctx->sound.volume = 70;
+    ctx->sound.volume = 100;
 
     LoadLevel(ctx, Level(ctx->level.index));
     mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
@@ -127,6 +127,7 @@ void loop(Context* ctx)
 
         EVERY_MS(soundCleanupTimer, 15000, {
             CleanupThreads(ctx);
+            for(size_t i = 0; i < ctx->ui.toast_count; i++);
         });
 
         RenderFrame(ctx);
@@ -319,6 +320,7 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
     if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) 
         ctx->engine.running = false;
     ctx->level.next = false;
+    GlitchActivated = false;
 }
 
 void HandleLevelFail(Context* ctx, SDL_Event* event)

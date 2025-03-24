@@ -101,12 +101,12 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
             // Precise texture coordinate calculation
             float texCoordinate = CalculateTextureCoordinate(hitX, hitY, rayX, rayY);
 
-            // Ensure smooth texture mapping
-            int texX = (int)(texCoordinate * (ctx->raycaster.texture_width - 1));
+            // Ensure smooth texture mapping and flip the texture on x-axis
+            int texX = (int)((1.0 - texCoordinate) * (ctx->raycaster.texture_width - 1));
             texX = fmax(0, fmin(texX, ctx->raycaster.texture_width - 1));
 
             SDL_Rect srcRect = { 
-                texX,  // Precise X coordinate 
+                texX,  // Precise X coordinate (flipped)
                 0,     // Full texture height 
                 1,     // Single pixel width
                 ctx->raycaster.texture_height 
@@ -132,7 +132,6 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
                 case 8: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_TEAL)); break;
                 case 9: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_OLIVE)); break;
                 case 10: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BRONZE)); break;
-                // default: SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); break;
             }
             SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom); 
         }

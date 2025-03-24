@@ -31,7 +31,7 @@ void UIClose(UI* ui)
 
 void UIAppendToast(UI* ui, UIToast toast)
 {
-    if(ui->toast_count >= MAX_TOASTS) return;
+    if(ui->toast_count >= MAX_TOASTS) ui->toast_count = 0;
 
     ui->toasts[ui->toast_count++] = toast;
 }

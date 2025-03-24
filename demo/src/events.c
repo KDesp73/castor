@@ -216,3 +216,21 @@ bool GlitchTrigger(Event* evt)
     return true;
 }
 
+bool GlassesTipTrigger(Event* evt)
+{
+    Context* ctx = (evt)->ctx;                             
+    Player* player = ctx->level.player;                    
+    return (                                               
+        ((player->X) >= (1) && (player->X) < (1) + 1) && 
+        ((player->Y) >= (11) && (player->Y) < (11) + 1)    
+    );                                                     
+}
+
+void GlassesTipAction(Event* evt)
+{
+    Context* ctx = evt->ctx;
+
+    UIToast toast = {0};
+    UIToastInit(&toast, "Press [X] to activate the glasses", 5000, ctx->sdl.screen_width - 270, ctx->sdl.screen_height - 160);
+    UIAppendToast(&ctx->ui, toast);
+}

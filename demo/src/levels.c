@@ -60,15 +60,20 @@ void Level0(Context* ctx)
 {
     LEVEL_HEADER("levels/0.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 6, 65);
+    PlayerPlace(ctx->level.player, 2, 2, 0);
 
-    AppendItem(ctx, ITEM_KEY(10, 10));
-    AppendItem(ctx, ITEM_SWORD(5, 10));
-    AppendItem(ctx, ITEM_GLASSES(10, 5));
+    AppendSprite(ctx, SPRITE_LAMP(7, 8));
+    AppendSprite(ctx, SPRITE_BARREL(3, 6));
+    AppendSprite(ctx, SPRITE_BARREL(3, 7));
+    AppendSprite(ctx, SPRITE_BARREL(4, 6));
+
+    AppendItem(ctx, ITEM_KEY(12, 2));
+    AppendItem(ctx, ITEM_GLASSES(4, 14));
 
     LEVEL_DOOR_EVENTS(0);
     LEVEL_GLITCH_EVENT(0);
     LEVEL_COMMON_EVENTS();
+    AppendEvent(ctx, EventNew(ctx, false, 2000, GlassesTipTrigger, GlassesTipAction));
 
 
     LEVEL_FOOTER();
