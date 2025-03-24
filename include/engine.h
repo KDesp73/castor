@@ -30,6 +30,9 @@
         SDL_Delay(FRAME_DELAY - ctx->engine.frame_time); \
     } 
 
+#define DT(ctx) \
+    (SDL_GetTicks() - ctx->engine.frame_start) / 1000.0f
+
 #define EVERY_MS(name, interval, code)                       \
     do {                                                     \
         static Uint32 __timer_##name = 0;                    \
@@ -44,8 +47,10 @@ bool EngineInit(Context* ctx);
 void EngineClose(Context* ctx);
 
 // Defined by the developer
-extern void loop(Context* ctx);
+extern void presetup(Context* ctx);
 extern void setup(Context* ctx);
+extern void loop(Context* ctx);
+extern void cleanup(Context* ctx);
 
 static inline int EngineMain(int argc, char** argv)
 {
@@ -54,6 +59,8 @@ static inline int EngineMain(int argc, char** argv)
     Context ctx = {0};
     ContextInit(&ctx);
 
+    presetup(&ctx);
+
     if(!EngineInit(&ctx)) {
         EngineClose(&ctx);
         return 1;
@@ -61,10 +68,11 @@ static inline int EngineMain(int argc, char** argv)
 
     setup(&ctx);
 
-    LoadTextures(&ctx);
+    while (ctx.engine.running) {
+        loop(&ctx);
+    }
 
-    loop(&ctx);
-
+    cleanup(&ctx);
 
     EngineClose(&ctx);
     return 0;

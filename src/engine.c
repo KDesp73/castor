@@ -20,15 +20,15 @@ bool EngineInit(Context* ctx)
         return false;
     }
 
-    if (!ConstructRenderer(ctx)) {
-        fprintf(stderr, "Renderer initialization failed\n");
-        return false;
-    }
-
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
         SDL_Quit();
         return false;
+    }
+
+    if (!ConstructRenderer(ctx)) {
+        fprintf(stderr, "Renderer initialization failed\n");
+        return 1;
     }
 
     return true;

@@ -1,5 +1,6 @@
 #include "image.h"
 #include "paths.h"
+#include <assert.h>
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -34,7 +35,7 @@
 Uint8 HandleInput(Context* ctx, float deltaTime);
 void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
 void HandleLevelTransition(Context* ctx, SDL_Event* event);
-void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime);
+void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime);
 void RenderFrame(Context* ctx);
 void HandleLevelFail(Context* ctx, SDL_Event* event);
 
@@ -43,75 +44,16 @@ static Image glassesImg;
 static Image swordImg;
 static Image invSquareImg;
 
-void loop(Context* ctx)
-{
-    if (!ctx || !ctx->level.player) {
-        fprintf(stderr, "Error: Context or Player is NULL!\n");
-        return;
-    }
-
-    Player stored_player = PlayerStore(ctx->level.player);
-    SDL_Event event;
-    static UIFont global = {0};
-
-    UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
-    UIOpen(&ctx->ui, &global);
-
-    keyAnim      = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
-    glassesImg   = LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
-    swordImg     = LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
-    invSquareImg = LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
-
-    // Start screen
-    ctx->engine.running = false;
-    if (UI_POLL_SCREEN(StartScreen, ctx, &event)) goto exit;
-    ctx->engine.running = true;
-
-    bool paused = false;
-
-    while (ctx->engine.running) {
-        FPS_START(ctx);
-
-        while (SDL_PollEvent(&event)) {
-            HandleEvent(ctx, &event, &paused);
-        }
-
-        if (ctx->level.next) {
-            HandleLevelTransition(ctx, &event);
-        } else if (ctx->level.fail) {
-            HandleLevelFail(ctx, &event);
-        } else if (!paused) {
-            Uint8 key = HandleInput(ctx, deltaTime);
-            HandleKeyInput(ctx, key, &stored_player, deltaTime);
-
-            UpdateEntities(ctx, deltaTime);
-            ProcessEvents(ctx);
-            ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
-
-            UpdateDamageNumbers(ctx);
-            if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
-
-            EVERY_MS(soundCleanupTimer, 15000, {
-                CleanupThreads(ctx);
-            });
-
-            RenderFrame(ctx);
-        }
-
-        FPS_END(ctx);
-    }
-
-exit:
-    FreeAnimation(&keyAnim);
-    FreeImage(&glassesImg);
-    FreeImage(&swordImg);
-}
 
 static CliArgs args;
 
-void setup(Context* ctx)
+void presetup(Context* ctx)
 {
     ctx->game_name = "RayCasting";
+}
+
+void setup(Context* ctx)
+{
     ctx->level.player = PlayerNew(10, 140, 0.0, 1.5, 1.5);
     ctx->raycaster.texture_width = 64;
     ctx->raycaster.texture_height = 64;
@@ -124,6 +66,65 @@ void setup(Context* ctx)
 
     LoadLevel(ctx, Level(ctx->level.index));
     SetFullscreen(ctx, args.fullscreen);
+    LoadTextures(ctx);
+
+    static UIFont global = {0};
+    UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
+    UIOpen(&ctx->ui, &global);
+
+    keyAnim      = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
+    glassesImg   = LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
+    swordImg     = LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
+    invSquareImg = LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
+}
+
+static bool started = false;
+static bool paused = false;
+
+void loop(Context* ctx)
+{
+    FPS_START(ctx);
+
+    SDL_Event event;
+    if(!started) {
+        if (UI_POLL_SCREEN(StartScreen, ctx, &event)) ctx->engine.running = false;
+        started = true;
+    }
+
+    while (SDL_PollEvent(&event)) {
+        HandleEvent(ctx, &event, &paused);
+    }
+
+    if (ctx->level.next) {
+        HandleLevelTransition(ctx, &event);
+    } else if (ctx->level.fail) {
+        HandleLevelFail(ctx, &event);
+    } else if (!paused) {
+        Uint8 key = HandleInput(ctx, deltaTime);
+        DEBUG_HandleKeyInput(ctx, key, deltaTime);
+
+        UpdateEntities(ctx, deltaTime);
+        ProcessEvents(ctx);
+        ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
+
+        UpdateDamageNumbers(ctx);
+        if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
+
+        EVERY_MS(soundCleanupTimer, 15000, {
+            CleanupThreads(ctx);
+        });
+
+        RenderFrame(ctx);
+    }
+
+    FPS_END(ctx);
+}
+
+void cleanup(Context* ctx)
+{
+    FreeAnimation(&keyAnim);
+    FreeImage(&glassesImg);
+    FreeImage(&swordImg);
 }
 
 int main(int argc, char** argv)
@@ -235,23 +236,17 @@ void RenderFrame(Context* ctx)
 }
 
 // NOTE: Debugging method. Remove
-void HandleKeyInput(Context* ctx, Uint8 key, Player* stored_player, float deltaTime)
+void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime)
 {
-    if (key == SDL_SCANCODE_R) {
-        PlayerLoad(ctx->level.player, *stored_player);
-    } else if (key == SDL_SCANCODE_T) {
-        if (ctx->raycaster.textures_loaded) {
-            FreeTextures(ctx);
-        } else {
-            LoadTextures(ctx);
-        }
-    } else if (key == SDL_SCANCODE_C) {
+    if (key == SDL_SCANCODE_C) {
         char buffer[64];
         snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X, ctx->level.player->Y);
         printf("%s\n", buffer);
         SDL_SetClipboardText(buffer);
     } else if(key == SDL_SCANCODE_K) {
         INV.key = true;
+    } else if(key == SDL_SCANCODE_N) {
+        ctx->level.next = true;
     }
 }
 
@@ -289,7 +284,8 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
     FreeLevel(ctx);
     ctx->level.index++;
     LoadLevel(ctx, Level(ctx->level.index));
-    if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) exit(1); // FIXME: Not correct way to exit
+    if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) 
+        ctx->engine.running = false;
     ctx->level.next = false;
 }
 
@@ -298,6 +294,7 @@ void HandleLevelFail(Context* ctx, SDL_Event* event)
     FreeLevel(ctx);
     LoadLevel(ctx, Level(1));
 
-    UI_POLL_SCREEN(FailScreen, ctx, event);
+    if(UI_POLL_SCREEN(FailScreen, ctx, event))
+        ctx->engine.running = false;
     ctx->level.fail = false;
 }
