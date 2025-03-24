@@ -142,3 +142,27 @@ void RenderHealthBar(SDL_Renderer* renderer, int x, int y, int width, int height
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &bgRect);
 }
+
+void RenderGlassesCooldown(SDL_Renderer* renderer, int x, int y, int width, int height, int currentCooldown, int maxCooldown)
+{
+    // Clamp health values
+    if (currentCooldown < 0) currentCooldown = 0;
+    if (currentCooldown > maxCooldown) currentCooldown = maxCooldown;
+
+    // Background (black)
+    SDL_Rect bgRect = { x, y, width, height };
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Cooldown bar (red)
+    float cooldownPercent = (float)currentCooldown / (float)maxCooldown;
+    int cooldownWidth = (int)(width * cooldownPercent);
+
+    SDL_Rect cooldownRect = { x, y, cooldownWidth, height };
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+    SDL_RenderFillRect(renderer, &cooldownRect);
+
+    // Optional: Border (white)
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &bgRect);
+}

@@ -117,6 +117,7 @@ void AppendEvent(Context* ctx, Event* evt);
 int** ExportSearchMap(Context* ctx);
 void UpdateEntities(Context* ctx, float deltaTime);
 void ProcessEvents(Context* ctx);
+Event* SearchEvent(Context* ctx, const char* id);
 void RemoveEntity(Context* ctx, const Entity* entity);
 void RemoveItem(Context* ctx, const Item* item);
 void ItemsIdle(Context* ctx, float elapsedTime);

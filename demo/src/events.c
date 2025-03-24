@@ -5,8 +5,6 @@
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "player.h"
-#include "screens.h"
-#include "sound.h"
 #include "sprite.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -220,5 +218,5 @@ bool GlitchTrigger(Event* evt)
 
 void GlitchAction(Event* evt)
 {
-    printf("GLITCH\n");    
+    GlitchActivated = true;
 }

@@ -13,9 +13,11 @@ typedef struct Event{
     void* state; // Reference to a user-defined context
     bool trigger_once;
     bool triggered;
+    bool first_run;
     Uint32 cooldown;
     Uint32 last_processed;
     int index;
+    char id[16];
 } Event;
 
 typedef bool (*EventTrigger)(struct Event* self);

@@ -1,3 +1,4 @@
+#include "events.h"
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -46,6 +47,7 @@ static Image invSquareImg;
 
 
 static CliArgs args;
+bool GlitchActivated = false;
 
 void presetup(Context* ctx)
 {
@@ -109,6 +111,13 @@ void loop(Context* ctx)
 
         UpdateDamageNumbers(ctx);
         if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
+
+        if(GlitchActivated) {
+            FreeTextures(ctx);
+        } else {
+            if(!ctx->raycaster.textures_loaded)
+                LoadTextures(ctx);
+        }
 
         EVERY_MS(soundCleanupTimer, 15000, {
             CleanupThreads(ctx);
@@ -204,6 +213,12 @@ void RenderFrame(Context* ctx)
 
     RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
     RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 45, 150, 30, PLR.health, PLR.maxHealth);
+    
+    Event* glitch = SearchEvent(ctx, "glitch");
+    if(INV.glasses && glitch) {
+        RenderGlassesCooldown(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 85, 150, 30, SDL_GetTicks() - glitch->last_processed, glitch->cooldown);
+        if(SDL_GetTicks() - glitch->last_processed >= 10000) GlitchActivated = false;
+    }
     RenderDamageNumbers(ctx);
     UIRender(&ctx->ui, ctx);
 

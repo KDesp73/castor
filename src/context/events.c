@@ -1,4 +1,5 @@
 #include "context.h"
+#include <string.h>
 
 
 void AppendEvent(Context* ctx, Event* evt)
@@ -11,17 +12,25 @@ void AppendEvent(Context* ctx, Event* evt)
 
 void ProcessEvents(Context* ctx)
 {
-    Uint32 now = SDL_GetTicks();
-
     for(size_t i = 0; i < ctx->level.event_count; i++) {
         Event* ev = ctx->level.events[i];
         if(!ev) continue;
 
-        if (now - ev->last_processed >= ev->cooldown) {
-            EventProcess(ev);
-            ev->last_processed = now;
-        }
+        EventProcess(ev);
     }
+}
+
+Event* SearchEvent(Context* ctx, const char* id)
+{
+    for(size_t i = 0; i < ctx->level.event_count; i++) {
+        Event* ev = ctx->level.events[i];
+        if(!ev) continue;
+        if(strlen(ev->id) == 0) continue;
+
+        if(!strcmp(ev->id, id)) return ev;
+    }
+
+    return NULL;
 }
 
 void FreeEvents(Context* ctx)

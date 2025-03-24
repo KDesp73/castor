@@ -9,6 +9,7 @@
 #include "player.h"
 #include "sprite.h"
 #include "objects.h"
+#include <string.h>
 
 static void GivePaths(Context* ctx)
 {
@@ -41,7 +42,9 @@ static void GivePaths(Context* ctx)
         AppendEvent(ctx, EventNew(ctx, false, 200, PickItemTrigger, PickItemAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 300, PlayerAttackTrigger, PlayerAttackAction)); \
         AppendEvent(ctx, EventNew(ctx, false, 2000, EnemyAttackTrigger, EnemyAttackAction)); \
-        AppendEvent(ctx, EventNew(ctx, false, 100, GlitchTrigger, GlitchAction)); \
+        Event* glitch = EventNew(ctx, false, 30000, GlitchTrigger, GlitchAction); \
+        strcpy(glitch->id, "glitch"); \
+        AppendEvent(ctx, glitch); \
     } while(0)
 
 #define LEVEL_DOOR_EVENTS(index) \
