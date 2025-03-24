@@ -1,6 +1,3 @@
-#include "image.h"
-#include "paths.h"
-#include <assert.h>
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -8,11 +5,13 @@
 #include "context.h"
 #include "engine.h"
 #include "game_player.h"
+#include "image.h"
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "level.h"
 #include "levels.h"
 #include "movement.h"
+#include "paths.h"
 #include "player.h"
 #include "raycaster.h"
 #include "screens.h"
@@ -28,16 +27,17 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
 
 Uint8 HandleInput(Context* ctx, float deltaTime);
-void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
-void HandleLevelTransition(Context* ctx, SDL_Event* event);
 void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime);
-void RenderFrame(Context* ctx);
+void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
 void HandleLevelFail(Context* ctx, SDL_Event* event);
+void HandleLevelTransition(Context* ctx, SDL_Event* event);
+void RenderFrame(Context* ctx);
 
 static Animation keyAnim;
 static Image glassesImg;

@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Iinclude -Ilib/raylib/include
-LDFLAGS = -Llib/raylib/lib -l:libraylib.a -lm
+LDFLAGS = -Llib/raylib/lib -l:libraylib.a -lm -lGL -lpthread -ldl -lrt -lX11
 
 # Directories
 SRC_DIR = src
