@@ -66,6 +66,8 @@ void setup(Context* ctx)
     ctx->raycaster.ceiling_texture_index = 7;
     ctx->settings.mouse_sensitivity = 0.3;
     ctx->settings.fullscreen = false;
+    ctx->settings.mouse_sensitivity = 0.20;
+    ctx->settings.render_distance = 30.0f;
     ctx->level.index = args.level;
     ctx->sound.volume = 100;
 
@@ -328,7 +330,7 @@ void HandleLevelFail(Context* ctx, SDL_Event* event)
     MapFree(mapStored, ctx->level.map_height);
 
     FreeLevel(ctx);
-    LoadLevel(ctx, Level(1));
+    LoadLevel(ctx, Level(0));
 
     mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
     MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);

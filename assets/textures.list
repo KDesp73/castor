@@ -7,7 +7,9 @@
 ./assets/textures/greystone.png
 ./assets/textures/wood.png
 ./assets/textures/door.png
-./assets/textures/test.png
-./assets/textures/glasses-tip.png
-./assets/textures/trust-noone.png
-./assets/textures/empty-board.png
+./assets/textures/bars.png
+./assets/textures/board-glasses-tip.png
+./assets/textures/board-trust-noone.png
+./assets/textures/board-remember.png
+./assets/textures/board-defend-yourself.png
+./assets/textures/board-empty.png

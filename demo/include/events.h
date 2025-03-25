@@ -31,6 +31,10 @@ DECLARE_GLITCH_ACTION(0, {
     ctx->level.map[13][9] = 0;
 })
 
+DECLARE_GLITCH_ACTION(1, {
+    ctx->level.map[17][11] = 0;
+    ctx->level.map[17][12] = 0;
+})
 
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
     static inline bool Door##num##Trigger(Event* evt)          \
@@ -46,7 +50,7 @@ DECLARE_GLITCH_ACTION(0, {
 
 
 DECLARE_DOOR_TRIGGER(0, 7, 14);
-DECLARE_DOOR_TRIGGER(1, 9, 1);
+DECLARE_DOOR_TRIGGER(1, 6, 3);
 DECLARE_DOOR_TRIGGER(2, 1, 7);
 DECLARE_DOOR_TRIGGER(3, 11, 14);
 

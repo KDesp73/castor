@@ -26,7 +26,7 @@ void UIToastRender(SDL_Renderer *renderer, UIFont *font, UIToast *toast, int scr
         return;
     }
 
-    int max_width = screen_width / 5;
+    int max_width = 256;
     int line_height = TTF_FontHeight(font->ttf);
 
     // Word wrapping logic

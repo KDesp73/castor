@@ -66,6 +66,7 @@ void Level0(Context* ctx)
     AppendSprite(ctx, SPRITE_BARREL(3, 6));
     AppendSprite(ctx, SPRITE_BARREL(3, 7));
     AppendSprite(ctx, SPRITE_BARREL(4, 6));
+    AppendSprite(ctx, SPRITE_COLUMN(13, 14));
 
     AppendItem(ctx, ITEM_KEY(12, 2));
     AppendItem(ctx, ITEM_GLASSES(4, 14));
@@ -83,14 +84,19 @@ void Level1(Context* ctx)
 {
     LEVEL_HEADER("levels/1.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 6, 65);
+    PlayerPlace(ctx->level.player, 12, 12, 90);
+
+    AppendSprite(ctx, SPRITE_LAMP(11.5, 11.5));
+
+    AppendItem(ctx, ITEM_SWORD(9, 12));
+    AppendItem(ctx, ITEM_GLASSES(18, 2));
+    AppendItem(ctx, ITEM_KEY(8, 16));
     
-    AppendSprite(ctx, SPRITE_COLUMN(9, 9));
-    AppendEntity(ctx, ENTITY_GOBLIN(3, 5));
-    AppendItem(ctx, ITEM_KEY(12, 3));
-    AppendItem(ctx, ITEM_SWORD(2, 8));
+    // AppendEntity(ctx, ENTITY_GOBLIN(6, 22));
+    // AppendEntity(ctx, ENTITY_MUSHROOM(20, 19));
 
     LEVEL_DOOR_EVENTS(1);
+    LEVEL_GLITCH_EVENT(1);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();

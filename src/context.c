@@ -17,8 +17,8 @@ void ContextInit(Context* ctx)
     ctx->sdl.screen_height = DEFAULT_SCREEN_HEIGHT;
     ctx->raycaster.texture_width = 64;
     ctx->raycaster.texture_height = 64;
-    ctx->settings.mouse_sensitivity = 0.25;
     ctx->settings.mouse_inverted = true;
+    ctx->settings.mouse_sensitivity = 0.25;
     ctx->settings.render_distance = 20.0f;
 
     ctx->settings.enable_fog = true;
