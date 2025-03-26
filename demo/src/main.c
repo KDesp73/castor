@@ -50,6 +50,7 @@ static int** mapStored;
 
 static CliArgs args;
 bool GlitchActivated = false;
+Particle particles[NUM_PARTICLES];
 
 void presetup(Context* ctx)
 {
@@ -85,6 +86,8 @@ void setup(Context* ctx)
     glassesImg   = LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
     swordImg     = LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
     invSquareImg = LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
+
+    initParticles(ctx);
 }
 
 static bool started = false;
@@ -125,6 +128,8 @@ void loop(Context* ctx)
             if(!ctx->raycaster.textures_loaded)
                 LoadTextures(ctx);
         }
+
+        if(ctx->level.index == 5) updateParticles(ctx);
 
         EVERY_MS(soundCleanupTimer, 15000, {
             CleanupThreads(ctx);
@@ -260,6 +265,8 @@ void RenderFrame(Context* ctx)
         RenderImage(ctx->sdl.renderer, &glassesImg, 2,
                 glassesX, glassesY);
     }
+
+    if(ctx->level.index == 5) renderParticles(ctx->sdl.renderer);
 
     SDL_RenderPresent(ctx->sdl.renderer);
 }

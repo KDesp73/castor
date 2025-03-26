@@ -11,6 +11,26 @@ void RenderCrosshair(SDL_Renderer* renderer, int screen_width, int screen_height
 void RenderHealthBar(SDL_Renderer* renderer, int x, int y, int width, int height, int currentHealth, int maxHealth);
 void RenderGlassesCooldown(SDL_Renderer* renderer, int x, int y, int width, int height, int currentCooldown, int maxCooldown);
 
+#define NUM_PARTICLES 200
+#define RECT_WIDTH 10   // Width of the confetti rectangles
+#define RECT_HEIGHT 5   // Height of the confetti rectangles
+
+typedef struct {
+    float x, y;        // Position
+    float vx, vy;      // Velocity
+    SDL_Color color;   // Color of the particle
+    int lifetime;      // Remaining lifetime of the particle
+    int width, height; // Width and height of the rectangle
+} Particle;
+
+extern Particle particles[NUM_PARTICLES];
+
+
+void initParticles(Context* ctx);
+void updateParticles(Context* ctx);
+void renderParticles(SDL_Renderer *renderer);
+
+
 extern bool GlitchActivated;
 
 #endif // IN_GAME_UI_H

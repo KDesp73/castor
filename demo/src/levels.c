@@ -152,7 +152,6 @@ void Level4(Context* ctx)
     AppendSprite(ctx, SPRITE_BARREL(23, 18));
     AppendSprite(ctx, SPRITE_BARREL(24, 17));
     AppendSprite(ctx, SPRITE_BARREL(23, 17));
-    AppendSprite(ctx, SPRITE_COLUMN(16, 3));
     AppendSprite(ctx, SPRITE_COLUMN(3, 13));
     AppendSprite(ctx, SPRITE_LAMP(27, 1));
     AppendSprite(ctx, SPRITE_LAMP(14, 22));

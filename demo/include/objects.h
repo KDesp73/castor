@@ -29,10 +29,10 @@ enum {
         100,                  \
         0.9,                  \
         0.9,                  \
-        4,                    \
+        6,                    \
         1.0f,                 \
         MoveSmoothAStar,      \
-        "grimm"              \
+        "grimm"               \
     )
 
 #define ENTITY_GOBLIN(x, y)   \

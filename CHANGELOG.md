@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Level 2 completed
+- Level 3 completed
+- Level 4 completed
+- Credits completed
 - Implemented launcher
 - Glitch mechanic
 - Level 0 completed
@@ -18,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Loop function called repeatedly
+
+### Fixed
+
+- Attack bug
 
 
 ## [0.6.0] - 2025-03-24 

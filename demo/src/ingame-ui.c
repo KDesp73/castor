@@ -1,4 +1,5 @@
 #include "context.h"
+#include <time.h>
 #include "ingame-ui.h"
 
 void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage)
@@ -14,7 +15,7 @@ void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage)
     dn.vx = (rand() % 10 - 5) / 10.0f; // small random horizontal drift
     dn.vy = -0.5f; // constant upward speed
 
-    dn.damage = damage;
+    dn.damage = -damage;
     dn.angle = (rand() % 360); // random rotation angle
     dn.scale = 2.0f + (rand() % 50) / 100.0f; // scale between 2.0 and 2.5
     dn.spawn_time = SDL_GetTicks();
@@ -165,4 +166,54 @@ void RenderGlassesCooldown(SDL_Renderer* renderer, int x, int y, int width, int 
     // Optional: Border (white)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &bgRect);
+}
+
+void initParticles(Context* ctx) {
+    srand(time(NULL));
+    for (int i = 0; i < NUM_PARTICLES; i++) {
+        particles[i].x = rand() % ctx->sdl.screen_width;
+        particles[i].y = 0;
+        particles[i].vx = (rand() % 100 - 50) / 10.0f;
+        particles[i].vy = (rand() % 10 + 5) / 2.0f;
+        particles[i].lifetime = rand() % 50 + 50;
+        particles[i].color.r = rand() % 256;
+        particles[i].color.g = rand() % 256;
+        particles[i].color.b = rand() % 256;
+        particles[i].color.a = 255;
+        particles[i].width = RECT_WIDTH;
+        particles[i].height = RECT_HEIGHT;
+    }
+}
+
+void updateParticles(Context* ctx) {
+    for (int i = 0; i < NUM_PARTICLES; i++) {
+        particles[i].x += particles[i].vx;
+        particles[i].y += particles[i].vy;
+
+        particles[i].vy += 0.05f;  // Gravity effect
+
+        particles[i].lifetime--;
+        
+        // Reset particle when it goes out of screen or lifetime is over
+        if (particles[i].y > ctx->sdl.screen_height || particles[i].lifetime <= 0) {
+            particles[i].x = rand() % ctx->sdl.screen_width;
+            particles[i].y = 0;
+            particles[i].vx = (rand() % 100 - 50) / 10.0f;
+            particles[i].vy = (rand() % 10 + 5) / 2.0f;
+            particles[i].lifetime = rand() % 50 + 50;
+        }
+    }
+}
+
+void renderParticles(SDL_Renderer *renderer) {
+    SDL_Rect rect;
+    for (int i = 0; i < NUM_PARTICLES; i++) {
+        rect.x = (int)particles[i].x;
+        rect.y = (int)particles[i].y;
+        rect.w = particles[i].width;
+        rect.h = particles[i].height;
+
+        SDL_SetRenderDrawColor(renderer, particles[i].color.r, particles[i].color.g, particles[i].color.b, 255);
+        SDL_RenderFillRect(renderer, &rect);
+    }
 }
