@@ -52,8 +52,10 @@ all: check_tools $(BUILD_DIR) static shared ## Build the project
 
 .PHONY: check_tools
 check_tools: ## Check if necessary tools are available
-	@command -v gcc >/dev/null 2>&1 || { echo >&2 "[ERRO] gcc is not installed."; exit 1; }
-	@command -v bear >/dev/null 2>&1 || { echo >&2 "[WARN] bear is not installed. Skipping compile_commands.json target."; }
+	@./scripts/check_deps.sh -s
+	@./scripts/check_deps.sh -s -m ./demo/Makefile
+	@./scripts/check_deps.sh -s -m ./launcher/Makefile
+	@./scripts/check_deps.sh -s -m ./builder/Makefile
 
 $(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
