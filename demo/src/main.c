@@ -337,6 +337,7 @@ void HandleLevelFail(Context* ctx, SDL_Event* event)
 
     FreeLevel(ctx);
     LoadLevel(ctx, Level(0));
+    ctx->level.index = 0;
 
     mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
     MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);

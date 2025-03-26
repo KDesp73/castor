@@ -147,18 +147,40 @@ void Level4(Context* ctx)
 
     PlayerPlace(ctx->level.player, 4, 3, 0);
 
+    AppendSprite(ctx, SPRITE_BARREL(6, 4));
+    AppendSprite(ctx, SPRITE_BARREL(19, 6));
+    AppendSprite(ctx, SPRITE_BARREL(23, 18));
+    AppendSprite(ctx, SPRITE_BARREL(24, 17));
+    AppendSprite(ctx, SPRITE_BARREL(23, 17));
+    AppendSprite(ctx, SPRITE_COLUMN(16, 3));
+    AppendSprite(ctx, SPRITE_COLUMN(3, 13));
+    AppendSprite(ctx, SPRITE_LAMP(27, 1));
+    AppendSprite(ctx, SPRITE_LAMP(14, 22));
+
     AppendItem(ctx, ITEM_GLASSES(5, 13));
     AppendItem(ctx, ITEM_SWORD(7, 2));
     AppendItem(ctx, ITEM_KEY(1, 30));
 
-    // AppendEntity(ctx, ENTITY_SKELETON(1, 2));
-    // AppendEntity(ctx, ENTITY_SKELETON(15, 19));
+    AppendEntity(ctx, ENTITY_GOBLIN(18, 11));
+    AppendEntity(ctx, ENTITY_EYE(11, 21));
+    AppendEntity(ctx, ENTITY_EYE(4, 6));
+    AppendEntity(ctx, ENTITY_SKELETON(28, 8));
+    AppendEntity(ctx, ENTITY_SKELETON(17, 3));
     AppendEntity(ctx, ENTITY_MUSHROOM(11, 3));
 
     LEVEL_DOOR_EVENTS(4);
     LEVEL_GLITCH_EVENT(4);
     LEVEL_COMMON_EVENTS();
+    AppendEvent(ctx, EventNew(ctx, false, 100, TeleportTrigger, TeleportAction));
 
     LEVEL_FOOTER();
 }
 
+void Level5(Context* ctx)
+{
+    LEVEL_HEADER("levels/credits.lvl");
+
+    PlayerPlace(ctx->level.player, 4, 3, 0);
+
+    LEVEL_FOOTER();
+}

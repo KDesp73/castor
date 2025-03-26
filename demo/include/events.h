@@ -85,4 +85,7 @@ void DoorKeyAction(Event* evt);
 bool GlassesTipTrigger(Event* evt);
 void GlassesTipAction(Event* evt);
 
+bool TeleportTrigger(Event* evt);
+void TeleportAction(Event* evt);
+
 #endif // EVENTS_H

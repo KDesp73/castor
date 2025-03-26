@@ -82,6 +82,12 @@ void PlayerAttackAction(Event* evt)
         if (entity == NULL || entity->sprite == NULL) {
             continue;
         }
+        float dx = entity->sprite->x - player->X;
+        float dy = entity->sprite->y - player->Y;
+        float distance = sqrtf(dx * dx + dy * dy);
+
+        if (distance > ATTACK_RANGE) continue;
+
 
         // Apply damage and play sound
         float damage = calculateDamage(EntityTakeDamage(entity, 30), 5);
@@ -231,4 +237,31 @@ void GlassesTipAction(Event* evt)
     UIToast toast = {0};
     UIToastInit(&toast, "Press [X] to activate the glasses", 5000, ctx->sdl.screen_width - 270, ctx->sdl.screen_height - 160);
     UIAppendToast(&ctx->ui, toast);
+}
+
+bool TeleportTrigger(Event* evt)
+{
+    Context* ctx = evt->ctx;
+    Player* player = ctx->level.player;
+
+#define STEPPED_ON_SQUARE(_x, _y) \
+        ((player->X) >= (_x) && (player->X) < (_x) + 1) && \
+        ((player->Y) >= (_y) && (player->Y) < (_y) + 1)    
+
+    if(STEPPED_ON_SQUARE(14, 25)) return true;
+    if(STEPPED_ON_SQUARE(14, 26)) return true;
+    if(STEPPED_ON_SQUARE(14, 27)) return true;
+    if(STEPPED_ON_SQUARE(14, 28)) return true;
+    if(STEPPED_ON_SQUARE(14, 29)) return true;
+    if(STEPPED_ON_SQUARE(14, 30)) return true;
+    if(STEPPED_ON_SQUARE(14, 31)) return true;
+
+    return false;
+}
+void TeleportAction(Event* evt)
+{
+    Context* ctx = evt->ctx;
+    Player* player = ctx->level.player;
+    
+    PlayerPlace(player, 27, 27, 180);
 }
