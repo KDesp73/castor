@@ -60,6 +60,13 @@ DECLARE_GLITCH_ACTION(4, {
     ctx->level.map[28][2] = 0;
 })
 
+DECLARE_GLITCH_ACTION(5, {
+    ctx->level.map[11][17] = 0;
+    ctx->level.map[11][18] = 0;
+    ctx->level.map[12][17] = 0;
+    ctx->level.map[12][18] = 0;
+})
+
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
     static inline bool Door##num##Trigger(Event* evt)          \
     {                                                          \
@@ -87,5 +94,8 @@ void GlassesTipAction(Event* evt);
 
 bool TeleportTrigger(Event* evt);
 void TeleportAction(Event* evt);
+
+bool CreditsTrigger(Event* evt);
+void CreditsAction(Event* evt);
 
 #endif // EVENTS_H

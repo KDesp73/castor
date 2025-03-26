@@ -265,3 +265,13 @@ void TeleportAction(Event* evt)
     
     PlayerPlace(player, 27, 27, 180);
 }
+
+bool CreditsTrigger(Event* evt)
+{
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    return keys[SDL_SCANCODE_G];
+}
+void CreditsAction(Event* evt)
+{
+    INV.glasses = true;
+}

@@ -12,7 +12,28 @@ enum {
     SPRITE_KEY,
     SPRITE_GLASSES,
     SPRITE_SWORD,
+    SPRITE_GRIMM,
 };
+
+#define ENTITY_GRIMM(x, y)    \
+    EntityNew(                \
+        SpriteNew(            \
+            x+0.5, y+0.5,     \
+            0,                \
+            SPRITE_GRIMM,     \
+            2,                \
+            false,            \
+            "s_grimm" \
+        ),                    \
+        6.0f,                 \
+        100,                  \
+        0.9,                  \
+        0.9,                  \
+        4,                    \
+        1.0f,                 \
+        MoveSmoothAStar,      \
+        "grimm"              \
+    )
 
 #define ENTITY_GOBLIN(x, y)   \
     EntityNew(                \

@@ -180,7 +180,22 @@ void Level5(Context* ctx)
 {
     LEVEL_HEADER("levels/credits.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 3, 0);
+    PlayerPlace(ctx->level.player, 12, 12, 0);
+
+    AppendSprite(ctx, SPRITE_COLUMN(7, 7));
+    AppendSprite(ctx, SPRITE_COLUMN(7, 16));
+    AppendSprite(ctx, SPRITE_COLUMN(16, 7));
+    AppendSprite(ctx, SPRITE_COLUMN(16, 16));
+
+    AppendItem(ctx, ITEM_SWORD(21, 11));
+
+    AppendEntity(ctx, ENTITY_GRIMM(2, 9));
+
+    LEVEL_GLITCH_EVENT(5);
+    LEVEL_COMMON_EVENTS();
+    
+    AppendEvent(ctx, EventNew(ctx, true, 100, CreditsTrigger, CreditsAction));
+
 
     LEVEL_FOOTER();
 }

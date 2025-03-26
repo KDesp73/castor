@@ -1,6 +1,3 @@
-#include "events.h"
-#include "map.h"
-#include <string.h>
 #define TARGET_FPS 60
 
 #include "animation.h"
@@ -13,6 +10,7 @@
 #include "inventory.h"
 #include "level.h"
 #include "levels.h"
+#include "map.h"
 #include "movement.h"
 #include "paths.h"
 #include "player.h"
@@ -33,6 +31,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 Uint8 HandleInput(Context* ctx, float deltaTime);
@@ -59,14 +58,14 @@ void presetup(Context* ctx)
 
 void setup(Context* ctx)
 {
-    ctx->level.player = PlayerNew(10, 140, 0.0, 1.5, 1.5);
+    ctx->level.player = PlayerNew(8, 140, 0.0, 1.5, 1.5);
     ctx->raycaster.texture_width = 64;
     ctx->raycaster.texture_height = 64;
     ctx->raycaster.floor_texture_index = 8;
     ctx->raycaster.ceiling_texture_index = 7;
     ctx->settings.mouse_sensitivity = 0.3;
     ctx->settings.fullscreen = false;
-    ctx->settings.mouse_sensitivity = 0.20;
+    ctx->settings.mouse_sensitivity = 0.25;
     ctx->settings.render_distance = 30.0f;
     ctx->level.index = args.level;
     ctx->sound.volume = 100;
@@ -160,12 +159,13 @@ Uint8 HandleInput(Context* ctx, float deltaTime)
     int xrel, yrel;
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
+#define BASE_DELTA 50
     if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * 50, deltaTime);
+        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * BASE_DELTA, deltaTime);
     }
 
     if (yrel != 0) {
-        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity*50 + 0.15), deltaTime);
+        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity * BASE_DELTA), deltaTime);
     }
 
     if (keys[SDL_SCANCODE_W]) {
