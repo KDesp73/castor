@@ -11,11 +11,11 @@ build() {
 
 case "$1" in
     builder) build "builder" "lvl" ;;
-    demo) build "demo" "game" ;;
+    demo) build "demo" "eidolon" ;;
     launcher) build "launcher" "launch" ;;
     *) 
         build "builder" "lvl"
-        build "demo" "game"
+        build "demo" "eidolon"
         build "launcher" "launch"
         ;;
 esac

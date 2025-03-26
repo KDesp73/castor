@@ -25,31 +25,25 @@ void UITextRender(SDL_Renderer *renderer, const char *text, int x, int y, UIFont
         return;
     }
 
-    TTF_SetFontHinting(font->ttf, TTF_HINTING_MONO);
+    TTF_SetFontHinting(font->ttf, TTF_HINTING_NORMAL);  // Use normal hinting
 
-    // Create the surface from the text
-    SDL_Surface *surface = TTF_RenderText_Solid(font->ttf, text, font->color);
+    // Use blended rendering for anti-aliasing
+    SDL_Surface *surface = TTF_RenderText_Blended(font->ttf, text, font->color);
     if (!surface) {
         printf("Error creating text surface: %s\n", TTF_GetError());
-        return; // Early exit if surface creation fails
-    }
-
-    // Create the texture from the surface
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (!texture) {
-        printf("Error creating text texture: %s\n", SDL_GetError());
-        SDL_FreeSurface(surface); // Free the surface if texture creation fails
         return;
     }
 
-    // Render the texture
-    SDL_Rect dst = {x, y, surface->w, surface->h};
-    SDL_QueryTexture(texture, NULL, NULL, &dst.w, &dst.h); // Ensure correct size
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        printf("Error creating text texture: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return;
+    }
 
-    // Copy the texture to the renderer
+    SDL_Rect dst = {x, y, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 
-    // Cleanup after rendering (before presenting)
-    SDL_FreeSurface(surface);  // Free the surface immediately after use
-    SDL_DestroyTexture(texture);  // Destroy the texture immediately after rendering
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }

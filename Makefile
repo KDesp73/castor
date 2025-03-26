@@ -9,7 +9,7 @@ INCLUDE_DIR = include
 BUILD_DIR = build
 DIST_DIR = dist
 
-LIBRARY_NAME = raycasting
+LIBRARY_NAME = castor
 SO_NAME = lib$(LIBRARY_NAME).so
 A_NAME = lib$(LIBRARY_NAME).a
 

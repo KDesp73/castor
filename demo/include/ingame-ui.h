@@ -3,6 +3,7 @@
 #include "context.h"
 #include <SDL2/SDL_render.h>
 
+#define UI_GLOBAL_FONT "assets/fonts/Karla-Bold.ttf"
 
 void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage);
 void RenderDamageNumbers(Context* ctx);

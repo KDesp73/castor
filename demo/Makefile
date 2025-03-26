@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Iinclude -I../include
-LDFLAGS = -L.. -l:libraycasting.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm -lSDL2_mixer
+LDFLAGS = -L.. -l:libcastor.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm -lSDL2_mixer
 
 # Directories
 SRC_DIR = src
@@ -10,7 +10,7 @@ BUILD_DIR = build
 DIST_DIR = dist
 
 # Target and version info
-TARGET = game
+TARGET = eidolon
 version_file = include/version.h
 VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
 VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))

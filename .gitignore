@@ -4,8 +4,8 @@ compile_commands.json
 
 *.o
 
-game
-libraycasting.*
+eidolon
+libcastor.*
 .changelog
 lvl
 temp.lvl

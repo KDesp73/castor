@@ -54,7 +54,7 @@ Particle particles[NUM_PARTICLES];
 
 void presetup(Context* ctx)
 {
-    ctx->game_name = "RayCasting";
+    ctx->game_name = "Eidolon";
 }
 
 void setup(Context* ctx)

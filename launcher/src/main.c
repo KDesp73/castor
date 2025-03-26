@@ -54,9 +54,9 @@ int main(void)
             printf("Launching game with settings:\n");
             printf("Fullscreen: %s\n", fullscreen ? "ON" : "OFF");
             if(fullscreen) {
-                execute("./game -F");
+                execute("./eidolon -F");
             } else {
-                execute("./game");
+                execute("./eidolon");
             }
             return 0;
         }
