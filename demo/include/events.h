@@ -36,6 +36,30 @@ DECLARE_GLITCH_ACTION(1, {
     ctx->level.map[17][12] = 0;
 })
 
+DECLARE_GLITCH_ACTION(2, {
+    ctx->level.map[5][1] = 0;
+    ctx->level.map[6][1] = 0;
+    ctx->level.map[7][1] = 0;
+    ctx->level.map[8][1] = 0;
+    ctx->level.map[9][1] = 0;
+    ctx->level.map[10][1] = 0;
+    ctx->level.map[11][1] = 0;
+    ctx->level.map[5][2] = 0;
+    ctx->level.map[6][2] = 0;
+    ctx->level.map[7][2] = 0;
+    ctx->level.map[8][2] = 0;
+    ctx->level.map[9][2] = 0;
+    ctx->level.map[10][2] = 0;
+    ctx->level.map[11][2] = 0;
+})
+
+DECLARE_GLITCH_ACTION(4, {
+    ctx->level.map[2][2] = 0;
+    ctx->level.map[3][2] = 0;
+    ctx->level.map[27][2] = 0;
+    ctx->level.map[28][2] = 0;
+})
+
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
     static inline bool Door##num##Trigger(Event* evt)          \
     {                                                          \
@@ -53,6 +77,7 @@ DECLARE_DOOR_TRIGGER(0, 7, 14);
 DECLARE_DOOR_TRIGGER(1, 6, 3);
 DECLARE_DOOR_TRIGGER(2, 1, 7);
 DECLARE_DOOR_TRIGGER(3, 11, 14);
+DECLARE_DOOR_TRIGGER(4, 4, 29);
 
 void DoorTooltipAction(Event* evt);
 void DoorKeyAction(Event* evt);

@@ -87,12 +87,13 @@ void Level1(Context* ctx)
     PlayerPlace(ctx->level.player, 12, 12, 90);
 
     AppendSprite(ctx, SPRITE_LAMP(11.5, 11.5));
+    AppendSprite(ctx, SPRITE_BARREL(5, 20));
 
     AppendItem(ctx, ITEM_SWORD(9, 12));
     AppendItem(ctx, ITEM_GLASSES(18, 2));
     AppendItem(ctx, ITEM_KEY(1, 16));
     
-    AppendEntity(ctx, ENTITY_GOBLIN(5, 17));
+    // AppendEntity(ctx, ENTITY_GOBLIN(5, 17));
     AppendEntity(ctx, ENTITY_MUSHROOM(20, 19));
 
     LEVEL_DOOR_EVENTS(1);
@@ -106,18 +107,21 @@ void Level2(Context* ctx)
 {
     LEVEL_HEADER("levels/2.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 6, 65);
+    PlayerPlace(ctx->level.player, 2, 2, 0);
 
     AppendSprite(ctx, SPRITE_BARREL(9, 2));
     AppendSprite(ctx, SPRITE_LAMP(5, 10));
     AppendSprite(ctx, SPRITE_COLUMN(4, 4));
+    AppendSprite(ctx, SPRITE_BARREL(5, 14));
 
     AppendEntity(ctx, ENTITY_EYE(14, 3));
 
-    AppendItem(ctx, ITEM_KEY(10, 10));
-    AppendItem(ctx, ITEM_SWORD(13, 10));
+    AppendItem(ctx, ITEM_KEY(4, 14));
+    AppendItem(ctx, ITEM_GLASSES(14, 2));
+    AppendItem(ctx, ITEM_SWORD(11, 2));
 
     LEVEL_DOOR_EVENTS(2);
+    LEVEL_GLITCH_EVENT(2);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();
@@ -127,9 +131,9 @@ void Level3(Context* ctx)
 {
     LEVEL_HEADER("levels/3.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 6, 65);
+    PlayerPlace(ctx->level.player, 1.5, 1.5, 0);
 
-    AppendItem(ctx, ITEM_KEY(5, 13));
+    AppendItem(ctx, ITEM_KEY(11, 11));
 
     LEVEL_DOOR_EVENTS(3);
     LEVEL_COMMON_EVENTS();
@@ -141,12 +145,18 @@ void Level4(Context* ctx)
 {
     LEVEL_HEADER("levels/4.lvl");
 
-    PlayerPlace(ctx->level.player, 4, 6, 65);
+    PlayerPlace(ctx->level.player, 4, 3, 0);
 
-    AppendEntity(ctx, ENTITY_SKELETON(1, 2));
-    AppendEntity(ctx, ENTITY_SKELETON(15, 19));
-    AppendEntity(ctx, ENTITY_MUSHROOM(8, 23));
+    AppendItem(ctx, ITEM_GLASSES(5, 13));
+    AppendItem(ctx, ITEM_SWORD(7, 2));
+    AppendItem(ctx, ITEM_KEY(1, 30));
 
+    // AppendEntity(ctx, ENTITY_SKELETON(1, 2));
+    // AppendEntity(ctx, ENTITY_SKELETON(15, 19));
+    AppendEntity(ctx, ENTITY_MUSHROOM(11, 3));
+
+    LEVEL_DOOR_EVENTS(4);
+    LEVEL_GLITCH_EVENT(4);
     LEVEL_COMMON_EVENTS();
 
     LEVEL_FOOTER();

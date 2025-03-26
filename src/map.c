@@ -35,7 +35,8 @@ void MapFree(int **map, size_t rows)
 {
     if(!map) return;
     for (size_t i = 0; i < rows; i++) 
-        free(map[i]);
+        if(map[i])
+            free(map[i]);
     free(map);
 }
 

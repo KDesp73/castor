@@ -269,7 +269,7 @@ void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime)
 {
     if (key == SDL_SCANCODE_C) {
         char buffer[64];
-        snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X, ctx->level.player->Y);
+        snprintf(buffer, 64, "(%.0f, %.0f)", ctx->level.player->X-1, ctx->level.player->Y-1);
         printf("%s\n", buffer);
         SDL_SetClipboardText(buffer);
     } else if(key == SDL_SCANCODE_K) {
@@ -312,9 +312,14 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
 {
     MapFree(mapStored, ctx->level.map_height);
 
+    LevelLoader level = Level(ctx->level.index+1);
+    if(!level) {
+        ctx->engine.running = false;
+        return;
+    }
     FreeLevel(ctx);
     ctx->level.index++;
-    LoadLevel(ctx, Level(ctx->level.index));
+    LoadLevel(ctx, level);
 
     mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
     MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);

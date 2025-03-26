@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define ATTACK_RANGE 5.0f
+#define ATTACK_RANGE 3.0f
 #define FACE_THRESHOLD 0.8f
 #define FLOATP(x) printf(#x ": %f\n", x);
 
@@ -34,13 +34,12 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
 
         if (!entity || !entity->sprite) continue;
 
-        // Compute vector from player to entity
         float dx = entity->sprite->x - player->X;
         float dy = entity->sprite->y - player->Y;
         float distance = sqrtf(dx * dx + dy * dy);
 
         if (distance > ATTACK_RANGE) continue; // Entity too far
-
+        
         // Normalize direction to entity
         float normDx = dx / distance;
         float normDy = dy / distance;
@@ -77,30 +76,24 @@ void PlayerAttackAction(Event* evt)
     Context* ctx = evt->ctx;
     Player* player = ctx->level.player;
 
-    // Iterate through entities to apply damage
     for (size_t i = 0; i < ctx->level.entity_count; ++i) {
         Entity* entity = ctx->level.entities[i];
 
         if (entity == NULL || entity->sprite == NULL) {
-            continue; // Skip invalid entities or entities without sprites
+            continue;
         }
 
-        // Check if the player is in attack range of the entity
-        if (player->X >= entity->sprite->x - 1 && player->X <= entity->sprite->x + 1 &&
-            player->Y >= entity->sprite->y - 1 && player->Y <= entity->sprite->y + 1) {
+        // Apply damage and play sound
+        float damage = calculateDamage(EntityTakeDamage(entity, 30), 5);
+        AddDamageNumber(ctx, ctx->sdl.screen_width / 2, ctx->sdl.screen_height / 2, damage);
+        PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
 
-            // Apply damage and play sound
-            float damage = calculateDamage(EntityTakeDamage(entity, 30), 5);
-            AddDamageNumber(ctx, ctx->sdl.screen_width / 2, ctx->sdl.screen_height / 2, damage);
-            PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
-
-            // If the entity is dead, remove it
-            if (entity->health <= 0) {
-                RemoveEntity(ctx, entity);
-            }
-
-            break; // Only attack one entity at a time
+        // If the entity is dead, remove it
+        if (entity->health <= 0) {
+            RemoveEntity(ctx, entity);
         }
+
+        break; // Only attack one entity at a time
     }
 }
 
