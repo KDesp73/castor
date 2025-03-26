@@ -16,7 +16,7 @@ void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage)
 
     dn.damage = damage;
     dn.angle = (rand() % 360); // random rotation angle
-    dn.scale = 1.0f + (rand() % 50) / 100.0f; // scale between 1.0 and 1.5
+    dn.scale = 2.0f + (rand() % 50) / 100.0f; // scale between 2.0 and 2.5
     dn.spawn_time = SDL_GetTicks();
     dn.lifetime = 2000; // 1 second duration
 

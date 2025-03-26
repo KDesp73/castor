@@ -62,7 +62,7 @@ void setup(Context* ctx)
     ctx->level.player = PlayerNew(10, 140, 0.0, 1.5, 1.5);
     ctx->raycaster.texture_width = 64;
     ctx->raycaster.texture_height = 64;
-    ctx->raycaster.floor_texture_index = 9;
+    ctx->raycaster.floor_texture_index = 8;
     ctx->raycaster.ceiling_texture_index = 7;
     ctx->settings.mouse_sensitivity = 0.3;
     ctx->settings.fullscreen = false;
@@ -206,6 +206,7 @@ void RenderFrame(Context* ctx)
     SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->sdl.renderer);
 
+    // CastFloorAndCeiling(ctx->sdl.renderer, ctx);
     CastWalls(ctx->sdl.renderer, ctx);
     CastSprites(ctx->sdl.renderer, ctx);
     

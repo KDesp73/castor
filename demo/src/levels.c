@@ -47,7 +47,7 @@ static void GivePaths(Context* ctx)
 #define LEVEL_DOOR_EVENTS(index) \
     do { \
         AppendEvent(ctx, EventNew(ctx, false, 300, Door##index##Trigger, DoorTooltipAction)); \
-        AppendEvent(ctx, EventNew(ctx, false, 100, Door##index##Trigger, DoorKeyAction)); \
+        AppendEvent(ctx, EventNew(ctx, false, 50, Door##index##Trigger, DoorKeyAction)); \
     } while(0)
 
 #define LEVEL_GLITCH_EVENT(index) \
@@ -90,10 +90,10 @@ void Level1(Context* ctx)
 
     AppendItem(ctx, ITEM_SWORD(9, 12));
     AppendItem(ctx, ITEM_GLASSES(18, 2));
-    AppendItem(ctx, ITEM_KEY(8, 16));
+    AppendItem(ctx, ITEM_KEY(1, 16));
     
-    // AppendEntity(ctx, ENTITY_GOBLIN(6, 22));
-    // AppendEntity(ctx, ENTITY_MUSHROOM(20, 19));
+    AppendEntity(ctx, ENTITY_GOBLIN(5, 17));
+    AppendEntity(ctx, ENTITY_MUSHROOM(20, 19));
 
     LEVEL_DOOR_EVENTS(1);
     LEVEL_GLITCH_EVENT(1);

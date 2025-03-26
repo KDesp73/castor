@@ -67,6 +67,11 @@ bool PlayerAttackTrigger(Event* evt)
     return PlayerIsAttacking(player, ctx);
 }
 
+static int calculateDamage(int base_damage, int variance) {
+    int random_offset = (rand() % (2 * variance + 1)) - variance; // Random value from -variance to +variance
+    return base_damage + random_offset;
+}
+
 void PlayerAttackAction(Event* evt)
 {
     Context* ctx = evt->ctx;
@@ -85,8 +90,8 @@ void PlayerAttackAction(Event* evt)
             player->Y >= entity->sprite->y - 1 && player->Y <= entity->sprite->y + 1) {
 
             // Apply damage and play sound
-            float damage = EntityTakeDamage(entity, 30);
-            AddDamageNumber(ctx, entity->sprite->x, entity->sprite->y, damage);
+            float damage = calculateDamage(EntityTakeDamage(entity, 30), 5);
+            AddDamageNumber(ctx, ctx->sdl.screen_width / 2, ctx->sdl.screen_height / 2, damage);
             PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
 
             // If the entity is dead, remove it
