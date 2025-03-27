@@ -98,4 +98,7 @@ void TeleportAction(castor_Event* evt);
 bool CreditsTrigger(castor_Event* evt);
 void CreditsAction(castor_Event* evt);
 
+bool EETrigger(castor_Event *evt);
+void EEAction(castor_Event *evt);
+
 #endif // EVENTS_H

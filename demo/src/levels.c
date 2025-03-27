@@ -115,6 +115,7 @@ void Level2(castor_Context* ctx)
     castor_AppendSprite(ctx, SPRITE_BARREL(5, 14));
 
     castor_AppendEntity(ctx, ENTITY_EYE(14, 3));
+    castor_AppendEntity(ctx, ENTITY_MUSHROOM(12, 12));
 
     castor_AppendItem(ctx, ITEM_KEY(4, 14));
     castor_AppendItem(ctx, ITEM_GLASSES(14, 2));
@@ -194,6 +195,7 @@ void Level5(castor_Context* ctx)
     LEVEL_COMMON_EVENTS();
     
     castor_AppendEvent(ctx, castor_EventNew(ctx, true, 100, CreditsTrigger, CreditsAction));
+    castor_AppendEvent(ctx, castor_EventNew(ctx, true, 100, EETrigger, EEAction));
 
 
     LEVEL_FOOTER();

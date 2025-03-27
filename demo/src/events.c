@@ -275,3 +275,14 @@ void CreditsAction(castor_Event* evt)
 {
     INV.glasses = true;
 }
+
+bool EETrigger(castor_Event *evt)
+{
+    castor_Context* ctx = evt->ctx;
+    return ctx->level.entity_count == 0;
+}
+void EEAction(castor_Event *evt)
+{
+    castor_Context* ctx = evt->ctx;
+    castor_PlayerPlace(ctx->level.player, 28, 28, 0);
+}
