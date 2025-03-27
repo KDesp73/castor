@@ -40,6 +40,7 @@ VERSION="1.0.0"
 
 # Define dependencies manually (or leave empty for auto-detection)
 DEPENDENCIES=(
+    "make"
     "gcc"
     "bear"
 )

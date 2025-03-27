@@ -1,6 +1,8 @@
 # castor
 
-Castor is a raycasting 3D game engine designed to stay out of your way as much as possible. It uses SDL for rendering so any SDL library is compatible with castor.
+Castor is a lightweight and efficient 3D raycasting engine written in C using SDL. It is designed for retro-style rendering, similar to early first-person games like Wolfenstein 3D, but with additional features such as sprite rendering, floor/ceiling projection, and more.
+
+Castor is built to be a simple yet powerful engine for creating classic-style 3D experiences. Using a raycasting technique, it projects a 2D map into a pseudo-3D world, allowing for fast and efficient rendering on low-end hardware. The engine is designed to be extendable, enabling developers to add new features, improve visual fidelity, and experiment with game mechanics.
 
 ## Get started
 
