@@ -38,7 +38,7 @@ QUIET=false  # Quiet mode (no output)
 SILENT=false # Silent mode (only errors)
 VERSION="1.0.0"
 
-# Define dependencies manually (or leave empty for auto-detection)
+# Define dependencies manually
 DEPENDENCIES=(
     "make"
     "gcc"
