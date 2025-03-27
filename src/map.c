@@ -1,6 +1,6 @@
 #include "map.h"
 
-void MapPrint(int* map[], size_t rows, size_t cols)
+void castor_MapPrint(int* map[], size_t rows, size_t cols)
 {
     printf("{\n");
     for(size_t i = 0; i < rows; i++) {
@@ -19,7 +19,7 @@ void MapPrint(int* map[], size_t rows, size_t cols)
     printf("}\n");
 }
 
-int **MapCreate(size_t rows, size_t cols)
+int **castor_MapCreate(size_t rows, size_t cols)
 {
     int **map = (int **)malloc(rows * sizeof(int *));
     for (size_t i = 0; i < rows; i++) {
@@ -31,7 +31,7 @@ int **MapCreate(size_t rows, size_t cols)
     return map;
 }
 
-void MapFree(int **map, size_t rows)
+void castor_MapFree(int **map, size_t rows)
 {
     if(!map) return;
     for (size_t i = 0; i < rows; i++) 
@@ -40,7 +40,7 @@ void MapFree(int **map, size_t rows)
     free(map);
 }
 
-bool MapSave(int** map, size_t rows, size_t cols, const char* path)
+bool castor_MapSave(int** map, size_t rows, size_t cols, const char* path)
 {
     FILE* file = fopen(path, "w");
     if(!file) {
@@ -61,7 +61,7 @@ bool MapSave(int** map, size_t rows, size_t cols, const char* path)
     return true;
 }
 
-int** MapLoad(size_t* rows, size_t* cols, const char* path) 
+int** castor_MapLoad(size_t* rows, size_t* cols, const char* path) 
 {
     FILE* file = fopen(path, "r");
     if (!file) {
@@ -120,7 +120,7 @@ int** MapLoad(size_t* rows, size_t* cols, const char* path)
     return map;
 }
 
-void MapCpy(int** src, int** dst, size_t w, size_t h)
+void castor_MapCpy(int** src, int** dst, size_t w, size_t h)
 {
     if (src == NULL || dst == NULL) {
         return;

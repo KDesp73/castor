@@ -6,9 +6,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct Event{
-    bool (*trigger)(struct Event* self);
-    void (*action)(struct Event* self);
+typedef struct castor_Event{
+    bool (*trigger)(struct castor_Event* self);
+    void (*action)(struct castor_Event* self);
     void* ctx; // Reference to the global context
     void* state; // Reference to a user-defined context
     bool trigger_once;
@@ -18,14 +18,14 @@ typedef struct Event{
     Uint32 last_processed;
     int index;
     char id[16];
-} Event;
+} castor_Event;
 
-typedef bool (*EventTrigger)(struct Event* self);
-typedef void (*EventAction)(struct Event* self);
+typedef bool (*EventTrigger)(struct castor_Event* self);
+typedef void (*EventAction)(struct castor_Event* self);
 
 
-Event* EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trigger, EventAction action);
-void EventFree(Event** evt);
-void EventProcess(Event* evt);
+castor_Event* castor_EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trigger, EventAction action);
+void castor_EventFree(castor_Event** evt);
+void castor_EventProcess(castor_Event* evt);
 
 #endif // EVENT_H

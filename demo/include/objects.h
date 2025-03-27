@@ -16,8 +16,8 @@ enum {
 };
 
 #define ENTITY_GRIMM(x, y)    \
-    EntityNew(                \
-        SpriteNew(            \
+    castor_EntityNew(                \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             0,                \
             SPRITE_GRIMM,     \
@@ -29,15 +29,15 @@ enum {
         100,                  \
         0.9,                  \
         0.9,                  \
-        6,                    \
+        4,                    \
         1.0f,                 \
-        MoveSmoothAStar,      \
+        castor_MoveSmoothAStar,      \
         "grimm"               \
     )
 
 #define ENTITY_GOBLIN(x, y)   \
-    EntityNew(                \
-        SpriteNew(            \
+    castor_EntityNew(                \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             0,                \
             SPRITE_GOBLIN,    \
@@ -51,13 +51,13 @@ enum {
         0.5,                  \
         4,                    \
         1.0f,                 \
-        MoveSmoothAStar,      \
+        castor_MoveSmoothAStar,      \
         "goblin"              \
     )
 
 #define ENTITY_SKELETON(x, y) \
-    EntityNew(                \
-        SpriteNew(            \
+    castor_EntityNew(                \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             0,                \
             SPRITE_SKELETON,  \
@@ -71,13 +71,13 @@ enum {
         0.4,                  \
         4,                    \
         1.0f,                 \
-        MoveSmoothAStar,      \
+        castor_MoveSmoothAStar,      \
         "skeleton"            \
     )
 
 #define ENTITY_MUSHROOM(x, y) \
-    EntityNew(                \
-        SpriteNew(            \
+    castor_EntityNew(                \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             0,                \
             SPRITE_MUSHROOM,  \
@@ -91,13 +91,13 @@ enum {
         0.4,                  \
         6,                    \
         1.0f,                 \
-        MoveSmoothAStar,      \
+        castor_MoveSmoothAStar,      \
         "mushroom"            \
     )
 
 #define ENTITY_EYE(x, y)      \
-    EntityNew(                \
-        SpriteNew(            \
+    castor_EntityNew(                \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             0,                \
             SPRITE_EYE,       \
@@ -111,12 +111,12 @@ enum {
         0.6,                  \
         5,                    \
         1.0f,                 \
-        MoveSmoothAStar,      \
+        castor_MoveSmoothAStar,      \
         "eye"                 \
     )
 
 #define SPRITE_COLUMN(x, y)   \
-    SpriteNew(                \
+    castor_SpriteNew(                \
         x+0.5, y+0.5,         \
         SPRITE_MIDDLE,        \
         SPRITE_COLUMN,        \
@@ -125,7 +125,7 @@ enum {
         "s_column" \
     )
 #define SPRITE_LAMP(x, y)     \
-    SpriteNew(                \
+    castor_SpriteNew(                \
         x+0.5, y+0.5,         \
         SPRITE_UP,            \
         SPRITE_LAMP,          \
@@ -134,7 +134,7 @@ enum {
         "s_lamp" \
     )
 #define SPRITE_BARREL(x, y)   \
-    SpriteNew(                \
+    castor_SpriteNew(                \
         x+0.5, y+0.5,         \
         SPRITE_DOWN,          \
         SPRITE_BARREL,        \
@@ -144,8 +144,8 @@ enum {
     )
 
 #define ITEM_KEY(x, y)        \
-    ItemNew(                  \
-        SpriteNew(            \
+    castor_ItemNew(                  \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             -7,               \
             SPRITE_KEY,       \
@@ -157,8 +157,8 @@ enum {
     )
 
 #define ITEM_GLASSES(x, y)    \
-    ItemNew(                  \
-        SpriteNew(            \
+    castor_ItemNew(                  \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             -7,               \
             SPRITE_GLASSES,   \
@@ -170,8 +170,8 @@ enum {
     )
 
 #define ITEM_SWORD(x, y)    \
-    ItemNew(                  \
-        SpriteNew(            \
+    castor_ItemNew(                  \
+        castor_SpriteNew(            \
             x+0.5, y+0.5,     \
             -7,               \
             SPRITE_SWORD,   \

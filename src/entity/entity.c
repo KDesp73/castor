@@ -7,15 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-Entity* EntityNew(
-    Sprite* sprite, 
+castor_Entity* castor_EntityNew(
+    castor_Sprite* sprite, 
     float speed, 
     size_t health, 
     float strength, 
     float toughness, 
     size_t detectionRange, 
     float hitbox, 
-    EntityMovement move,
+    castor_EntityMovement move,
     const char* id)
 {
     assert(sprite);
@@ -23,7 +23,7 @@ Entity* EntityNew(
     assert(toughness > 0 && toughness < 1);
     assert(id && strlen(id) > 0);
 
-    Entity* e = malloc(sizeof(Entity));
+    castor_Entity* e = malloc(sizeof(castor_Entity));
     if(!e) {
         fprintf(stderr, "Could not allocate memory for entity\n");
         return NULL;
@@ -37,7 +37,7 @@ Entity* EntityNew(
     e->detection_range = detectionRange;
     e->hitbox = hitbox;
     e->move = move;
-    e->default_path = (Path) {
+    e->default_path = (castor_Path) {
         .length = 0,
         .index = 0
     };
@@ -47,7 +47,7 @@ Entity* EntityNew(
     return e;
 }
 
-void EntityFree(Entity** e)
+void castor_EntityFree(castor_Entity** e)
 {
     if(*e){
         free(*e);
@@ -55,7 +55,7 @@ void EntityFree(Entity** e)
     }
 }
 
-float EntityTakeDamage(Entity* e, size_t damage)
+float castor_EntityTakeDamage(castor_Entity* e, size_t damage)
 {
     if(e->health - (1 - e->toughness) * damage < 0) {
         e->health = 0;
@@ -68,7 +68,7 @@ float EntityTakeDamage(Entity* e, size_t damage)
 }
 
 #define BASE_DAMAGE 20
-float EntityDealDamage(const Entity* e)
+float castor_EntityDealDamage(const castor_Entity* e)
 {
     return e->strength * BASE_DAMAGE;
 }
@@ -76,10 +76,10 @@ float EntityDealDamage(const Entity* e)
 #include <stdio.h>
 #include <math.h>
 
-void EntityFollowDefaultPath(Entity* entity, float deltaTime) {
+void castor_EntityFollowDefaultPath(castor_Entity* entity, float deltaTime) {
     // Check if entity pointer is valid
     if (entity == NULL) {
-        fprintf(stderr, "Error: Entity pointer is null.\n");
+        fprintf(stderr, "Error: castor_Entity pointer is null.\n");
         return;
     }
 

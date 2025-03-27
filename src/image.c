@@ -1,9 +1,9 @@
 #include "image.h"
 #include <SDL2/SDL_image.h>
 
-Image LoadImage(SDL_Renderer* renderer, const char* path)
+castor_Image castor_LoadImage(SDL_Renderer* renderer, const char* path)
 {
-    Image image = {0};
+    castor_Image image = {0};
 
     SDL_Surface *surface = IMG_Load(path);
     if (!surface) {
@@ -24,7 +24,7 @@ Image LoadImage(SDL_Renderer* renderer, const char* path)
     return image;
 }
 
-void RenderImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y)
+void castor_RenderImage(SDL_Renderer* renderer, castor_Image* image, float scale, int x, int y)
 {
     if (!image || !image->texture) return;
 
@@ -34,7 +34,7 @@ void RenderImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y
     SDL_RenderCopy(renderer, image->texture, &srcRect, &dstRect);
 }
 
-void RenderRotatedImage(SDL_Renderer* renderer, Image* image, float scale, int x, int y, double angle)
+void castor_RenderRotatedImage(SDL_Renderer* renderer, castor_Image* image, float scale, int x, int y, double angle)
 {
     SDL_Rect destRect = { x, y, image->w * scale, image->h * scale };
 
@@ -51,7 +51,7 @@ void RenderRotatedImage(SDL_Renderer* renderer, Image* image, float scale, int x
     );
 }
 
-void FreeImage(Image* image)
+void castor_FreeImage(castor_Image* image)
 {
     if (image->texture) {
         SDL_DestroyTexture(image->texture);

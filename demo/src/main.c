@@ -34,17 +34,17 @@
 #include <string.h>
 #include <time.h>
 
-Uint8 HandleInput(Context* ctx, float deltaTime);
-void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime);
-void HandleEvent(Context* ctx, SDL_Event* event, bool* paused);
-void HandleLevelFail(Context* ctx, SDL_Event* event);
-void HandleLevelTransition(Context* ctx, SDL_Event* event);
-void RenderFrame(Context* ctx);
+Uint8 HandleInput(castor_Context* ctx, float deltaTime);
+void DEBUG_HandleKeyInput(castor_Context* ctx, Uint8 key, float deltaTime);
+void HandleEvent(castor_Context* ctx, SDL_Event* event, bool* paused);
+void HandleLevelFail(castor_Context* ctx, SDL_Event* event);
+void HandleLevelTransition(castor_Context* ctx, SDL_Event* event);
+void RenderFrame(castor_Context* ctx);
 
-static Animation keyAnim;
-static Image glassesImg;
-static Image swordImg;
-static Image invSquareImg;
+static castor_Animation keyAnim;
+static castor_Image glassesImg;
+static castor_Image swordImg;
+static castor_Image invSquareImg;
 
 static int** mapStored;
 
@@ -52,14 +52,14 @@ static CliArgs args;
 bool GlitchActivated = false;
 Particle particles[NUM_PARTICLES];
 
-void presetup(Context* ctx)
+void presetup(castor_Context* ctx)
 {
     ctx->game_name = "Eidolon";
 }
 
-void setup(Context* ctx)
+void setup(castor_Context* ctx)
 {
-    ctx->level.player = PlayerNew(8, 140, 0.0, 1.5, 1.5);
+    ctx->level.player = castor_PlayerNew(8, 140, 0.0, 1.5, 1.5);
     ctx->raycaster.texture_width = 64;
     ctx->raycaster.texture_height = 64;
     ctx->raycaster.floor_texture_index = 8;
@@ -71,21 +71,21 @@ void setup(Context* ctx)
     ctx->level.index = args.level;
     ctx->sound.volume = 100;
 
-    LoadLevel(ctx, Level(ctx->level.index));
-    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
-    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    castor_LoadLevel(ctx, Level(ctx->level.index));
+    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
+    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
 
-    SetFullscreen(ctx, args.fullscreen);
-    LoadTextures(ctx);
+    castor_SetFullscreen(ctx, args.fullscreen);
+    castor_LoadTextures(ctx);
 
     static UIFont global = {0};
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);
     UIOpen(&ctx->ui, &global);
 
-    keyAnim      = LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
-    glassesImg   = LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
-    swordImg     = LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
-    invSquareImg = LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
+    keyAnim      = castor_LoadAnimation(ctx->sdl.renderer, "assets/animations/key.png", 32, 32, 50);
+    glassesImg   = castor_LoadImage(ctx->sdl.renderer, "assets/sprites/glasses.png");
+    swordImg     = castor_LoadImage(ctx->sdl.renderer, "./assets/sprites/sword.png");
+    invSquareImg = castor_LoadImage(ctx->sdl.renderer, "./assets/sprites/inventory-square.png");
 
     initParticles(ctx);
 }
@@ -93,7 +93,7 @@ void setup(Context* ctx)
 static bool started = false;
 static bool paused = false;
 
-void loop(Context* ctx)
+void loop(castor_Context* ctx)
 {
     FPS_START(ctx);
 
@@ -115,24 +115,24 @@ void loop(Context* ctx)
         Uint8 key = HandleInput(ctx, deltaTime);
         DEBUG_HandleKeyInput(ctx, key, deltaTime);
 
-        UpdateEntities(ctx, deltaTime);
-        ProcessEvents(ctx);
-        ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
+        castor_UpdateEntities(ctx, deltaTime);
+        castor_ProcessEvents(ctx);
+        castor_ItemsIdle(ctx, SDL_GetTicks() / 1000.0f);
 
         UpdateDamageNumbers(ctx);
-        if(INV.key) UpdateAnimation(&keyAnim, SDL_GetTicks());
+        if(INV.key) castor_UpdateAnimation(&keyAnim, SDL_GetTicks());
 
         if(GlitchActivated) {
-            FreeTextures(ctx);
+            castor_FreeTextures(ctx);
         } else {
             if(!ctx->raycaster.textures_loaded)
-                LoadTextures(ctx);
+                castor_LoadTextures(ctx);
         }
 
         if(ctx->level.index == 5) updateParticles(ctx);
 
         EVERY_MS(soundCleanupTimer, 15000, {
-            CleanupThreads(ctx);
+            castor_CleanupThreads(ctx);
             for(size_t i = 0; i < ctx->ui.toast_count; i++);
         });
 
@@ -142,20 +142,20 @@ void loop(Context* ctx)
     FPS_END(ctx);
 }
 
-void cleanup(Context* ctx)
+void cleanup(castor_Context* ctx)
 {
-    FreeAnimation(&keyAnim);
-    FreeImage(&glassesImg);
-    FreeImage(&swordImg);
+    castor_FreeAnimation(&keyAnim);
+    castor_FreeImage(&glassesImg);
+    castor_FreeImage(&swordImg);
 }
 
 int main(int argc, char** argv)
 {
     args = ParseCliArgs(argc, argv);
-    return EngineMain(argc, argv);
+    return castor_Main(argc, argv);
 }
 
-Uint8 HandleInput(Context* ctx, float deltaTime)
+Uint8 HandleInput(castor_Context* ctx, float deltaTime)
 {
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     SDL_ShowCursor(SDL_FALSE);
@@ -166,37 +166,37 @@ Uint8 HandleInput(Context* ctx, float deltaTime)
 
 #define BASE_DELTA 50
     if (xrel != 0) {
-        RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * BASE_DELTA, deltaTime);
+        castor_RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * BASE_DELTA, deltaTime);
     }
 
     if (yrel != 0) {
-        RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity * BASE_DELTA), deltaTime);
+        castor_RotateY(ctx, ((ctx->settings.mouse_inverted) ? -yrel : yrel) * (ctx->settings.mouse_sensitivity * BASE_DELTA), deltaTime);
     }
 
     if (keys[SDL_SCANCODE_W]) {
-        MoveFront(ctx, deltaTime);
+        castor_MoveFront(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_S]) {
-        MoveBack(ctx, deltaTime);
+        castor_MoveBack(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_A]) {
-        MoveLeft(ctx, deltaTime);
+        castor_MoveLeft(ctx, deltaTime);
     }
     if (keys[SDL_SCANCODE_D]) {
-        MoveRight(ctx, deltaTime);
+        castor_MoveRight(ctx, deltaTime);
     }
 
     if (keys[SDL_SCANCODE_UP]) {
-        RotateY(ctx, ctx->level.player->angleDelta, deltaTime);
+        castor_RotateY(ctx, ctx->level.player->angleDelta, deltaTime);
     }
     if (keys[SDL_SCANCODE_DOWN]) {
-        RotateY(ctx, -ctx->level.player->angleDelta * 2, deltaTime);
+        castor_RotateY(ctx, -ctx->level.player->angleDelta * 2, deltaTime);
     }
     if (keys[SDL_SCANCODE_LEFT]) {
-        RotateX(ctx, -ctx->level.player->angleDelta, deltaTime);
+        castor_RotateX(ctx, -ctx->level.player->angleDelta, deltaTime);
     }
     if (keys[SDL_SCANCODE_RIGHT]) {
-        RotateX(ctx, ctx->level.player->angleDelta, deltaTime);
+        castor_RotateX(ctx, ctx->level.player->angleDelta, deltaTime);
     }
 
     // For debugging
@@ -206,14 +206,14 @@ Uint8 HandleInput(Context* ctx, float deltaTime)
     return 0;
 }
 
-void RenderFrame(Context* ctx)
+void RenderFrame(castor_Context* ctx)
 {
     SDL_SetRenderDrawColor(ctx->sdl.renderer, 30, 30, 30, 255);
     SDL_RenderClear(ctx->sdl.renderer);
 
     // CastFloorAndCeiling(ctx->sdl.renderer, ctx);
-    CastWalls(ctx->sdl.renderer, ctx);
-    CastSprites(ctx->sdl.renderer, ctx);
+    castor_CastWalls(ctx->sdl.renderer, ctx);
+    castor_CastSprites(ctx->sdl.renderer, ctx);
     
     if(INV.sword) {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -221,19 +221,19 @@ void RenderFrame(Context* ctx)
         bool attacking = keys[SDL_SCANCODE_SPACE] || (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT));
 
         if(!attacking)
-            RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 200, ctx->sdl.screen_height - 350, 0);
+            castor_RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 200, ctx->sdl.screen_height - 350, 0);
         else
-            RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 300, ctx->sdl.screen_height - 150, -35);
+            castor_RenderRotatedImage(ctx->sdl.renderer, &swordImg, 20, ctx->sdl.screen_width / 2 - 300, ctx->sdl.screen_height - 150, -35);
     }
 
     RenderCrosshair(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
     RenderHealthBar(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 45, 150, 30, PLR.health, PLR.maxHealth);
     
-    Event* glitch = SearchEvent(ctx, "glitch");
+    castor_Event* glitch = castor_SearchEvent(ctx, "glitch");
     if(INV.glasses && glitch) {
         RenderGlassesCooldown(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 85, 150, 30, SDL_GetTicks() - glitch->last_processed, glitch->cooldown);
         if(SDL_GetTicks() - glitch->last_processed >= 10000) {
-            MapCpy(mapStored, ctx->level.map, ctx->level.map_width, ctx->level.map_height);
+            castor_MapCpy(mapStored, ctx->level.map, ctx->level.map_width, ctx->level.map_height);
 
             GlitchActivated = false;
         }
@@ -249,20 +249,20 @@ void RenderFrame(Context* ctx)
     int glassesX = ctx->sdl.screen_width - 3*(2*glassesImg.w+padding);
     int glassesY = ctx->sdl.screen_height - 2*glassesImg.w - padding;
 
-    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, keyX-8, keyY-8);
-    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, swordX-8, swordY-8);
-    RenderImage(ctx->sdl.renderer, &invSquareImg, 1, glassesX-8, glassesY-8);
+    castor_RenderImage(ctx->sdl.renderer, &invSquareImg, 1, keyX-8, keyY-8);
+    castor_RenderImage(ctx->sdl.renderer, &invSquareImg, 1, swordX-8, swordY-8);
+    castor_RenderImage(ctx->sdl.renderer, &invSquareImg, 1, glassesX-8, glassesY-8);
 
     if (INV.key) {
-        RenderAnimation(ctx->sdl.renderer, &keyAnim, 2,
+        castor_RenderAnimation(ctx->sdl.renderer, &keyAnim, 2,
                 keyX, keyY, keyAnim.currentFrame);
     }
     if(INV.sword) {
-        RenderImage(ctx->sdl.renderer, &swordImg, 2,
+        castor_RenderImage(ctx->sdl.renderer, &swordImg, 2,
                 swordX, swordY);
     }
     if(INV.glasses) {
-        RenderImage(ctx->sdl.renderer, &glassesImg, 2,
+        castor_RenderImage(ctx->sdl.renderer, &glassesImg, 2,
                 glassesX, glassesY);
     }
 
@@ -272,7 +272,7 @@ void RenderFrame(Context* ctx)
 }
 
 // NOTE: Debugging method. Remove
-void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime)
+void DEBUG_HandleKeyInput(castor_Context* ctx, Uint8 key, float deltaTime)
 {
     if (key == SDL_SCANCODE_C) {
         char buffer[64];
@@ -286,7 +286,7 @@ void DEBUG_HandleKeyInput(Context* ctx, Uint8 key, float deltaTime)
     }
 }
 
-void HandleEvent(Context* ctx, SDL_Event* event, bool* paused)
+void HandleEvent(castor_Context* ctx, SDL_Event* event, bool* paused)
 {
     if (event->type == SDL_QUIT) {
         ctx->engine.running = false;
@@ -315,21 +315,21 @@ void HandleEvent(Context* ctx, SDL_Event* event, bool* paused)
     }
 }
 
-void HandleLevelTransition(Context* ctx, SDL_Event* event)
+void HandleLevelTransition(castor_Context* ctx, SDL_Event* event)
 {
-    MapFree(mapStored, ctx->level.map_height);
+    castor_MapFree(mapStored, ctx->level.map_height);
 
-    LevelLoader level = Level(ctx->level.index+1);
+    castor_LevelLoader level = Level(ctx->level.index+1);
     if(!level) {
         ctx->engine.running = false;
         return;
     }
-    FreeLevel(ctx);
+    castor_FreeLevel(ctx);
     ctx->level.index++;
-    LoadLevel(ctx, level);
+    castor_LoadLevel(ctx, level);
 
-    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
-    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
+    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
 
 
     if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) 
@@ -338,16 +338,16 @@ void HandleLevelTransition(Context* ctx, SDL_Event* event)
     GlitchActivated = false;
 }
 
-void HandleLevelFail(Context* ctx, SDL_Event* event)
+void HandleLevelFail(castor_Context* ctx, SDL_Event* event)
 {
-    MapFree(mapStored, ctx->level.map_height);
+    castor_MapFree(mapStored, ctx->level.map_height);
 
-    FreeLevel(ctx);
-    LoadLevel(ctx, Level(0));
+    castor_FreeLevel(ctx);
+    castor_LoadLevel(ctx, Level(0));
     ctx->level.index = 0;
 
-    mapStored = MapCreate(ctx->level.map_height, ctx->level.map_width);
-    MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
+    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
 
     if(UI_POLL_SCREEN(FailScreen, ctx, event))
         ctx->engine.running = false;

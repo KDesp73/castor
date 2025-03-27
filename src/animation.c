@@ -2,9 +2,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_stdinc.h>
 
-Animation LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameWidth, int frameHeight, Uint32 rate)
+castor_Animation castor_LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameWidth, int frameHeight, Uint32 rate)
 {
-    Animation anim = {.frameDelay = rate};
+    castor_Animation anim = {.frameDelay = rate};
 
     SDL_Surface *surface = IMG_Load(filePath);
     if (!surface) {
@@ -31,7 +31,7 @@ Animation LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameW
     return anim;
 }
 
-void UpdateAnimation(Animation *anim, Uint32 currentTime)
+void castor_UpdateAnimation(castor_Animation *anim, Uint32 currentTime)
 {
     if (currentTime > anim->lastUpdateTime + anim->frameDelay) {
         anim->currentFrame = (anim->currentFrame + 1) % anim->totalFrames;
@@ -39,7 +39,7 @@ void UpdateAnimation(Animation *anim, Uint32 currentTime)
     }
 }
 
-void RenderAnimation(SDL_Renderer *renderer, Animation *anim, float scale, int x, int y, int frameIndex)
+void castor_RenderAnimation(SDL_Renderer *renderer, castor_Animation *anim, float scale, int x, int y, int frameIndex)
 {
     if (!anim || !anim->texture || frameIndex >= anim->totalFrames) return;
 
@@ -50,7 +50,7 @@ void RenderAnimation(SDL_Renderer *renderer, Animation *anim, float scale, int x
     anim->currentFrame = frameIndex;
 }
 
-void FreeAnimation(Animation *anim)
+void castor_FreeAnimation(castor_Animation *anim)
 {
     if (anim->texture) {
         SDL_DestroyTexture(anim->texture);

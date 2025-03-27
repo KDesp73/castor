@@ -2,7 +2,7 @@
 #include <string.h>
 
 
-void AppendEvent(Context* ctx, Event* evt)
+void castor_AppendEvent(castor_Context* ctx, castor_Event* evt)
 {
     if(ctx->level.event_count >= MAX_EVENTS) return;
 
@@ -10,20 +10,20 @@ void AppendEvent(Context* ctx, Event* evt)
 }
 
 
-void ProcessEvents(Context* ctx)
+void castor_ProcessEvents(castor_Context* ctx)
 {
     for(size_t i = 0; i < ctx->level.event_count; i++) {
-        Event* ev = ctx->level.events[i];
+        castor_Event* ev = ctx->level.events[i];
         if(!ev) continue;
 
-        EventProcess(ev);
+        castor_EventProcess(ev);
     }
 }
 
-Event* SearchEvent(Context* ctx, const char* id)
+castor_Event* castor_SearchEvent(castor_Context* ctx, const char* id)
 {
     for(size_t i = 0; i < ctx->level.event_count; i++) {
-        Event* ev = ctx->level.events[i];
+        castor_Event* ev = ctx->level.events[i];
         if(!ev) continue;
         if(strlen(ev->id) == 0) continue;
 
@@ -33,11 +33,11 @@ Event* SearchEvent(Context* ctx, const char* id)
     return NULL;
 }
 
-void FreeEvents(Context* ctx)
+void castor_FreeEvents(castor_Context* ctx)
 {
     for(size_t i = 0; i < ctx->level.event_count; i++){
         if(ctx->level.events[i]){
-            EventFree(&ctx->level.events[i]);
+            castor_EventFree(&ctx->level.events[i]);
         }
     }
     ctx->level.event_count = 0;

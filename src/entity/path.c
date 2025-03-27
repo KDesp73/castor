@@ -10,9 +10,9 @@ static bool IsWalkable(int** map, int x, int y, size_t mapW, size_t mapH)
     return map[y][x] == 0;  // 0 is assumed to be a walkable tile, change if needed
 }
 
-Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY)
+castor_Path castor_GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY)
 {
-    Path result;
+    castor_Path result;
     result.length = 0;
 
     if (startX < 0 || startX >= mapW || startY < 0 || startY >= mapH || !IsWalkable(map, (int)startX, (int)startY, mapW, mapH)) {
@@ -123,7 +123,7 @@ Path GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLe
     return result;
 }
 
-void PathPrint(const Path path)
+void castor_PathPrint(const castor_Path path)
 {
     for(size_t i = 0; i < path.length; i++){
         printf("%zu: %f, %f %s\n", i, path.path[i][0], path.path[i][1], (i == path.index) ? "<" : "");

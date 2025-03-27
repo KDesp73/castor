@@ -8,7 +8,7 @@ void UIOpen(UI* ui, UIFont* font)
 
 void UIRender(UI* ui, void* context)
 {
-    Context* ctx = context;
+    castor_Context* ctx = context;
 
     // TOASTS
     for(size_t i = 0; i < ui->toast_count; i++){

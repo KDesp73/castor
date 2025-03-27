@@ -13,7 +13,7 @@
 #define FACE_THRESHOLD 0.8f
 #define FLOATP(x) printf(#x ": %f\n", x);
 
-static bool PlayerIsAttacking(Player* player, Context* ctx)
+static bool PlayerIsAttacking(castor_Player* player, castor_Context* ctx)
 {
     // Check if attack button is pressed (space or left mouse button)
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -30,7 +30,7 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
 
     // Iterate through entities
     for (size_t i = 0; i < ctx->level.entity_count; ++i) {
-        Entity* entity = ctx->level.entities[i];
+        castor_Entity* entity = ctx->level.entities[i];
 
         if (!entity || !entity->sprite) continue;
 
@@ -56,12 +56,12 @@ static bool PlayerIsAttacking(Player* player, Context* ctx)
     return false;
 }
 
-bool PlayerAttackTrigger(Event* evt)
+bool PlayerAttackTrigger(castor_Event* evt)
 {
     if(!INV.sword) return false;
 
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
+    castor_Context* ctx = evt->ctx;
+    castor_Player* player = ctx->level.player;
     
     return PlayerIsAttacking(player, ctx);
 }
@@ -71,13 +71,13 @@ static int calculateDamage(int base_damage, int variance) {
     return base_damage + random_offset;
 }
 
-void PlayerAttackAction(Event* evt)
+void PlayerAttackAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
+    castor_Context* ctx = evt->ctx;
+    castor_Player* player = ctx->level.player;
 
     for (size_t i = 0; i < ctx->level.entity_count; ++i) {
-        Entity* entity = ctx->level.entities[i];
+        castor_Entity* entity = ctx->level.entities[i];
 
         if (entity == NULL || entity->sprite == NULL) {
             continue;
@@ -90,20 +90,20 @@ void PlayerAttackAction(Event* evt)
 
 
         // Apply damage and play sound
-        float damage = calculateDamage(EntityTakeDamage(entity, 30), 5);
+        float damage = calculateDamage(castor_EntityTakeDamage(entity, 30), 5);
         AddDamageNumber(ctx, ctx->sdl.screen_width / 2, ctx->sdl.screen_height / 2, damage);
-        PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
+        castor_PlaySound(ctx, "./assets/sounds/sword-hit.mp3", ctx->sound.volume, 200);
 
         // If the entity is dead, remove it
         if (entity->health <= 0) {
-            RemoveEntity(ctx, entity);
+            castor_RemoveEntity(ctx, entity);
         }
 
         break; // Only attack one entity at a time
     }
 }
 
-static void AddToInventory(const Item* item)
+static void AddToInventory(const castor_Item* item)
 {
     if(!strcmp("key", item->id)) {
         INV.key = true;
@@ -115,7 +115,7 @@ static void AddToInventory(const Item* item)
 }
 
 #define TOUCH_DISTANCE 1.0f
-static bool PlayerTouchingSprite(const Player* player, const Sprite* sprite)
+static bool PlayerTouchingSprite(const castor_Player* player, const castor_Sprite* sprite)
 {
     if (!player || !sprite) return false;
 
@@ -125,16 +125,16 @@ static bool PlayerTouchingSprite(const Player* player, const Sprite* sprite)
 
     return distance < TOUCH_DISTANCE;
 }
-static bool CheckItemPickup(Context* ctx)
+static bool CheckItemPickup(castor_Context* ctx)
 {
     bool picked_up = false;
     for (int i = ctx->level.item_count - 1; i >= 0; i--) {
-        Item* item = ctx->level.items[i];
-        Sprite* sprite = item->sprite;
+        castor_Item* item = ctx->level.items[i];
+        castor_Sprite* sprite = item->sprite;
 
         if (PlayerTouchingSprite(ctx->level.player, sprite)) {
             AddToInventory(item);
-            RemoveItem(ctx, item);
+            castor_RemoveItem(ctx, item);
             picked_up = true;
             break;
         }
@@ -142,32 +142,32 @@ static bool CheckItemPickup(Context* ctx)
     return picked_up;
 }
 
-bool PickItemTrigger(Event* evt)
+bool PickItemTrigger(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
+    castor_Context* ctx = evt->ctx;
 
     return CheckItemPickup(ctx);
 }
 
-void PickItemAction(Event* evt)
+void PickItemAction(castor_Event* evt)
 {
     // Since the picking-up is happening 
     // in the trigger we can do nothing here
 }
 
 
-void DoorTooltipAction(Event* evt)
+void DoorTooltipAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
+    castor_Context* ctx = evt->ctx;
 
     UIToast toast = {0};
     UIToastInit(&toast, "Press [E] to unlock", 2000, ctx->sdl.screen_width - 270, ctx->sdl.screen_height - 160);
     UIAppendToast(&ctx->ui, toast);
 }
 
-void DoorKeyAction(Event* evt)
+void DoorKeyAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
+    castor_Context* ctx = evt->ctx;
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
     if (keys[SDL_SCANCODE_E]) {
@@ -175,14 +175,14 @@ void DoorKeyAction(Event* evt)
     }
 }
 
-bool EnemyAttackTrigger(Event* evt)
+bool EnemyAttackTrigger(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
+    castor_Context* ctx = evt->ctx;
+    castor_Player* player = ctx->level.player;
 
     // Iterate through entities to apply damage
     for (size_t i = 0; i < ctx->level.entity_count; ++i) {
-        Entity* entity = ctx->level.entities[i];
+        castor_Entity* entity = ctx->level.entities[i];
 
         if (entity == NULL || entity->sprite == NULL) {
             continue; // Skip invalid entities or entities without sprites
@@ -192,7 +192,7 @@ bool EnemyAttackTrigger(Event* evt)
         if (player->X >= entity->sprite->x - MIN_STOP_DISTANCE && player->X <= entity->sprite->x + MIN_STOP_DISTANCE &&
             player->Y >= entity->sprite->y - MIN_STOP_DISTANCE && player->Y <= entity->sprite->y + MIN_STOP_DISTANCE) {
 
-            float damage = EntityDealDamage(entity);
+            float damage = castor_EntityDealDamage(entity);
             PLR.health -= damage;
 
             return true;
@@ -202,16 +202,16 @@ bool EnemyAttackTrigger(Event* evt)
     return false;
 }
 
-void EnemyAttackAction(Event* evt)
+void EnemyAttackAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
-    PlaySound(ctx, "./assets/sounds/grunt.mp3", ctx->sound.volume, 1000);
+    castor_Context* ctx = evt->ctx;
+    castor_PlaySound(ctx, "./assets/sounds/grunt.mp3", ctx->sound.volume, 1000);
     if(PLR.health <= 0) {
         ctx->level.fail = true;
     }
 }
 
-bool GlitchTrigger(Event* evt)
+bool GlitchTrigger(castor_Event* evt)
 {
     if(!INV.glasses) return false;
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
@@ -220,29 +220,29 @@ bool GlitchTrigger(Event* evt)
     return true;
 }
 
-bool GlassesTipTrigger(Event* evt)
+bool GlassesTipTrigger(castor_Event* evt)
 {
-    Context* ctx = (evt)->ctx;                             
-    Player* player = ctx->level.player;                    
+    castor_Context* ctx = (evt)->ctx;                             
+    castor_Player* player = ctx->level.player;                    
     return (                                               
         ((player->X) >= (1) && (player->X) < (1) + 1) && 
         ((player->Y) >= (11) && (player->Y) < (11) + 1)    
     );                                                     
 }
 
-void GlassesTipAction(Event* evt)
+void GlassesTipAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
+    castor_Context* ctx = evt->ctx;
 
     UIToast toast = {0};
     UIToastInit(&toast, "Press [X] to activate the glasses", 5000, ctx->sdl.screen_width - 270, ctx->sdl.screen_height - 160);
     UIAppendToast(&ctx->ui, toast);
 }
 
-bool TeleportTrigger(Event* evt)
+bool TeleportTrigger(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
+    castor_Context* ctx = evt->ctx;
+    castor_Player* player = ctx->level.player;
 
 #define STEPPED_ON_SQUARE(_x, _y) \
         ((player->X) >= (_x) && (player->X) < (_x) + 1) && \
@@ -258,20 +258,20 @@ bool TeleportTrigger(Event* evt)
 
     return false;
 }
-void TeleportAction(Event* evt)
+void TeleportAction(castor_Event* evt)
 {
-    Context* ctx = evt->ctx;
-    Player* player = ctx->level.player;
+    castor_Context* ctx = evt->ctx;
+    castor_Player* player = ctx->level.player;
     
-    PlayerPlace(player, 27, 27, 180);
+    castor_PlayerPlace(player, 27, 27, 180);
 }
 
-bool CreditsTrigger(Event* evt)
+bool CreditsTrigger(castor_Event* evt)
 {
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     return keys[SDL_SCANCODE_G];
 }
-void CreditsAction(Event* evt)
+void CreditsAction(castor_Event* evt)
 {
     INV.glasses = true;
 }

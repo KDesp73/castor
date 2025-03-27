@@ -66,21 +66,21 @@ typedef struct {
         bool next;
         bool fail;
 
-        Player* player;
+        castor_Player* player;
         int** map;
         size_t map_width;
         size_t map_height;
         #define MAX_SPRITES 32
-        Sprite* sprites[MAX_SPRITES];
+        castor_Sprite* sprites[MAX_SPRITES];
         size_t sprite_count;
         #define MAX_ENTITIES 16
-        Entity* entities[MAX_ENTITIES];
+        castor_Entity* entities[MAX_ENTITIES];
         size_t entity_count;
         #define MAX_ITEMS 32
-        Item* items[MAX_ITEMS];
+        castor_Item* items[MAX_ITEMS];
         size_t item_count;
         #define MAX_EVENTS 128
-        Event* events[MAX_EVENTS];
+        castor_Event* events[MAX_EVENTS];
         size_t event_count;
     } level;
 
@@ -88,48 +88,48 @@ typedef struct {
     struct {
         int volume;
         #define MAX_SOUND_THREADS 32
-        SoundThread threads[MAX_SOUND_THREADS];
+        castor_SoundThread threads[MAX_SOUND_THREADS];
         size_t thread_count;
     } sound;
 
     // UI
     UI ui;
-} Context;
+} castor_Context;
 
 // SDL
-bool ConstructRenderer(Context* ctx);
+bool castor_ConstructRenderer(castor_Context* ctx);
 
 // Raycaster
-void FreeTextures(Context* ctx);
-void FreeSprites(Context* ctx);
-void LoadTextures(Context* ctx);
-void AppendSprite(Context* ctx, Sprite* sprite);
-void RemoveSprite(Context* ctx, const Sprite* sprite);
+void castor_FreeTextures(castor_Context* ctx);
+void castor_FreeSprites(castor_Context* ctx);
+void castor_LoadTextures(castor_Context* ctx);
+void castor_AppendSprite(castor_Context* ctx, castor_Sprite* sprite);
+void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite);
 
 // Level
-void FreeEntities(Context* ctx);
-void FreeItems(Context* ctx);
-void FreeEvents(Context* ctx);
-void LoadLevelMap(Context* ctx, const char* path);
-void AppendEntity(Context* ctx, Entity* entity);
-void AppendItem(Context* ctx, Item* item);
-void AppendEvent(Context* ctx, Event* evt);
-int** ExportSearchMap(Context* ctx);
-void UpdateEntities(Context* ctx, float deltaTime);
-void ProcessEvents(Context* ctx);
-Event* SearchEvent(Context* ctx, const char* id);
-void RemoveEntity(Context* ctx, const Entity* entity);
-void RemoveItem(Context* ctx, const Item* item);
-void ItemsIdle(Context* ctx, float elapsedTime);
-void FreeLevel(Context* ctx);
+void castor_FreeEntities(castor_Context* ctx);
+void castor_FreeItems(castor_Context* ctx);
+void castor_FreeEvents(castor_Context* ctx);
+void castor_LoadLevelMap(castor_Context* ctx, const char* path);
+void castor_AppendEntity(castor_Context* ctx, castor_Entity* entity);
+void castor_AppendItem(castor_Context* ctx, castor_Item* item);
+void castor_AppendEvent(castor_Context* ctx, castor_Event* evt);
+int** castor_ExportSearchMap(castor_Context* ctx);
+void castor_UpdateEntities(castor_Context* ctx, float deltaTime);
+void castor_ProcessEvents(castor_Context* ctx);
+castor_Event* castor_SearchEvent(castor_Context* ctx, const char* id);
+void castor_RemoveEntity(castor_Context* ctx, const castor_Entity* entity);
+void castor_RemoveItem(castor_Context* ctx, const castor_Item* item);
+void castor_ItemsIdle(castor_Context* ctx, float elapsedTime);
+void castor_FreeLevel(castor_Context* ctx);
 
 // Sound
-int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms);
-void CleanupThreads(Context* ctx);
+int castor_PlaySound(castor_Context* ctx, const char* file, int volume, Uint32 duration_ms);
+void castor_CleanupThreads(castor_Context* ctx);
 
 // Engine
-void ContextInit(Context* ctx);
-void ContextFree(Context* ctx);
+void castor_ContextInit(castor_Context* ctx);
+void castor_ContextFree(castor_Context* ctx);
 
 
 

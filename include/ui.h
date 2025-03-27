@@ -98,7 +98,7 @@ typedef struct {
     UIToast toasts[MAX_TOASTS];
     size_t toast_count;
     #define MAX_DAMAGE_NUMBERS 16
-    DamageNumber damage_numbers[MAX_DAMAGE_NUMBERS];
+    castor_DamageNumber damage_numbers[MAX_DAMAGE_NUMBERS];
     size_t damage_number_count;
 } UI;
 void UIOpen(UI* ui, UIFont* font);

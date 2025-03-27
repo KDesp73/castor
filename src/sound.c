@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define THREAD_STACK_SIZE 1024  // You can adjust this size depending on your needs
+#define THREAD_STACK_SIZE 1024
 
 typedef struct {
     const char* file;
@@ -44,7 +44,7 @@ static int PlaySoundThread(void* data)
     return 0;
 }
 
-int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
+int castor_PlaySound(castor_Context* ctx, const char* file, int volume, Uint32 duration_ms)
 {
     if (!file || file[0] == '\0') {
         printf("Invalid file path provided!\n");
@@ -52,7 +52,7 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
     }
 
     if (ctx->sound.thread_count >= MAX_SOUND_THREADS) {
-        CleanupThreads(ctx);
+        castor_CleanupThreads(ctx);
         return 1;
     }
 
@@ -84,7 +84,7 @@ int PlaySound(Context* ctx, const char* file, int volume, Uint32 duration_ms)
     return 0;
 }
 
-void CleanupThreads(Context* ctx)
+void castor_CleanupThreads(castor_Context* ctx)
 {
     int new_count = 0;
 

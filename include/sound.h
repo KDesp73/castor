@@ -8,6 +8,6 @@ typedef struct {
     const char* file;
     int volume;
     Uint32 duration_ms;
-} SoundThread;
+} castor_SoundThread;
 
 #endif // SOUND_H

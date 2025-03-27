@@ -14,7 +14,7 @@ static bool IsValidNode(int x, int y, size_t mapW, size_t mapH, const int** map)
 }
 
 // A* algorithm to find the next step toward the player
-Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, size_t mapH)
+castor_Node castor_AStar(castor_Entity* entity, const castor_Player* player, const int** map, size_t mapW, size_t mapH)
 {
     int startX = (int)floor(entity->sprite->x);
     int startY = (int)floor(entity->sprite->y);
@@ -22,7 +22,7 @@ Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, s
     int targetY = (int)floor(player->Y);
 
     if (startX == targetX && startY == targetY) {
-        return (Node){startX, startY};  // Already at the target, return current position
+        return (castor_Node){startX, startY};  // Already at the target, return current position
     }
 
     const int dx[4] = {1, -1, 0, 0};  // Directions for neighboring nodes (right, left, down, up)
@@ -30,21 +30,21 @@ Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, s
 
     // Cost and came_from tracking
     float g_cost[MAX_PATH][MAX_PATH];
-    Node came_from[MAX_PATH][MAX_PATH];
+    castor_Node came_from[MAX_PATH][MAX_PATH];
     for (size_t i = 0; i < MAX_PATH; i++) {
         for (size_t j = 0; j < MAX_PATH; j++) {
             g_cost[i][j] = INF;
         }
     }
 
-    PriorityQueue openSet = {0};
-    AStarNode startNode = {{startX, startY}, 0, Heuristic(startX, startY, targetX, targetY), 0};
+    castor_PriorityQueue openSet = {0};
+    castor_AStarNode startNode = {{startX, startY}, 0, Heuristic(startX, startY, targetX, targetY), 0};
     openSet.nodes[openSet.size++] = startNode;
     g_cost[startY][startX] = 0;
 
     while (openSet.size > 0) {
         // Get the node with the lowest f value
-        AStarNode current = openSet.nodes[0];
+        castor_AStarNode current = openSet.nodes[0];
         size_t bestIdx = 0;
         for (size_t i = 1; i < openSet.size; i++) {
             if (openSet.nodes[i].f < current.f) {
@@ -74,19 +74,19 @@ Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, s
 
             float tentative_g = g_cost[y][x] + 1;
             if (tentative_g < g_cost[ny][nx]) {
-                came_from[ny][nx] = (Node){x, y};
+                came_from[ny][nx] = (castor_Node){x, y};
                 g_cost[ny][nx] = tentative_g;
                 float h = Heuristic(nx, ny, targetX, targetY);
                 float f = tentative_g + h;
-                AStarNode neighborNode = {{nx, ny}, tentative_g, h, f};
+                castor_AStarNode neighborNode = {{nx, ny}, tentative_g, h, f};
                 openSet.nodes[openSet.size++] = neighborNode;
             }
         }
     }
 
     // Reconstruct the next best move
-    Node current = {targetX, targetY};
-    Node nextMove = {startX, startY};  // Default to staying in place
+    castor_Node current = {targetX, targetY};
+    castor_Node nextMove = {startX, startY};  // Default to staying in place
 
     while (came_from[current.y][current.x].x != startX || came_from[current.y][current.x].y != startY) {
         nextMove = current;

@@ -2,7 +2,7 @@
 #include "entity.h"
 #include <math.h>
 
-void MoveChase(struct Entity* entity, const int** map, size_t mapW, size_t mapH, const Player* player, float deltaTime)
+void castor_MoveChase(struct castor_Entity* entity, const int** map, size_t mapW, size_t mapH, const castor_Player* player, float deltaTime)
 {
     if (!entity || !player) return;
 
@@ -12,7 +12,7 @@ void MoveChase(struct Entity* entity, const int** map, size_t mapW, size_t mapH,
     float distance = sqrtf(dx * dx + dy * dy);
 
     if (distance > entity->detection_range) {
-        EntityFollowDefaultPath(entity, deltaTime);
+        castor_EntityFollowDefaultPath(entity, deltaTime);
         return;
     }
 
@@ -27,7 +27,7 @@ void MoveChase(struct Entity* entity, const int** map, size_t mapW, size_t mapH,
     entity->sprite->y += dirY * entity->speed * deltaTime;
 }
 
-void MoveAStar(Entity* entity, const int** map, size_t mapW, size_t mapH, const Player* player, float deltaTime)
+void castor_MoveAStar(castor_Entity* entity, const int** map, size_t mapW, size_t mapH, const castor_Player* player, float deltaTime)
 {
     if (!entity || !player) return;
 
@@ -37,13 +37,13 @@ void MoveAStar(Entity* entity, const int** map, size_t mapW, size_t mapH, const 
     float distance = sqrtf(dx * dx + dy * dy);
 
     if (distance > entity->detection_range) {
-        EntityFollowDefaultPath(entity, deltaTime);
+        castor_EntityFollowDefaultPath(entity, deltaTime);
         return;
     }
     if (distance <= MIN_STOP_DISTANCE) return; // Stop moving if too close
 
     // Get the next step from A*
-    Node nextMove = AStar(entity, player, map, mapW, mapH);
+    castor_Node nextMove = castor_AStar(entity, player, map, mapW, mapH);
 
     // Calculate movement direction towards the next step
     float moveX = nextMove.x - entity->sprite->x;
@@ -59,7 +59,7 @@ void MoveAStar(Entity* entity, const int** map, size_t mapW, size_t mapH, const 
     }
 }
 
-void MoveSmoothAStar(Entity* entity, const int** map, size_t mapW, size_t mapH, const Player* player, float deltaTime)
+void castor_MoveSmoothAStar(castor_Entity* entity, const int** map, size_t mapW, size_t mapH, const castor_Player* player, float deltaTime)
 {
     if (!entity || !player) return;
 
@@ -69,13 +69,13 @@ void MoveSmoothAStar(Entity* entity, const int** map, size_t mapW, size_t mapH, 
     float distance = sqrtf(dx * dx + dy * dy);
 
     if (distance > entity->detection_range) {
-        EntityFollowDefaultPath(entity, deltaTime);
+        castor_EntityFollowDefaultPath(entity, deltaTime);
         return;
     }
 
     if (distance <= MIN_STOP_DISTANCE) return;
 
-    Node nextMove = AStar(entity, player, map, mapW, mapH);
+    castor_Node nextMove = castor_AStar(entity, player, map, mapW, mapH);
 
     // Calculate the direction towards the next path node
     float moveX = nextMove.x - entity->sprite->x;

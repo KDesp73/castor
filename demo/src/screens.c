@@ -36,7 +36,7 @@ static size_t buttonsHeight = 40;
 
 int StartScreen(void* context, SDL_Event* evt)
 {
-    Context* ctx = (Context*) context;
+    castor_Context* ctx = (castor_Context*) context;
     SCREEN_HEADER(ctx);
 
     UIButton start_button = {
@@ -80,7 +80,7 @@ int StartScreen(void* context, SDL_Event* evt)
 
 int PauseScreen(void* context, SDL_Event* evt)
 {
-    Context* ctx = context;
+    castor_Context* ctx = context;
     SCREEN_HEADER(ctx);
 
     const char* title = "Paused";
@@ -143,7 +143,7 @@ int PauseScreen(void* context, SDL_Event* evt)
 
 int SettingsScreen(void* context, SDL_Event* evt)
 {
-    Context* ctx = context;
+    castor_Context* ctx = context;
     SCREEN_HEADER(ctx);
     const char* title = "Settings";
     UIFont title_font = {0};
@@ -210,7 +210,7 @@ int SettingsScreen(void* context, SDL_Event* evt)
         }
         
         if (UIButtonIsPressed(evt, &fullscreenButton)) {
-            SetFullscreen(ctx, !ctx->settings.fullscreen);
+            castor_SetFullscreen(ctx, !ctx->settings.fullscreen);
             fullscreenButton.label = (ctx->settings.fullscreen) ? "Window" : "Fullscreen";
         }
     }
@@ -250,7 +250,7 @@ static const char* hints[] = {
     "Collect keys to unlock new areas!",
     "Find a sword to defend yourself",
     "Pause the game anytime with [ESC].",
-    "Tip: Watch out for glitching textures… they might reveal secrets!"
+    "Tip: Watch out for glitching textures they might reveal secrets!"
 };
 static int hint_index = -1;
 
@@ -259,7 +259,7 @@ int LoadingScreen(void* context, SDL_Event* evt)
     if(hint_index == -1)
         hint_index = rand() % (sizeof(hints) / sizeof(hints[0]));
 
-    Context* ctx = context;
+    castor_Context* ctx = context;
     SCREEN_HEADER(ctx);
     const char* title = "Next level";
     UIFont title_font = {0};
@@ -314,7 +314,7 @@ int LoadingScreen(void* context, SDL_Event* evt)
 
 int FailScreen(void* context, SDL_Event* evt)
 {
-    Context* ctx = context;
+    castor_Context* ctx = context;
     SCREEN_HEADER(ctx);
     const char* title = "You died";
     UIFont title_font = {0};

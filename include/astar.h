@@ -8,19 +8,19 @@
 
 typedef struct {
     int x, y;
-} Node;
+} castor_Node;
 
 typedef struct {
-    Node node;
+    castor_Node node;
     float g, h, f;
-} AStarNode;
+} castor_AStarNode;
 
 typedef struct {
-    AStarNode nodes[MAX_PATH];
+    castor_AStarNode nodes[MAX_PATH];
     size_t size;
-} PriorityQueue;
+} castor_PriorityQueue;
 
-Node AStar(Entity* entity, const Player* player, const int** map, size_t mapW, size_t mapH);
+castor_Node castor_AStar(castor_Entity* entity, const castor_Player* player, const int** map, size_t mapW, size_t mapH);
 
 
 #endif // A_STAR_H

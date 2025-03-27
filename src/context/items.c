@@ -8,13 +8,13 @@ static float PseudoRandomValue(uintptr_t seed)
     return (float)(seed % 1000) / 1000.0f;
 }
 
-void ItemsIdle(Context* ctx, float deltaTime)
+void castor_ItemsIdle(castor_Context* ctx, float deltaTime)
 {
     float baseAmplitude = 1.0f;
     float baseSpeed = 2.0f;
 
     for (size_t i = 0; i < ctx->level.item_count; i++) {
-        Item* item = ctx->level.items[i];
+        castor_Item* item = ctx->level.items[i];
         if (item && item->sprite) {
             uintptr_t seed = (uintptr_t)item;
             float amplitude = baseAmplitude * (0.75f + 0.5f * PseudoRandomValue(seed));
@@ -28,17 +28,17 @@ void ItemsIdle(Context* ctx, float deltaTime)
 }
 
 
-void AppendItem(Context* ctx, Item* item)
+void castor_AppendItem(castor_Context* ctx, castor_Item* item)
 {
     if (ctx->level.item_count >= MAX_ITEMS) return;
 
-    AppendSprite(ctx, item->sprite);
+    castor_AppendSprite(ctx, item->sprite);
 
     item->index = ctx->level.item_count;
     ctx->level.items[ctx->level.item_count++] = item;
 }
 
-void RemoveItem(Context* ctx, const Item* item)
+void castor_RemoveItem(castor_Context* ctx, const castor_Item* item)
 {
     assert(ctx);
     assert(item);
@@ -50,9 +50,9 @@ void RemoveItem(Context* ctx, const Item* item)
     }
 
     if (item->sprite) {
-        RemoveSprite(ctx, item->sprite);
+        castor_RemoveSprite(ctx, item->sprite);
     }
-    ItemFree(&ctx->level.items[index]);
+    castor_ItemFree(&ctx->level.items[index]);
 
     for (size_t i = index; i < ctx->level.item_count - 1; i++) {
         ctx->level.items[i] = ctx->level.items[i + 1];
@@ -65,11 +65,11 @@ void RemoveItem(Context* ctx, const Item* item)
     ctx->level.item_count--;
 }
 
-void FreeItems(Context* ctx)
+void castor_FreeItems(castor_Context* ctx)
 {
     for(size_t i = 0; i < ctx->level.item_count; i++){
         if(ctx->level.items[i]){
-            ItemFree(&ctx->level.items[i]);
+            castor_ItemFree(&ctx->level.items[i]);
         }
     }
     ctx->level.item_count = 0;

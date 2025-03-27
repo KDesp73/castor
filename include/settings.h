@@ -3,6 +3,6 @@
 
 #include "context.h"
 
-void SetFullscreen(Context* ctx, bool fullscreen);
+void castor_SetFullscreen(castor_Context* ctx, bool fullscreen);
 
 #endif // SETTINGS_H

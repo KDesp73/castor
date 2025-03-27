@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void PlayerInit(Player* player, double speed, double angleDelta, double angle, double x, double y)
+void castor_PlayerInit(castor_Player* player, double speed, double angleDelta, double angle, double x, double y)
 {
     player->speed = speed;
     player->angleDelta = angleDelta;
@@ -12,17 +12,17 @@ void PlayerInit(Player* player, double speed, double angleDelta, double angle, d
     player->Y = y;
 }
 
-Player* PlayerNew(double speed, double angleDelta, double angle, double x, double y)
+castor_Player* castor_PlayerNew(double speed, double angleDelta, double angle, double x, double y)
 {
-    Player* result = (Player*) malloc(sizeof(Player));
+    castor_Player* result = (castor_Player*) malloc(sizeof(castor_Player));
 
-    PlayerInit(result, speed, angleDelta, angle, x, y);
+    castor_PlayerInit(result, speed, angleDelta, angle, x, y);
 
     return result;
 }
 
 
-void PlayerFree(Player** player)
+void castor_PlayerFree(castor_Player** player)
 {
     if(*player){
         free(*player);
@@ -30,16 +30,16 @@ void PlayerFree(Player** player)
     }
 }
 
-Player PlayerStore(const Player* player)
+castor_Player castor_PlayerStore(const castor_Player* player)
 {
-    return (Player) {
+    return (castor_Player) {
         .X = player->X,
         .Y = player->Y,
         .angleX = player->angleX,
         .speed = player->speed
     };
 }
-void PlayerLoad(Player* player, Player stored)
+void castor_PlayerLoad(castor_Player* player, castor_Player stored)
 {
     player->X = stored.X;
     player->Y = stored.Y;
@@ -47,7 +47,7 @@ void PlayerLoad(Player* player, Player stored)
     player->speed = stored.speed;
 }
 
-void PlayerPlace(Player* player, double x, double y, double angle)
+void castor_PlayerPlace(castor_Player* player, double x, double y, double angle)
 {
     player->X = x;
     player->Y = y;

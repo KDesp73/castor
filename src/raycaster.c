@@ -47,7 +47,7 @@ static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, floa
     return fmaxf(0.0f, fminf(0.999f, texCoord));
 }
 
-void CastWalls(SDL_Renderer *renderer, Context* ctx)
+void castor_CastWalls(SDL_Renderer *renderer, castor_Context* ctx)
 {
     // Ensure the Z-buffer is allocated
     if (ctx->raycaster.z_buffer == NULL) {
@@ -121,7 +121,7 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
 
             SDL_RenderCopy(renderer, ctx->raycaster.textures[tile-1], &srcRect, &dstRect);
         } else {
-            switch (tile) {
+            switch (tile % 11) {
                 case 1: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_RED)); break;
                 case 2: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_GREEN)); break;
                 case 3: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BLUE)); break;
@@ -132,6 +132,7 @@ void CastWalls(SDL_Renderer *renderer, Context* ctx)
                 case 8: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_TEAL)); break;
                 case 9: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_OLIVE)); break;
                 case 10: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_BRONZE)); break;
+                default: SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(UI_COLOR_GREEN)); break;
             }
             SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom); 
         }
@@ -153,7 +154,7 @@ static Uint32* getPixels(SDL_Renderer* renderer, SDL_Texture* texture, int* W, i
     return pixels;
 }
 
-void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
+void castor_CastFloorAndCeiling(SDL_Renderer *renderer, const castor_Context *ctx)
 {
     if (
         !ctx->raycaster.textures[ctx->raycaster.ceiling_texture_index] ||
@@ -243,7 +244,7 @@ void CastFloorAndCeiling(SDL_Renderer *renderer, const Context *ctx)
     free(floorPixels);
 }
 
-static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, double planeX, double planeY) 
+static bool renderSprite(castor_Context* ctx, castor_Sprite sprite, double dirX, double dirY, double planeX, double planeY) 
 {
     SDL_Texture* spriteTexture = ctx->raycaster.sprite_textures[sprite.texture_id];
     if (!spriteTexture) return false;
@@ -302,9 +303,9 @@ static bool renderSprite(Context* ctx, Sprite sprite, double dirX, double dirY, 
     return true;
 }
 
-void CastSprites(SDL_Renderer* renderer, Context* ctx)
+void castor_CastSprites(SDL_Renderer* renderer, castor_Context* ctx)
 {
-    Player* player = ctx->level.player;
+    castor_Player* player = ctx->level.player;
 
     // Precompute camera vectors
     double dirX = cos(player->angleX * M_PI / 180.0);
@@ -312,21 +313,21 @@ void CastSprites(SDL_Renderer* renderer, Context* ctx)
     double planeX = -dirY * tan(ctx->settings.fov * M_PI / 360.0);
     double planeY = dirX * tan(ctx->settings.fov * M_PI / 360.0);
 
-    Sprite* list[ctx->level.sprite_count];
-    memcpy(list, ctx->level.sprites, ctx->level.sprite_count * sizeof(Sprite*));
+    castor_Sprite* list[ctx->level.sprite_count];
+    memcpy(list, ctx->level.sprites, ctx->level.sprite_count * sizeof(castor_Sprite*));
 
     for (int i = 0; i < ctx->level.sprite_count; i++) {
-        Sprite* sprite = list[i];
+        castor_Sprite* sprite = list[i];
         if(!sprite) continue;
         double dx = sprite->x - player->X;
         double dy = sprite->y - player->Y;
         sprite->distance = dx * dx + dy * dy;
     }
 
-    qsort(list, ctx->level.sprite_count, sizeof(Sprite*), SpriteCmp);
+    qsort(list, ctx->level.sprite_count, sizeof(castor_Sprite*), castor_SpriteCmp);
 
     for (int i = 0; i < ctx->level.sprite_count; i++) {
-        Sprite* sprite = list[i];
+        castor_Sprite* sprite = list[i];
         if(!renderSprite(ctx, *sprite, dirX, dirY, planeX, planeY)) continue;
     }
 }

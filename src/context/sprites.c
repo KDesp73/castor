@@ -2,7 +2,7 @@
 #include <assert.h>
 
 
-void AppendSprite(Context* ctx, Sprite* sprite)
+void castor_AppendSprite(castor_Context* ctx, castor_Sprite* sprite)
 {
     if (ctx->level.sprite_count >= MAX_SPRITES) return;
 
@@ -10,7 +10,7 @@ void AppendSprite(Context* ctx, Sprite* sprite)
     ctx->level.sprites[ctx->level.sprite_count++] = sprite;
 }
 
-void RemoveSprite(Context* ctx, const Sprite* sprite)
+void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite)
 {
     assert(ctx);
     assert(sprite);
@@ -21,7 +21,7 @@ void RemoveSprite(Context* ctx, const Sprite* sprite)
         return;
     }
 
-    SpriteFree(&ctx->level.sprites[index]);
+    castor_SpriteFree(&ctx->level.sprites[index]);
 
     // Shift remaining sprites left
     for (size_t i = index; i < ctx->level.sprite_count - 1; i++) {
@@ -34,11 +34,11 @@ void RemoveSprite(Context* ctx, const Sprite* sprite)
 }
 
 
-void FreeSprites(Context* ctx)
+void castor_FreeSprites(castor_Context* ctx)
 {
     for(size_t i = 0; i < ctx->level.sprite_count; i++){
         if(ctx->level.sprites[i]){
-            SpriteFree(&ctx->level.sprites[i]);
+            castor_SpriteFree(&ctx->level.sprites[i]);
         }
     }
     ctx->level.sprite_count = 0;

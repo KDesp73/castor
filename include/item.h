@@ -4,12 +4,12 @@
 #include "sprite.h"
 typedef struct {
     char id[16];
-    Sprite* sprite;
+    castor_Sprite* sprite;
     float baseZ;
     size_t index;
-} Item;
+} castor_Item;
 
-Item* ItemNew(Sprite* sprite, const char* id);
-void ItemFree(Item** e);
+castor_Item* castor_ItemNew(castor_Sprite* sprite, const char* id);
+void castor_ItemFree(castor_Item** e);
 
 #endif // ITEM_H

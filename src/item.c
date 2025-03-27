@@ -4,12 +4,12 @@
 #include <assert.h>
 
 
-Item* ItemNew(Sprite* sprite, const char* id)
+castor_Item* castor_ItemNew(castor_Sprite* sprite, const char* id)
 {
     assert(sprite);
     assert(id && strlen(id) > 0);
 
-    Item* res = malloc(sizeof(Item));
+    castor_Item* res = malloc(sizeof(castor_Item));
 
     res->sprite = sprite;
     res->baseZ = sprite->z;
@@ -19,7 +19,7 @@ Item* ItemNew(Sprite* sprite, const char* id)
     return res;
 }
 
-void ItemFree(Item** i)
+void castor_ItemFree(castor_Item** i)
 {
     if(*i){
         free(*i);

@@ -3,9 +3,9 @@
 
 #include "context.h"
 
-typedef void (*LevelLoader)(Context*);
+typedef void (*castor_LevelLoader)(castor_Context*);
 
-static inline void LoadLevel(Context* ctx, LevelLoader loader)
+static inline void castor_LoadLevel(castor_Context* ctx, castor_LevelLoader loader)
 {
     loader(ctx);
 }

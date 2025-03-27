@@ -22,12 +22,12 @@ typedef struct {
     bool is_animation;
     size_t index;
     char id[16];
-} Sprite;
+} castor_Sprite;
 
-Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id);
-void SpriteFree(Sprite** s);
+castor_Sprite* castor_SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id);
+void castor_SpriteFree(castor_Sprite** s);
 
-int SpriteCmp(const void* a, const void* b);
+int castor_SpriteCmp(const void* a, const void* b);
 
 
 #endif // SPRITE_H

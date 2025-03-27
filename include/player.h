@@ -6,14 +6,14 @@ typedef struct {
     double angleDelta;
     double angleX, angleY;
     double X, Y;
-} Player;
+} castor_Player;
 
-void PlayerInit(Player* player, double speed, double angleDelta, double angle, double x, double y);
-Player* PlayerNew(double speed, double angleDelta, double angle, double x, double y);
-void PlayerFree(Player** player);
+void castor_PlayerInit(castor_Player* player, double speed, double angleDelta, double angle, double x, double y);
+castor_Player* castor_PlayerNew(double speed, double angleDelta, double angle, double x, double y);
+void castor_PlayerFree(castor_Player** player);
 
-Player PlayerStore(const Player* player);
-void PlayerPlace(Player* player, double x, double y, double angle);
-void PlayerLoad(Player* player, Player stored);
+castor_Player castor_PlayerStore(const castor_Player* player);
+void castor_PlayerPlace(castor_Player* player, double x, double y, double angle);
+void castor_PlayerLoad(castor_Player* player, castor_Player stored);
 
 #endif // PLAYER_H

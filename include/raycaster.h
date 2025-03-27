@@ -6,9 +6,9 @@
 
 #define TILE_EMPTY 0
 
-void CastWalls(SDL_Renderer *renderer, Context* ctx);
-void CastFloorAndCeiling(SDL_Renderer *renderer, const Context* ctx);
-void CastSprites(SDL_Renderer* renderer, Context* ctx);
+void castor_CastWalls(SDL_Renderer *renderer, castor_Context* ctx);
+void castor_CastFloorAndCeiling(SDL_Renderer *renderer, const castor_Context* ctx);
+void castor_CastSprites(SDL_Renderer* renderer, castor_Context* ctx);
 
 
 

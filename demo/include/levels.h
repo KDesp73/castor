@@ -4,14 +4,14 @@
 #include "context.h"
 #include "level.h"
 
-void Level0(Context* ctx);
-void Level1(Context* ctx);
-void Level2(Context* ctx);
-void Level3(Context* ctx);
-void Level4(Context* ctx);
-void Level5(Context* ctx); // Credits
+void Level0(castor_Context* ctx);
+void Level1(castor_Context* ctx);
+void Level2(castor_Context* ctx);
+void Level3(castor_Context* ctx);
+void Level4(castor_Context* ctx);
+void Level5(castor_Context* ctx); // Credits
 
-static inline LevelLoader Level(int index)
+static inline castor_LevelLoader Level(int index)
 {
 #define LVL(x) case x: return Level##x
     switch (index) {

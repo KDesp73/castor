@@ -24,7 +24,7 @@ CliArgs ParseCliArgs(int argc, char** argv)
                 cli_help(args, "game [-F] [-l <index>] [-h | -v]", "Written by KDesp73 (Konstantinos Despoinidis)");
                 exit(0);
             case 'v':
-                printf("engine v%s\n", VERSION);
+                printf("castor v%s\n", CASTOR_VERSION);
                 exit(0);
             case 'F':
                 res.fullscreen = true;

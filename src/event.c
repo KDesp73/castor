@@ -2,9 +2,9 @@
 #include <SDL2/SDL_timer.h>
 #include <stdlib.h>
 
-Event* EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trigger, EventAction action)
+castor_Event* castor_EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trigger, EventAction action)
 {
-    Event* evt = malloc(sizeof(Event));
+    castor_Event* evt = malloc(sizeof(castor_Event));
 
     evt->ctx = ctx;
     evt->trigger = trigger;
@@ -17,7 +17,7 @@ Event* EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trig
     return evt;
 }
 
-void EventFree(Event** evt)
+void castor_EventFree(castor_Event** evt)
 {
     if(*evt) {
         free(*evt);
@@ -25,7 +25,7 @@ void EventFree(Event** evt)
     }
 }
 
-void EventProcess(Event* evt)
+void castor_EventProcess(castor_Event* evt)
 {
     Uint32 now = SDL_GetTicks();
 

@@ -5,9 +5,9 @@
 
 #define UI_GLOBAL_FONT "assets/fonts/Karla-Bold.ttf"
 
-void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage);
-void RenderDamageNumbers(Context* ctx);
-void UpdateDamageNumbers(Context* ctx);
+void AddDamageNumber(castor_Context* ctx, float enemy_x, float enemy_y, int damage);
+void RenderDamageNumbers(castor_Context* ctx);
+void UpdateDamageNumbers(castor_Context* ctx);
 void RenderCrosshair(SDL_Renderer* renderer, int screen_width, int screen_height);
 void RenderHealthBar(SDL_Renderer* renderer, int x, int y, int width, int height, int currentHealth, int maxHealth);
 void RenderGlassesCooldown(SDL_Renderer* renderer, int x, int y, int width, int height, int currentCooldown, int maxCooldown);
@@ -27,8 +27,8 @@ typedef struct {
 extern Particle particles[NUM_PARTICLES];
 
 
-void initParticles(Context* ctx);
-void updateParticles(Context* ctx);
+void initParticles(castor_Context* ctx);
+void updateParticles(castor_Context* ctx);
 void renderParticles(SDL_Renderer *renderer);
 
 

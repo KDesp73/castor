@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-int SpriteCmp(const void* a, const void* b)
+int castor_SpriteCmp(const void* a, const void* b)
 {
-    const Sprite* spriteA = *(const Sprite**)a;
-    const Sprite* spriteB = *(const Sprite**)b;
+    const castor_Sprite* spriteA = *(const castor_Sprite**)a;
+    const castor_Sprite* spriteB = *(const castor_Sprite**)b;
 
     if(!spriteA || !spriteB) return 0;
 
@@ -16,11 +16,11 @@ int SpriteCmp(const void* a, const void* b)
     return 0;
 }
 
-Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id)
+castor_Sprite* castor_SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id)
 {
     assert(textureId >= 0);
 
-    Sprite* s = malloc(sizeof(Sprite));
+    castor_Sprite* s = malloc(sizeof(castor_Sprite));
     if(!s) {
         fprintf(stderr, "Could not allocate memory for sprite\n");
         return NULL;
@@ -38,7 +38,7 @@ Sprite* SpriteNew(float x, float y, float z, size_t textureId, float scale, bool
     return s;
 }
 
-void SpriteFree(Sprite** s){
+void castor_SpriteFree(castor_Sprite** s){
     if(*s){
         free(*s);
         *s = NULL;

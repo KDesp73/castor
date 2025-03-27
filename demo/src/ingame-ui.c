@@ -2,11 +2,11 @@
 #include <time.h>
 #include "ingame-ui.h"
 
-void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage)
+void AddDamageNumber(castor_Context* ctx, float enemy_x, float enemy_y, int damage)
 {
     if (ctx->ui.damage_number_count >= MAX_DAMAGE_NUMBERS) return;
 
-    DamageNumber dn;
+    castor_DamageNumber dn;
 
     dn.x = enemy_x + (rand() % 20 - 10); // random offset X [-10, 10]
     dn.y = enemy_y - 30 + (rand() % 10 - 5); // random offset Y
@@ -24,11 +24,11 @@ void AddDamageNumber(Context* ctx, float enemy_x, float enemy_y, int damage)
     ctx->ui.damage_numbers[ctx->ui.damage_number_count++] = dn;
 }
 
-void UpdateDamageNumbers(Context* ctx)
+void UpdateDamageNumbers(castor_Context* ctx)
 {
     Uint32 now = SDL_GetTicks();
     for (int i = 0; i < ctx->ui.damage_number_count; i++) {
-        DamageNumber* dn = &ctx->ui.damage_numbers[i];
+        castor_DamageNumber* dn = &ctx->ui.damage_numbers[i];
 
         dn->x += dn->vx;
         dn->y += dn->vy;
@@ -75,12 +75,12 @@ static void RenderText(float x, float y, float damage, float scale, float angle,
     SDL_FreeSurface(surface);
 }
 
-void RenderDamageNumbers(Context* ctx)
+void RenderDamageNumbers(castor_Context* ctx)
 {
     Uint32 now = SDL_GetTicks();
 
     for (int i = 0; i < ctx->ui.damage_number_count; i++) {
-        DamageNumber* dn = &ctx->ui.damage_numbers[i];
+        castor_DamageNumber* dn = &ctx->ui.damage_numbers[i];
 
         // Fade out effect
         float alpha = 1.0f - ((float)(now - dn->spawn_time) / dn->lifetime);
@@ -168,7 +168,7 @@ void RenderGlassesCooldown(SDL_Renderer* renderer, int x, int y, int width, int 
     SDL_RenderDrawRect(renderer, &bgRect);
 }
 
-void initParticles(Context* ctx) {
+void initParticles(castor_Context* ctx) {
     srand(time(NULL));
     for (int i = 0; i < NUM_PARTICLES; i++) {
         particles[i].x = rand() % ctx->sdl.screen_width;
@@ -185,7 +185,7 @@ void initParticles(Context* ctx) {
     }
 }
 
-void updateParticles(Context* ctx) {
+void updateParticles(castor_Context* ctx) {
     for (int i = 0; i < NUM_PARTICLES; i++) {
         particles[i].x += particles[i].vx;
         particles[i].y += particles[i].vy;

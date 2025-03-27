@@ -4,15 +4,15 @@
 #include "context.h"
 
 
-void MoveFront(Context* context, float deltaTime);
-void MoveBack(Context* context, float deltaTime);
-void MoveLeft(Context* context, float deltaTime);
-void MoveRight(Context* context, float deltaTime);
-void RotateX(Context* context, double delta, float deltaTime);
-void RotateY(Context* context, double delta, float deltaTime);
+void castor_MoveFront(castor_Context* context, float deltaTime);
+void castor_MoveBack(castor_Context* context, float deltaTime);
+void castor_MoveLeft(castor_Context* context, float deltaTime);
+void castor_MoveRight(castor_Context* context, float deltaTime);
+void castor_RotateX(castor_Context* context, double delta, float deltaTime);
+void castor_RotateY(castor_Context* context, double delta, float deltaTime);
 
 #define COLLISION_TOLERANCE 0.1f
-bool CheckCollision(float newX, float newY, const Context* ctx);
+bool castor_CheckCollision(float newX, float newY, const castor_Context* ctx);
 
 
 #endif // MOVEMENT_H

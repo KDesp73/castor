@@ -3,26 +3,26 @@
 #include <assert.h>
 
 
-void AppendEntity(Context* ctx, Entity* entity)
+void castor_AppendEntity(castor_Context* ctx, castor_Entity* entity)
 {
     if (ctx->level.entity_count >= MAX_ENTITIES) return;
 
-    AppendSprite(ctx, entity->sprite);
+    castor_AppendSprite(ctx, entity->sprite);
 
     entity->index = ctx->level.entity_count;
     ctx->level.entities[ctx->level.entity_count++] = entity;
 }
 
-void UpdateEntities(Context* ctx, float deltaTime)
+void castor_UpdateEntities(castor_Context* ctx, float deltaTime)
 {
-    int** map = ExportSearchMap(ctx);
+    int** map = castor_ExportSearchMap(ctx);
     
     for (size_t i = 0; i < ctx->level.entity_count; i++) {
-        Entity* e = ctx->level.entities[i];
+        castor_Entity* e = ctx->level.entities[i];
         if(!e) continue;
         if(e->health <= 0) {
             // TODO: Proper death method
-            RemoveEntity(ctx, e);
+            castor_RemoveEntity(ctx, e);
             continue;
         }
 
@@ -31,10 +31,10 @@ void UpdateEntities(Context* ctx, float deltaTime)
         }
     }
 
-    MapFree(map, ctx->level.map_height);
+    castor_MapFree(map, ctx->level.map_height);
 }
 
-void RemoveEntity(Context* ctx, const Entity* entity)
+void castor_RemoveEntity(castor_Context* ctx, const castor_Entity* entity)
 {
     assert(ctx);
     assert(entity);
@@ -47,9 +47,9 @@ void RemoveEntity(Context* ctx, const Entity* entity)
 
     // Remove associated sprite if available
     if (entity->sprite) {
-        RemoveSprite(ctx, entity->sprite);
+        castor_RemoveSprite(ctx, entity->sprite);
     }
-    EntityFree(&ctx->level.entities[index]);
+    castor_EntityFree(&ctx->level.entities[index]);
 
     // Shift entities left
     for (size_t i = index; i < ctx->level.entity_count - 1; i++) {
@@ -61,11 +61,11 @@ void RemoveEntity(Context* ctx, const Entity* entity)
     ctx->level.entity_count--;
 }
 
-void FreeEntities(Context* ctx)
+void castor_FreeEntities(castor_Context* ctx)
 {
     for(size_t i = 0; i < ctx->level.entity_count; i++){
         if(ctx->level.entities[i]){
-            EntityFree(&ctx->level.entities[i]);
+            castor_EntityFree(&ctx->level.entities[i]);
         }
     }
     ctx->level.entity_count = 0;

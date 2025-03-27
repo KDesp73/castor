@@ -10,11 +10,11 @@ typedef struct {
     size_t currentFrame;
     Uint32 lastUpdateTime;
     Uint32 frameDelay;
-} Animation;
+} castor_Animation;
 
-Animation LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameWidth, int frameHeight, Uint32 rate);
-void RenderAnimation(SDL_Renderer *renderer, Animation *anim, float scale, int x, int y, int frameIndex);
-void UpdateAnimation(Animation *anim, Uint32 currentTime);
-void FreeAnimation(Animation *anim);
+castor_Animation castor_LoadAnimation(SDL_Renderer *renderer, const char *filePath, int frameWidth, int frameHeight, Uint32 rate);
+void castor_RenderAnimation(SDL_Renderer *renderer, castor_Animation *anim, float scale, int x, int y, int frameIndex);
+void castor_UpdateAnimation(castor_Animation *anim, Uint32 currentTime);
+void castor_FreeAnimation(castor_Animation *anim);
 
 #endif // ANIMATION_H

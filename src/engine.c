@@ -3,7 +3,7 @@
 #include <SDL2/SDL_mixer.h>
 
 
-bool EngineInit(Context* ctx)
+bool castor_EngineInit(castor_Context* ctx)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
@@ -26,7 +26,7 @@ bool EngineInit(Context* ctx)
         return false;
     }
 
-    if (!ConstructRenderer(ctx)) {
+    if (!castor_ConstructRenderer(ctx)) {
         fprintf(stderr, "Renderer initialization failed\n");
         return 1;
     }
@@ -34,9 +34,9 @@ bool EngineInit(Context* ctx)
     return true;
 }
 
-void EngineClose(Context* ctx)
+void castor_EngineClose(castor_Context* ctx)
 {
-    ContextFree(ctx);
+    castor_ContextFree(ctx);
     TTF_Quit();
     IMG_Quit();
     Mix_CloseAudio();

@@ -1,10 +1,10 @@
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef CASTOR_VERSION_H
+#define CASTOR_VERSION_H
 
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 6
-#define VERSION_PATCH 0
-#define VERSION "0.6.0"
+#define CASTOR_VERSION_MAJOR 0
+#define CASTOR_VERSION_MINOR 6
+#define CASTOR_VERSION_PATCH 0
+#define CASTOR_VERSION "0.6.0"
 
 
-#endif // VERSION_H
+#endif // CASTOR_VERSION_H

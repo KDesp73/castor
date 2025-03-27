@@ -4,7 +4,7 @@
 #include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_stdinc.h>
 
-void MoveFront(Context* ctx, float deltaTime)
+void castor_MoveFront(castor_Context* ctx, float deltaTime)
 {
     float moveX = cos(ctx->level.player->angleX * M_PI / 180.0);
     float moveY = sin(ctx->level.player->angleX * M_PI / 180.0);
@@ -16,13 +16,13 @@ void MoveFront(Context* ctx, float deltaTime)
     moveX *= ctx->level.player->speed * deltaTime;
     moveY *= ctx->level.player->speed * deltaTime;
 
-    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+    if (!castor_CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveBack(Context* ctx, float deltaTime)
+void castor_MoveBack(castor_Context* ctx, float deltaTime)
 {
     float moveX = cos(ctx->level.player->angleX * M_PI / 180.0) * -1;
     float moveY = sin(ctx->level.player->angleX * M_PI / 180.0) * -1;
@@ -34,13 +34,13 @@ void MoveBack(Context* ctx, float deltaTime)
     moveX *= ctx->level.player->speed * deltaTime;
     moveY *= ctx->level.player->speed * deltaTime;
 
-    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+    if (!castor_CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveLeft(Context* ctx, float deltaTime)
+void castor_MoveLeft(castor_Context* ctx, float deltaTime)
 {
     float moveX = cos((ctx->level.player->angleX - 90) * M_PI / 180.0);
     float moveY = sin((ctx->level.player->angleX - 90) * M_PI / 180.0);
@@ -52,13 +52,13 @@ void MoveLeft(Context* ctx, float deltaTime)
     moveX *= ctx->level.player->speed * deltaTime;
     moveY *= ctx->level.player->speed * deltaTime;
 
-    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+    if (!castor_CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void MoveRight(Context* ctx, float deltaTime)
+void castor_MoveRight(castor_Context* ctx, float deltaTime)
 {
     float moveX = cos((ctx->level.player->angleX + 90) * M_PI / 180.0);
     float moveY = sin((ctx->level.player->angleX + 90) * M_PI / 180.0);
@@ -70,20 +70,20 @@ void MoveRight(Context* ctx, float deltaTime)
     moveX *= ctx->level.player->speed * deltaTime;
     moveY *= ctx->level.player->speed * deltaTime;
 
-    if (!CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
+    if (!castor_CheckCollision(ctx->level.player->X + moveX, ctx->level.player->Y + moveY, ctx)) {
         ctx->level.player->X += moveX;
         ctx->level.player->Y += moveY;
     }
 }
 
-void RotateX(Context* ctx, double delta, float deltaTime)
+void castor_RotateX(castor_Context* ctx, double delta, float deltaTime)
 {
     ctx->level.player->angleX += delta * deltaTime;
     if (ctx->level.player->angleX >= 360) ctx->level.player->angleX -= 360;
 }
 
 #define ANGLE_Y_CUTOFF 100
-void RotateY(Context *ctx, double delta, float deltaTime)
+void castor_RotateY(castor_Context *ctx, double delta, float deltaTime)
 {
     ctx->level.player->angleY -= delta * deltaTime;
 
@@ -93,7 +93,7 @@ void RotateY(Context *ctx, double delta, float deltaTime)
         ctx->level.player->angleY = ANGLE_Y_CUTOFF;
 }
 
-bool CheckCollision(float newX, float newY, const Context* ctx)
+bool castor_CheckCollision(float newX, float newY, const castor_Context* ctx)
 {
     // Check collision with map tiles
     int mapX = (int)newX;
@@ -124,7 +124,7 @@ bool CheckCollision(float newX, float newY, const Context* ctx)
 
     // Check collision with sprites
     for (int i = 0; i < ctx->level.sprite_count; i++) {
-        Sprite* sprite = ctx->level.sprites[i];
+        castor_Sprite* sprite = ctx->level.sprites[i];
 
         // Skip sprites without collision
         if (!sprite->collision) continue;

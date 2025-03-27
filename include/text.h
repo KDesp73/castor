@@ -10,6 +10,6 @@
 #define COLOR_BLUE (SDL_Color) {0,0,255,255}
 #define COLOR_BLACK (SDL_Color) {0,0,0,255}
 
-void RenderText(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, int x, int y, const char *fmt, ...);
+void castor_RenderText(SDL_Renderer *renderer, TTF_Font *font, SDL_Color color, int x, int y, const char *fmt, ...);
 
 #endif // TEXT_H

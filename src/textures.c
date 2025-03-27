@@ -12,7 +12,7 @@ static bool FileExists(const char* path)
     return (stat(path, &buffer) == 0) && S_ISREG(buffer.st_mode);
 }
 
-SDL_Texture* TextureLoad(SDL_Renderer *renderer, const char* file_path)
+SDL_Texture* castor_TextureLoad(SDL_Renderer *renderer, const char* file_path)
 {
     if(!FileExists(file_path)) {
         fprintf(stderr, "Path %s is not a file\n", file_path);
@@ -31,7 +31,7 @@ SDL_Texture* TextureLoad(SDL_Renderer *renderer, const char* file_path)
 
 #define MAX_PATH 256
 
-bool TexturesLoad(SDL_Renderer* renderer, SDL_Texture** textures, const char* path)
+bool castor_TexturesLoad(SDL_Renderer* renderer, SDL_Texture** textures, const char* path)
 {
     FILE* file = fopen(path, "r");
     if (!file) {
@@ -54,7 +54,7 @@ bool TexturesLoad(SDL_Renderer* renderer, SDL_Texture** textures, const char* pa
         line[strcspn(line, "\r\n")] = '\0';
 
         // Load texture
-        textures[index] = TextureLoad(renderer, line + offset);
+        textures[index] = castor_TextureLoad(renderer, line + offset);
         if (!textures[index]) {
             fprintf(stderr, "Error loading texture: %s\n", line + offset);
         } else {

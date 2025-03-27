@@ -5,7 +5,7 @@
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
 
-void SetFullscreen(Context* ctx, bool fullscreen)
+void castor_SetFullscreen(castor_Context* ctx, bool fullscreen)
 {
     if (!ctx || !ctx->sdl.window || !ctx->sdl.renderer) {
         fprintf(stderr, "Error: Invalid context, window, or renderer!\n");
@@ -48,7 +48,7 @@ void SetFullscreen(Context* ctx, bool fullscreen)
 
     ctx->settings.fullscreen = fullscreen;
 
-    LoadTextures(ctx);
+    castor_LoadTextures(ctx);
 
     printf("Fullscreen toggle complete.\n");
 }

@@ -2,7 +2,6 @@
 #define ENGINE_H
 
 #include "context.h"
-#include "level.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -43,26 +42,26 @@
         }                                                    \
     } while (0)
 
-bool EngineInit(Context* ctx);
-void EngineClose(Context* ctx);
+bool castor_EngineInit(castor_Context* ctx);
+void castor_EngineClose(castor_Context* ctx);
 
 // Defined by the developer
-extern void presetup(Context* ctx);
-extern void setup(Context* ctx);
-extern void loop(Context* ctx);
-extern void cleanup(Context* ctx);
+extern void presetup(castor_Context* ctx);
+extern void setup(castor_Context* ctx);
+extern void loop(castor_Context* ctx);
+extern void cleanup(castor_Context* ctx);
 
-static inline int EngineMain(int argc, char** argv)
+static inline int castor_Main(int argc, char** argv)
 {
     srand(time(NULL));
 
-    Context ctx = {0};
-    ContextInit(&ctx);
+    castor_Context ctx = {0};
+    castor_ContextInit(&ctx);
 
     presetup(&ctx);
 
-    if(!EngineInit(&ctx)) {
-        EngineClose(&ctx);
+    if(!castor_EngineInit(&ctx)) {
+        castor_EngineClose(&ctx);
         return 1;
     }
 
@@ -74,7 +73,7 @@ static inline int EngineMain(int argc, char** argv)
 
     cleanup(&ctx);
 
-    EngineClose(&ctx);
+    castor_EngineClose(&ctx);
     return 0;
 }
 

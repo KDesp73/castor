@@ -7,21 +7,21 @@
 #include "inventory.h"
 #include <stdbool.h>
 
-bool PlayerAttackTrigger(Event* evt);
-void PlayerAttackAction(Event* evt);
+bool PlayerAttackTrigger(castor_Event* evt);
+void PlayerAttackAction(castor_Event* evt);
 
-bool EnemyAttackTrigger(Event* evt);
-void EnemyAttackAction(Event* evt);
+bool EnemyAttackTrigger(castor_Event* evt);
+void EnemyAttackAction(castor_Event* evt);
 
-bool PickItemTrigger(Event* evt);
-void PickItemAction(Event* evt);
+bool PickItemTrigger(castor_Event* evt);
+void PickItemAction(castor_Event* evt);
 
 
-bool GlitchTrigger(Event* evt);
+bool GlitchTrigger(castor_Event* evt);
 #define DECLARE_GLITCH_ACTION(num, code) \
-    static inline void Glitch##num##Action(Event* evt) \
+    static inline void Glitch##num##Action(castor_Event* evt) \
     { \
-        Context* ctx = evt->ctx; \
+        castor_Context* ctx = evt->ctx; \
         GlitchActivated = true; \
         code \
     }
@@ -68,10 +68,10 @@ DECLARE_GLITCH_ACTION(5, {
 })
 
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \
-    static inline bool Door##num##Trigger(Event* evt)          \
+    static inline bool Door##num##Trigger(castor_Event* evt)          \
     {                                                          \
-        Context* ctx = (evt)->ctx;                             \
-        Player* player = ctx->level.player;                    \
+        castor_Context* ctx = (evt)->ctx;                             \
+        castor_Player* player = ctx->level.player;                    \
         if (!(INV.key)) return false;                          \
         return (                                               \
             ((player->X) >= (_x) && (player->X) < (_x) + 1) && \
@@ -86,16 +86,16 @@ DECLARE_DOOR_TRIGGER(2, 1, 7);
 DECLARE_DOOR_TRIGGER(3, 11, 14);
 DECLARE_DOOR_TRIGGER(4, 4, 29);
 
-void DoorTooltipAction(Event* evt);
-void DoorKeyAction(Event* evt);
+void DoorTooltipAction(castor_Event* evt);
+void DoorKeyAction(castor_Event* evt);
 
-bool GlassesTipTrigger(Event* evt);
-void GlassesTipAction(Event* evt);
+bool GlassesTipTrigger(castor_Event* evt);
+void GlassesTipAction(castor_Event* evt);
 
-bool TeleportTrigger(Event* evt);
-void TeleportAction(Event* evt);
+bool TeleportTrigger(castor_Event* evt);
+void TeleportAction(castor_Event* evt);
 
-bool CreditsTrigger(Event* evt);
-void CreditsAction(Event* evt);
+bool CreditsTrigger(castor_Event* evt);
+void CreditsAction(castor_Event* evt);
 
 #endif // EVENTS_H

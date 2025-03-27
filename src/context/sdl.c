@@ -2,15 +2,15 @@
 #include "textures.h"
 
 
-void LoadTextures(Context* ctx)
+void castor_LoadTextures(castor_Context* ctx)
 {
-    TexturesLoad(ctx->sdl.renderer, ctx->raycaster.textures, TEXTURES_LIST_FILE);
+    castor_TexturesLoad(ctx->sdl.renderer, ctx->raycaster.textures, TEXTURES_LIST_FILE);
     ctx->raycaster.textures_loaded = true;
-    TexturesLoad(ctx->sdl.renderer, ctx->raycaster.sprite_textures, SPRITES_LIST_FILE);
+    castor_TexturesLoad(ctx->sdl.renderer, ctx->raycaster.sprite_textures, SPRITES_LIST_FILE);
     ctx->raycaster.sprites_loaded = true;
 }
 
-void FreeTextures(Context* ctx)
+void castor_FreeTextures(castor_Context* ctx)
 {
     for(size_t i = 0; i < MAX_TEXTURES; i++) {
         if(ctx->raycaster.textures[i] != NULL) {
@@ -26,7 +26,7 @@ void FreeTextures(Context* ctx)
     ctx->raycaster.sprites_loaded = false;
 }
 
-bool ConstructRenderer(Context* ctx)
+bool castor_ConstructRenderer(castor_Context* ctx)
 {
     ctx->sdl.window = SDL_CreateWindow(
             ctx->game_name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

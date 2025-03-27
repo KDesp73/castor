@@ -9,7 +9,7 @@
 #include <string.h>
 #include <assert.h>
 
-void ContextInit(Context* ctx)
+void castor_ContextInit(castor_Context* ctx)
 {
     ctx->engine.running = true;
     ctx->settings.fov = 60;
@@ -27,18 +27,18 @@ void ContextInit(Context* ctx)
     ctx->sound.volume = 50;
 }
 
-void ContextFree(Context* ctx)
+void castor_ContextFree(castor_Context* ctx)
 {
     if (ctx) {
-        PlayerFree(&ctx->level.player);
-        FreeTextures(ctx);
-        FreeSprites(ctx);
-        FreeEntities(ctx);
-        FreeItems(ctx);
-        FreeEvents(ctx);
-        UIClose(&ctx->ui);
-        MapFree(ctx->level.map, ctx->level.map_height);
-        CleanupThreads(ctx);
+       castor_PlayerFree(&ctx->level.player);
+       castor_FreeTextures(ctx);
+       castor_FreeSprites(ctx);
+       castor_FreeEntities(ctx);
+       castor_FreeItems(ctx);
+       castor_FreeEvents(ctx);
+       UIClose(&ctx->ui);
+       castor_MapFree(ctx->level.map, ctx->level.map_height);
+       castor_CleanupThreads(ctx);
 
         if (ctx->sdl.renderer) {
             SDL_DestroyRenderer(ctx->sdl.renderer);
