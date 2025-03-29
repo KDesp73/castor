@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -7,64 +8,37 @@
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 400
 
-static char* execute(const char* command)
-{
-    char buffer[128];
-    char *result = NULL;
-    size_t result_size = 0;
-    FILE *pipe = popen(command, "r");
-    if (!pipe) {
-        return NULL;
-    }
-
-    while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
-        size_t buffer_len = strlen(buffer);
-        result = (char*) realloc(result, result_size + buffer_len + 1);
-        if (!result) {
-            pclose(pipe);
-            return NULL;
-        }
-        strcpy(result + result_size, buffer);
-        result_size += buffer_len;
-    }
-
-    pclose(pipe);
-    return result;
-}
-
 int main(void)
 {
-    // Initialization
     SetTraceLogLevel(LOG_ERROR);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game Launcher");
 
-    // Default settings
     bool fullscreen = false;
+    bool debug = false;
 
     Rectangle startButton = { SCREEN_WIDTH / 2 - 60, SCREEN_HEIGHT - 80, 140, 40 };
 
     SetTargetFPS(60);
 
-    while (!WindowShouldClose())
-    {
-        // Handle input
-        if (CheckCollisionPointRec(GetMousePosition(), startButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
+    while (!WindowShouldClose()) {
+        if (CheckCollisionPointRec(GetMousePosition(), startButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             CloseWindow();
             printf("Launching game with settings:\n");
             printf("Fullscreen: %s\n", fullscreen ? "ON" : "OFF");
-            if(fullscreen) {
-                execute("./eidolon -F");
-            } else {
-                execute("./eidolon");
-            }
+            printf("Debug: %s\n", debug ? "ON" : "OFF");
+
+            char buffer[64];
+            snprintf(buffer, sizeof(buffer), "./eidolon%s%s",
+                     fullscreen ? " -F" : "",
+                     debug ? " -D" : "");
+
+            system(buffer);
             return 0;
         }
 
-        // Toggle fullscreen
         if (IsKeyPressed(KEY_F)) fullscreen = !fullscreen;
+        if (IsKeyPressed(KEY_D)) debug = !debug;
 
-        // Draw UI
         BeginDrawing();
         ClearBackground(GetColor(0x282828FF));
 
@@ -75,11 +49,18 @@ int main(void)
         Rectangle checkbox = { 200, 80, 20, 20 };
         DrawRectangleLinesEx(checkbox, 2, WHITE);
         if (fullscreen) DrawRectangle(checkbox.x + 4, checkbox.y + 4, 12, 12, GREEN);
-        if (CheckCollisionPointRec(GetMousePosition(), checkbox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             fullscreen = !fullscreen;
         }
 
+        // Debug Checkbox (Fixed)
+        DrawText("Debug", 80, 160, 18, RAYWHITE);
+        Rectangle checkbox1 = { 200, 160, 20, 20 };
+        DrawRectangleLinesEx(checkbox1, 2, WHITE);
+        if (debug) DrawRectangle(checkbox1.x + 4, checkbox1.y + 4, 12, 12, GREEN);  // FIXED: Uses `debug` now
+        if (CheckCollisionPointRec(GetMousePosition(), checkbox1) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            debug = !debug;
+        }
 
         // Start Game Button
         DrawRectangleRec(startButton, LIGHTGRAY);
@@ -88,7 +69,7 @@ int main(void)
         EndDrawing();
     }
 
-    assert(0 || "Should not reach here");
+    assert(0 && "Should not reach here");
     CloseWindow();
     return 0;
 }
