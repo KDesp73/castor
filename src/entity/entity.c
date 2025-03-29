@@ -42,7 +42,7 @@ castor_Entity* castor_EntityNew(
         .index = 0
     };
     e->index = -1;
-    strncpy(e->id, id, 16);
+    strncpy(e->id, id, 15);
 
     return e;
 }

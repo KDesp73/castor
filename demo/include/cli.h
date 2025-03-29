@@ -4,7 +4,8 @@
 #include <stdbool.h>
 typedef struct {
     bool fullscreen;
-    int level;
+    char* level;
+    bool debug;
 } CliArgs;
 
 CliArgs ParseCliArgs(int argc, char** argv);

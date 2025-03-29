@@ -33,7 +33,7 @@ castor_Sprite* castor_SpriteNew(float x, float y, float z, size_t textureId, flo
     s->scale = scale;
     s->collision = collision;
     s->index = -1;
-    strncpy(s->id, id, 16);
+    strncpy(s->id, id, 15);
 
     return s;
 }

@@ -68,12 +68,16 @@ void setup(castor_Context* ctx)
     ctx->settings.fullscreen = false;
     ctx->settings.mouse_sensitivity = 0.25;
     ctx->settings.render_distance = 30.0f;
-    ctx->level.index = args.level;
+    ctx->level.index = 0;
     ctx->sound.volume = 100;
 
-    castor_LoadLevel(ctx, Level(ctx->level.index));
-    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
-    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    if(args.level){
+        castor_LoadLevelMap(ctx, args.level);
+    } else {
+        castor_LoadLevel(ctx, Level(ctx->level.index));
+        mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
+        castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    }
 
     castor_SetFullscreen(ctx, args.fullscreen);
     castor_LoadTextures(ctx);
@@ -113,7 +117,8 @@ void loop(castor_Context* ctx)
         HandleLevelFail(ctx, &event);
     } else if (!paused) {
         Uint8 key = HandleInput(ctx, deltaTime);
-        DEBUG_HandleKeyInput(ctx, key, deltaTime);
+        if(args.debug)
+            DEBUG_HandleKeyInput(ctx, key, deltaTime);
 
         castor_UpdateEntities(ctx, deltaTime);
         castor_ProcessEvents(ctx);
@@ -152,6 +157,7 @@ void cleanup(castor_Context* ctx)
 int main(int argc, char** argv)
 {
     args = ParseCliArgs(argc, argv);
+
     return castor_Main(argc, argv);
 }
 

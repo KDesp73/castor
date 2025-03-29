@@ -14,7 +14,7 @@ castor_Item* castor_ItemNew(castor_Sprite* sprite, const char* id)
     res->sprite = sprite;
     res->baseZ = sprite->z;
     res->index = -1;
-    strncpy(res->id, id, 16);
+    strncpy(res->id, id, 15);
 
     return res;
 }
