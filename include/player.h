@@ -8,8 +8,8 @@ typedef struct {
     double X, Y;
 } castor_Player;
 
-void castor_PlayerInit(castor_Player* player, double speed, double angleDelta, double angle, double x, double y);
-castor_Player* castor_PlayerNew(double speed, double angleDelta, double angle, double x, double y);
+void castor_PlayerInit(castor_Player* player, double speed, double angleDelta);
+castor_Player* castor_PlayerNew(double speed, double angleDelta);
 void castor_PlayerFree(castor_Player** player);
 
 castor_Player castor_PlayerStore(const castor_Player* player);

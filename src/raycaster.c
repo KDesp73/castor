@@ -161,29 +161,22 @@ void castor_CastFloorAndCeiling(SDL_Renderer *renderer, const castor_Context *ct
         !ctx->raycaster.textures[ctx->raycaster.floor_texture_index]
     ) return;
 
+    const float playerHeight = 0.5f;
+    const float scale = 2.5f;
 
+    float angleRad = ctx->level.player->angleX * M_PI / 180.0f;
+    float dirX = cosf(angleRad);
+    float dirY = sinf(angleRad);
+    float fov_rad = ctx->settings.fov * M_PI / 180.0f;
+    float planeScale = tanf(fov_rad / 2.0f);
+    float planeX = -dirY * planeScale;
+    float planeY = dirX * planeScale;
 
-    const float playerHeight = 0.5f;  // Player's eye level
-    const float textureScale = 1.0f;  // Texture density
-
-    // Player direction vectors
-    float angle       = ctx->level.player->angleX;
-    float angleRad    = angle * M_PI / 180.0f;
-    float dirX        = cosf(angleRad);  // Player direction X
-    float dirY        = sinf(angleRad);  // Player direction Y
-    float aspectRatio = (float) ctx->sdl.screen_width / ctx->sdl.screen_height;
-    float fov_rad     = ctx->settings.fov * M_PI / 180.0f;
-    float planeScale  = tanf(fov_rad / 2.0f) * aspectRatio;
-    float planeX      = -dirY * planeScale;
-    float planeY      = dirX * planeScale;
-
-    printf("angle: %f\n", angle);
-    printf("dirX: %f\n", dirX);
-    printf("dirY: %f\n", dirY);
+    float playerX = ctx->level.player->X;
+    float playerY = ctx->level.player->Y;
 
     int horizon = (ctx->sdl.screen_height / 2) - (int)(ctx->level.player->angleY * 5);
 
-    // Create screen texture for pixel access
     SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
             SDL_TEXTUREACCESS_STREAMING, ctx->sdl.screen_width, ctx->sdl.screen_height);
     if (!screenTexture) return;
@@ -201,42 +194,40 @@ void castor_CastFloorAndCeiling(SDL_Renderer *renderer, const castor_Context *ct
 
         bool isFloor = y > horizon;
         float vertPos = isFloor ? (y - horizon) : (horizon - y);
-        float rowDistance = (playerHeight * ctx->sdl.screen_height) / (1e-5f + vertPos);
+        float rowDistance = playerHeight / (vertPos / ctx->sdl.screen_height);
 
-        // Static position calculation
-        float floorStepX = rowDistance * (dirX - planeX);
-        float floorStepY = rowDistance * (dirY - planeY);
+        float leftRayX = dirX - planeX;
+        float leftRayY = dirY - planeY;
+        float rightRayX = dirX + planeX;
+        float rightRayY = dirY + planeY;
 
-        // Texture stepping (perspective correct)
-        float texStepX = rowDistance * (2.0f * planeX) / ctx->sdl.screen_width;
-        float texStepY = rowDistance * (2.0f * planeY) / ctx->sdl.screen_width;
+        float stepX = (rightRayX - leftRayX) / ctx->sdl.screen_width;
+        float stepY = (rightRayY - leftRayY) / ctx->sdl.screen_width;
 
-        // Initial texture coordinates
-        float floorX = ctx->level.player->X + floorStepX * 2.0f; // Correct
-        float floorY = ctx->level.player->Y + floorStepY;
+        float floorX = leftRayX * rowDistance;
+        float floorY = leftRayY * rowDistance;
 
-        // Texture selection
         Uint32 *texPixels = isFloor ? floorPixels : ceilingPixels;
         int texW = isFloor ? floorW : ceilW;
         int texH = isFloor ? floorH : ceilH;
 
         for (int x = 0; x < ctx->sdl.screen_width; x++) {
-            // Calculate texture coordinates
-            int texX = (int)(floorX * texW * textureScale) % texW;
-            int texY = (int)(floorY * texH * textureScale) % texH;
+            float worldX = playerX + floorX * scale;
+            float worldY = playerY + floorY * scale;
 
-            texX = texX < 0 ? texX + texW : texX;
-            texY = texY < 0 ? texY + texH : texY;
+            // Map to texture coordinates
+            int texX = ((int)(worldX * texW) % texW + texW) % texW;
+            int texY = ((int)(worldY * texH) % texH + texH) % texH;
 
-            pixels[y * (pitch/sizeof(Uint32)) + x] = texPixels[texY * texW + texX];
+            // Draw the pixel
+            pixels[y * (pitch / sizeof(Uint32)) + x] = texPixels[texY * texW + texX];
 
-            // Update coordinates using perspective-correct steps
-            floorX += texStepX;
-            floorY += texStepY;
+            // Step to next position
+            floorX += stepX * rowDistance;
+            floorY += stepY * rowDistance;
         }
     }
 
-    // Cleanup code
     SDL_UnlockTexture(screenTexture);
     SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
     SDL_DestroyTexture(screenTexture);
