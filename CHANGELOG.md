@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [1.1.0] - 2025-03-31 
 
 ### Added
 
+- Pressing shift to run
 - Debug and flag
 - Debug option to launcher
 
@@ -17,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Using `-l` to load lvl file
 - Updated credits
 - prefixed engine api with `castor_`
+
+### Fixed
+
+- Close to working floor and ceiling rendering
 
 
 ## [1.0.0] - 2025-03-26 
@@ -224,4 +229,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 [0.5.2]: https://github.com/KDesp73/castor/releases/tag/v0.5.2
 [0.6.0]: https://github.com/KDesp73/castor/releases/tag/v0.6.0
 [1.0.0]: https://github.com/KDesp73/castor/releases/tag/v1.0.0
+[1.1.0]: https://github.com/KDesp73/castor/releases/tag/v1.1.0
 

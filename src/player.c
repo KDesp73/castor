@@ -2,21 +2,21 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void castor_PlayerInit(castor_Player* player, double speed, double angleDelta, double angle, double x, double y)
+void castor_PlayerInit(castor_Player* player, double speed, double angleDelta)
 {
     player->speed = speed;
     player->angleDelta = angleDelta;
-    player->angleX = angle;
+    player->angleX = 0;
     player->angleY = 0;
-    player->X = x;
-    player->Y = y;
+    player->X = 0;
+    player->Y = 0;
 }
 
-castor_Player* castor_PlayerNew(double speed, double angleDelta, double angle, double x, double y)
+castor_Player* castor_PlayerNew(double speed, double angleDelta)
 {
     castor_Player* result = (castor_Player*) malloc(sizeof(castor_Player));
 
-    castor_PlayerInit(result, speed, angleDelta, angle, x, y);
+    castor_PlayerInit(result, speed, angleDelta);
 
     return result;
 }
