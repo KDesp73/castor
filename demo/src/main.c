@@ -169,7 +169,7 @@ void HandleInput(castor_Context* ctx, float deltaTime)
     int xrel, yrel;
     SDL_GetRelativeMouseState(&xrel, &yrel);
 
-#define BASE_DELTA 25
+#define BASE_DELTA 15
     if (xrel != 0) {
         castor_RotateX(ctx, xrel * ctx->settings.mouse_sensitivity * BASE_DELTA, deltaTime);
     }
@@ -192,10 +192,12 @@ void HandleInput(castor_Context* ctx, float deltaTime)
         moveY /= magnitude;
     }
 
-    if (moveY > 0) castor_MoveFront(ctx, deltaTime * moveY);
-    if (moveY < 0) castor_MoveBack(ctx, deltaTime * -moveY);
-    if (moveX > 0) castor_MoveRight(ctx, deltaTime * moveX);
-    if (moveX < 0) castor_MoveLeft(ctx, deltaTime * -moveX);
+    float speedMultiplier = (keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) ? 1.5f : 1.0f;
+
+    if (moveY > 0) castor_MoveFront(ctx, deltaTime * moveY * speedMultiplier);
+    if (moveY < 0) castor_MoveBack(ctx, deltaTime * -moveY * speedMultiplier);
+    if (moveX > 0) castor_MoveRight(ctx, deltaTime * moveX * speedMultiplier);
+    if (moveX < 0) castor_MoveLeft(ctx, deltaTime * -moveX * speedMultiplier);
 
     if (keys[SDL_SCANCODE_UP]) {
         castor_RotateY(ctx, ctx->level.player->angleDelta, deltaTime);
