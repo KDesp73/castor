@@ -101,6 +101,21 @@ compile_commands.json: $(SRC_FILES) ## Generate compile_commands.json
 	@echo "[INFO] Generating compile_commands.json"
 	bear -- make all
 
+PREFIX = /usr/local
+
+.PHONY: install
+install: all ## Install libraries and headers
+	@echo "[INFO] Installing castor using" $(PREFIX) "as the prefix"
+	mkdir -p $(PREFIX)/include/castor
+	cp -r ./include/* $(PREFIX)/include/castor
+	cp ./libcastor.* $(PREFIX)/lib
+
+.PHONY: uninstall
+uninstall: ## Uninstall castor from the machine
+	@echo "[INFO] Uninstalling castor"
+	rm -rf $(PREFIX)/include/castor
+	rm -f $(PREFIX)/lib/libcastor.*
+
 ## Show this help message
 .PHONY: help
 help: ## Show this help message
