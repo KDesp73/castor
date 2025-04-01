@@ -3,8 +3,7 @@
 build() {
     cd "$1" || exit 1
     make clean
-    make compile_commands.json
-    make all
+    make type=RELEASE all
     cd .. || exit 1
     mv "$1/$2" .
 }
