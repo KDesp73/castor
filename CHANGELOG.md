@@ -68,7 +68,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Item pickup issue
 
 
-## [0.5.2] - 2025-03-23 
+## [0.5.2] - 2025-03-23 [YANKED]
 
 ### Added
 
