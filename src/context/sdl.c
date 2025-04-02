@@ -6,6 +6,9 @@ void castor_LoadTextures(castor_Context* ctx)
 {
     castor_TexturesLoad(ctx->sdl.renderer, ctx->raycaster.textures, TEXTURES_LIST_FILE);
     ctx->raycaster.textures_loaded = true;
+}
+void castor_LoadSprites(castor_Context* ctx)
+{
     castor_TexturesLoad(ctx->sdl.renderer, ctx->raycaster.sprite_textures, SPRITES_LIST_FILE);
     ctx->raycaster.sprites_loaded = true;
 }
@@ -16,10 +19,6 @@ void castor_FreeTextures(castor_Context* ctx)
         if(ctx->raycaster.textures[i] != NULL) {
             SDL_DestroyTexture(ctx->raycaster.textures[i]); 
             ctx->raycaster.textures[i] = NULL;
-        }
-        if(ctx->raycaster.sprite_textures[i] != NULL) {
-            SDL_DestroyTexture(ctx->raycaster.sprite_textures[i]); 
-            ctx->raycaster.sprite_textures[i] = NULL;
         }
     }
     ctx->raycaster.textures_loaded = false;

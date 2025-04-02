@@ -80,6 +80,7 @@ void setup(castor_Context* ctx)
 
     castor_SetFullscreen(ctx, args.fullscreen);
     castor_LoadTextures(ctx);
+    castor_LoadSprites(ctx);
 
     static UIFont global = {0};
     UIFontOpen(&global, UI_GLOBAL_FONT, 18, UI_COLOR_WHITE);

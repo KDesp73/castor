@@ -103,6 +103,7 @@ bool castor_ConstructRenderer(castor_Context* ctx);
 void castor_FreeTextures(castor_Context* ctx);
 void castor_FreeSprites(castor_Context* ctx);
 void castor_LoadTextures(castor_Context* ctx);
+void castor_LoadSprites(castor_Context* ctx);
 void castor_AppendSprite(castor_Context* ctx, castor_Sprite* sprite);
 void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite);
 
