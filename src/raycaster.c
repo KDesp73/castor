@@ -240,42 +240,33 @@ static bool renderSprite(castor_Context* ctx, castor_Sprite sprite, double dirX,
     SDL_Texture* spriteTexture = ctx->raycaster.sprite_textures[sprite.texture_id];
     if (!spriteTexture) return false;
 
-    // Get texture dimensions and calculate aspect ratio
     int texW, texH;
     SDL_QueryTexture(spriteTexture, NULL, NULL, &texW, &texH);
     float aspect_ratio = (float)texW / texH;  // Preserve aspect ratio
 
-    // Translate sprite position
     double spriteX = sprite.x - ctx->level.player->X;
     double spriteY = sprite.y - ctx->level.player->Y;
 
-    // Transform to camera space
     double invDet = 1.0 / (planeX * dirY - dirX * planeY);
     double transformX = invDet * (dirY * spriteX - dirX * spriteY);
     double transformY = invDet * (-planeY * spriteX + planeX * spriteY);
     if (transformY <= 0.01) return false;
 
-    // Calculate sprite height based on distance and scale
     int spriteHeight = abs((int)(ctx->sdl.screen_height / transformY * sprite.scale));
     int spriteWidth = (int)(spriteHeight * aspect_ratio);  // Width derived from height and aspect ratio
 
-    // Skip rendering if too small
     if (spriteHeight < 2 || spriteWidth < 2) return false;;
 
-    // Calculate screen position
     int spriteScreenX = (int)(ctx->sdl.screen_width / 2 * (1 + transformX / transformY));
 
-    // Vertical positioning
     double verticalOffset = sprite.z / transformY;
     int baseScreenY = (int)(ctx->sdl.screen_height / 2 - ctx->level.player->angleY * 5 - verticalOffset * 100);
 
-    // Calculate drawing bounds
     int drawStartX = spriteScreenX - spriteWidth / 2;
     int drawEndX = spriteScreenX + spriteWidth / 2;
     int drawStartY = baseScreenY - spriteHeight / 2;
     int drawEndY = baseScreenY + spriteHeight / 2;
 
-    // Render vertical stripes (only visible parts will be rendered)
     SDL_SetTextureBlendMode(spriteTexture, SDL_BLENDMODE_BLEND);
     for (int x = drawStartX; x < drawEndX; x++) {
         // Skip if the stripe is outside the screen or occluded by the z-buffer
@@ -285,7 +276,6 @@ static bool renderSprite(castor_Context* ctx, castor_Sprite sprite, double dirX,
         int texX = (int)((x - drawStartX) * (float)texW / (drawEndX - drawStartX));
         texX = texX < 0 ? 0 : (texX >= texW ? texW - 1 : texX);
 
-        // Render the entire vertical stripe (no clamping for height)
         SDL_Rect srcRect = {texX, 0, 1, texH};
         SDL_Rect destRect = {x, drawStartY, 1, drawEndY - drawStartY};
         SDL_RenderCopy(ctx->sdl.renderer, spriteTexture, &srcRect, &destRect);
