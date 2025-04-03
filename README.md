@@ -15,10 +15,6 @@ cd castor
 make all
 ```
 
-> [!NOTE]
-> Before `make all` the `check_deps.sh` script is run. In the case that a 
-> dependency is missing add it to your system
-
 ## Roadmap
 
 Planned features include:
