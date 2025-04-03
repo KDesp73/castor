@@ -7,7 +7,6 @@ LDFLAGS = -Ldeps/lib -lSDL2 -lSDL2_ttf -lSDL2_image -lm
 SRC_DIR = src
 INCLUDE_DIR = include
 BUILD_DIR = build
-DIST_DIR = dist
 
 LIBRARY_NAME = castor
 SO_NAME = lib$(LIBRARY_NAME).so
@@ -85,18 +84,11 @@ clean: ## Remove all build files and the executable
 	rm -rf $(BUILD_DIR) $(TARGET) $(SO_NAME) $(A_NAME)
 	rm eidolon lvl launch temp.lvl
 
-.PHONY: distclean
-distclean: clean ## Perform a full clean, including backup and temporary files
-	@echo "[INFO] Performing full clean, removing build directory, dist files, and editor backups."
-	rm -f *~ core $(SRC_DIR)/*~ $(DIST_DIR)/*.tar.gz
-
 .PHONY: dist
 dist: $(SRC_FILES) ## Create a tarball of the project
 	@echo "[INFO] Creating a tarball for version $(VERSION)"
-	mkdir -p $(DIST_DIR)
-	tar -czvf $(DIST_DIR)/$(TARGET)-$(VERSION).tar.gz $(SRC_DIR) $(INCLUDE_DIR) Makefile README.md
+	./scripts/dist.sh
 
-## Generate compile_commands.json
 .PHONY: compile_commands.json
 compile_commands.json: $(SRC_FILES) ## Generate compile_commands.json
 	@echo "[INFO] Generating compile_commands.json"
