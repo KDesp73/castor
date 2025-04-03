@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -Iinclude -fPIC
-LDFLAGS = -lSDL2 -lSDL2_ttf -lSDL2_image -lm
+LDFLAGS = -Ldeps/lib -lSDL2 -lSDL2_ttf -lSDL2_image -lm
 
 # Directories
 SRC_DIR = src
@@ -83,6 +83,7 @@ static: $(BUILD_DIR) $(OBJ_FILES) ## Build static library
 clean: ## Remove all build files and the executable
 	@echo "[INFO] Cleaning up build directory and executable."
 	rm -rf $(BUILD_DIR) $(TARGET) $(SO_NAME) $(A_NAME)
+	rm eidolon lvl launch temp.lvl
 
 .PHONY: distclean
 distclean: clean ## Perform a full clean, including backup and temporary files

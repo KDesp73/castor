@@ -51,7 +51,7 @@ static void GivePaths(castor_Context* ctx)
     } while(0)
 
 #define LEVEL_GLITCH_EVENT(index) \
-    castor_Event* glitch = castor_EventNew(ctx, false, 30000, GlitchTrigger, Glitch##index##Action); \
+    castor_Event* glitch = castor_EventNew(ctx, false, 20000, GlitchTrigger, Glitch##index##Action); \
     strcpy(glitch->id, "glitch"); \
     castor_AppendEvent(ctx, glitch);
 

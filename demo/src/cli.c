@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define CLI_IMPLEMENTATION
-#include <io/cli.h>
+#include "io/cli.h"
 #include "cli.h"
 
 CliArgs ParseCliArgs(int argc, char** argv)
