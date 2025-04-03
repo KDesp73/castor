@@ -8,16 +8,16 @@ SRC_DIR = src
 INCLUDE_DIR = include
 BUILD_DIR = build
 
-LIBRARY_NAME = castor
-SO_NAME = lib$(LIBRARY_NAME).so
-A_NAME = lib$(LIBRARY_NAME).a
-
 # Version info
 version_file = include/version.h
-VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_PATCH = $(shell sed -n -e 's/\#define VERSION_PATCH \([0-9]*\)/\1/p' $(version_file))
+VERSION_MAJOR = $(shell sed -n -e 's/\#define CASTOR_VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
+VERSION_MINOR = $(shell sed -n -e 's/\#define CASTOR_VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
+VERSION_PATCH = $(shell sed -n -e 's/\#define CASTOR_VERSION_PATCH \([0-9]*\)/\1/p' $(version_file))
 VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+
+LIBRARY_NAME = castor
+SO_NAME = lib$(LIBRARY_NAME).so.$(VERSION)
+A_NAME = lib$(LIBRARY_NAME).a.$(VERSION)
 
 # Determine the build type
 ifeq ($(type), RELEASE)
@@ -72,16 +72,19 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
 shared: $(BUILD_DIR) $(OBJ_FILES) ## Build shared library
 	@echo "[INFO] Building shared library: $(SO_NAME)"
 	@$(CC) -shared $(CFLAGS) -o $(SO_NAME) $(OBJ_FILES)
+	ln -s $(SO_NAME) lib$(LIBRARY_NAME).so
 
 .PHONY: static
 static: $(BUILD_DIR) $(OBJ_FILES) ## Build static library
 	@echo "[INFO] Building static library: $(A_NAME)"
 	@$(AR) rcs $(A_NAME) $(OBJ_FILES)
+	ln -s $(A_NAME) lib$(LIBRARY_NAME).a
 
 .PHONY: clean
 clean: ## Remove all build files and the executable
 	@echo "[INFO] Cleaning up build directory and executable."
-	rm -rf $(BUILD_DIR) $(TARGET) $(SO_NAME) $(A_NAME)
+	rm -rf $(BUILD_DIR)
+	rm lib$(LIBRARY_NAME)*
 	rm eidolon lvl launch temp.lvl
 
 .PHONY: dist
@@ -114,11 +117,6 @@ uninstall: ## Uninstall castor from the machine
 help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
-## Enable verbose output for debugging
-.PHONY: verbose
-verbose: CFLAGS += -DVERBOSE
-verbose: all ## Build the project in verbose mode
 
 # Phony targets to avoid conflicts with file names
 .PHONY: all clean distclean install uninstall dist compile_commands.json help check_tools verbose
