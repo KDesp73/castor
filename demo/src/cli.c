@@ -14,7 +14,9 @@ CliArgs ParseCliArgs(int argc, char** argv)
         cli_arg_new('v', "version", "Prints the engine version", no_argument),
         cli_arg_new('F', "fullscreen", "Start the game in fullscreen", no_argument),
         cli_arg_new('l', "level", "Specify the level file to load", required_argument),
+#ifdef DEBUG
         cli_arg_new('D', "debug", "Start in debug mode", no_argument),
+#endif
         NULL
     );
 
@@ -33,9 +35,11 @@ CliArgs ParseCliArgs(int argc, char** argv)
             case 'l':
                 res.level = strdup(optarg);
                 break;
+#ifdef DEBUG
             case 'D':
                 res.debug = true;
                 break;
+#endif
             default:
                 exit(1);
         } 

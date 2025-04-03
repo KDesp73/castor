@@ -1,43 +1,24 @@
-# Detect OS
-OS := $(shell uname -s 2>/dev/null || echo Windows)
-
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Iinclude -Ilib/raylib/include
-LDFLAGS = -lm
-
-ifeq ($(OS), Windows)
-    EXE = .exe
-	LDFLAGS += -Llib/raylib/lib -l:raylib.lib -lopengl32 -lgdi32 -lwinmm
-    RM = del /Q /F
-    MKDIR = mkdir
-else
-    EXE =
-    LDFLAGS += -Llib/raylib/lib -l:libraylib.a
-    RM = rm -rf
-    MKDIR = mkdir -p
-endif
+CFLAGS = -Wall -Iinclude -I../deps/include/raylib
+LDFLAGS = -L../deps/lib -l:libraylib.a -lm -lGL -lpthread -ldl -lrt -lX11
 
 # Directories
 SRC_DIR = src
+INCLUDE_DIR = include
 BUILD_DIR = build
 DIST_DIR = dist
 
-TARGET = lvl$(EXE)
-
-# Version info
-version_file = include/version.h
-VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_PATCH = $(shell sed -n -e 's/\#define VERSION_PATCH \([0-9]*\)/\1/p' $(version_file))
-VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+# Target and version info
+TARGET = lvl
 
 # Determine the build type
 ifeq ($(type), RELEASE)
 	CFLAGS += -O3
 else
-	SANITIZERS =
-	CFLAGS  += -DDEBUG -ggdb $(SANITIZERS)
+	SANITIZERS = # -fsanitize=address,undefined
+	CFLAGS  += -DDEBUG -ggdb
+	CFLAGS  += $(SANITIZERS)
 	LDFLAGS += $(SANITIZERS)
 endif
 
@@ -45,45 +26,58 @@ endif
 SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 
-.DEFAULT_GOAL := all
+# Default target
+.DEFAULT_GOAL := help
+
+# Total source file count
+TOTAL_FILES := $(words $(SRC_FILES))
+
+# Counter to track progress
+counter = 0
+
+# Targets
 
 .PHONY: all
 all: $(BUILD_DIR) $(TARGET) ## Build the project
 	@echo "Build complete."
 
-$(BUILD_DIR):
+$(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
-	$(MKDIR) $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
 
-$(TARGET): $(OBJ_FILES)
+$(TARGET): $(OBJ_FILES) ## Build the shell executable
 	@echo "[INFO] Building the project"
 	@$(CC) -o $@ $^ $(LDFLAGS)
+	@echo "[INFO] Executable created: $(TARGET)"
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
+	$(eval counter=$(shell echo $$(($(counter)+1))))
+	@echo "[$(counter)/$(TOTAL_FILES)] Compiling $< -> $@"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: install
-install: all
-ifeq ($(OS), Windows)
-	@echo "[INFO] Installing $(TARGET) to C:\Program Files\$(TARGET)"
-	$(MKDIR) "C:\Program Files\$(TARGET)"
-	cp $(TARGET).exe "C:\Program Files\$(TARGET)"
-else
+install: all ## Install the executable to /usr/bin/
 	@echo "[INFO] Installing $(TARGET) to /usr/bin/"
 	cp $(TARGET) /usr/bin/$(TARGET)
-endif
 
 .PHONY: uninstall
-uninstall:
-ifeq ($(OS), Windows)
-	@echo "[INFO] Uninstalling $(TARGET)"
-	$(RM) "C:\Program Files\$(TARGET)\$(TARGET).exe"
-else
+uninstall: ## Remove the executable from /usr/bin/
 	@echo "[INFO] Uninstalling $(TARGET)"
 	rm -f /usr/bin/$(TARGET)
-endif
 
 .PHONY: clean
-clean:
-	@echo "[INFO] Cleaning up build directory."
-	$(RM) $(BUILD_DIR) $(TARGET)
+clean: ## Remove all build files and the executable
+	@echo "[INFO] Cleaning up build directory and executable."
+	rm -rf $(BUILD_DIR) $(TARGET)
+
+## Generate compile_commands.json
+.PHONY: compile_commands.json
+compile_commands.json: $(SRC_FILES) ## Generate compile_commands.json
+	@echo "[INFO] Generating compile_commands.json"
+	bear -- make all
+
+## Show this help message
+.PHONY: help
+help: ## Show this help message
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

@@ -1,28 +1,7 @@
-# Detect OS
-OS := $(shell uname -s 2>/dev/null || echo Windows)
-EXT :=
-INSTALL_DIR := /usr/bin/
-RM := rm -rf
-CP := cp
-MKDIR := mkdir -p
-
-ifeq ($(OS), Windows)
-    EXT := .exe
-    INSTALL_DIR := bin\
-    RM := del /Q /F
-    CP := copy
-    MKDIR := mkdir
-    LDFLAGS += -lmingw32 -mwindows
-endif
-
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Iinclude -Ilib/raylib/include
-LDFLAGS += -Llib/raylib/lib -l:libraylib.a -lm
-
-ifeq ($(OS), Linux)
-    LDFLAGS += -lGL -lpthread -ldl -lrt -lX11
-endif
+CFLAGS = -Wall -Iinclude -I../deps/include/raylib
+LDFLAGS = -L../deps/lib -l:libraylib.5.5.a -lm -lGL -lpthread -ldl -lrt -lX11
 
 # Directories
 SRC_DIR = src
@@ -30,13 +9,8 @@ INCLUDE_DIR = include
 BUILD_DIR = build
 DIST_DIR = dist
 
-# Target and version info
-TARGET = launch$(EXT)
-version_file = include/version.h
-VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_PATCH = $(shell sed -n -e 's/\#define VERSION_PATCH \([0-9]*\)/\1/p' $(version_file))
-VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+# Target
+TARGET = launch
 
 # Determine the build type
 ifeq ($(type), RELEASE)
@@ -52,66 +26,58 @@ endif
 SRC_FILES := $(shell find $(SRC_DIR) -name '*.c')
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 
+# Default target
 .DEFAULT_GOAL := help
 
+# Total source file count
+TOTAL_FILES := $(words $(SRC_FILES))
+
+# Counter to track progress
+counter = 0
+
 # Targets
+
 .PHONY: all
-all: check_tools $(BUILD_DIR) $(TARGET) ## Build the project
+all: $(BUILD_DIR) $(TARGET) ## Build the project
 	@echo "Build complete."
 
-.PHONY: check_tools
-check_tools:
-	@command -v gcc >/dev/null 2>&1 || { echo "[ERRO] gcc is not installed."; exit 1; }
-	@command -v bear >/dev/null 2>&1 || { echo "[WARN] bear is not installed. Skipping compile_commands.json target."; }
-
-$(BUILD_DIR):
+$(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
-	$(MKDIR) $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
 
-$(TARGET): $(OBJ_FILES)
+$(TARGET): $(OBJ_FILES) ## Build the shell executable
 	@echo "[INFO] Building the project"
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@echo "[INFO] Executable created: $(TARGET)"
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
+	$(eval counter=$(shell echo $$(($(counter)+1))))
+	@echo "[$(counter)/$(TOTAL_FILES)] Compiling $< -> $@"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: install
-install: all
-	@echo "[INFO] Installing $(TARGET) to $(INSTALL_DIR)"
-	$(CP) $(TARGET) $(INSTALL_DIR)
+install: all ## Install the executable to /usr/bin/
+	@echo "[INFO] Installing $(TARGET) to /usr/bin/"
+	cp $(TARGET) /usr/bin/$(TARGET)
 
 .PHONY: uninstall
-uninstall:
+uninstall: ## Remove the executable from /usr/bin/
 	@echo "[INFO] Uninstalling $(TARGET)"
-	$(RM) $(INSTALL_DIR)$(TARGET)
+	rm -f /usr/bin/$(TARGET)
 
 .PHONY: clean
-clean:
+clean: ## Remove all build files and the executable
 	@echo "[INFO] Cleaning up build directory and executable."
-	$(RM) $(BUILD_DIR) $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
-.PHONY: distclean
-distclean: clean
-	@echo "[INFO] Performing full clean."
-	$(RM) *~ core $(SRC_DIR)/*~ $(DIST_DIR)/*.tar.gz
-
-.PHONY: dist
-dist: $(SRC_FILES)
-	@echo "[INFO] Creating a tarball for version $(VERSION)"
-	$(MKDIR) $(DIST_DIR)
-	tar -czvf $(DIST_DIR)/$(TARGET)-$(VERSION).tar.gz $(SRC_DIR) $(INCLUDE_DIR) Makefile README.md
-
+## Generate compile_commands.json
 .PHONY: compile_commands.json
-compile_commands.json: $(SRC_FILES)
+compile_commands.json: $(SRC_FILES) ## Generate compile_commands.json
 	@echo "[INFO] Generating compile_commands.json"
 	bear -- make all
 
+## Show this help message
 .PHONY: help
-help:
+help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
-.PHONY: verbose
-verbose: CFLAGS += -DVERBOSE
-verbose: all
