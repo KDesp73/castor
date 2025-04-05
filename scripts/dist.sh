@@ -3,7 +3,7 @@
 DIST_DIR=dist
 TARGET=eidolon
 
-version_file=include/version.h
+version_file=engine/include/version.h
 VERSION_MAJOR="$(sed -n -e 's/\#define CASTOR_VERSION_MAJOR \([0-9]*\)/\1/p' "$version_file")"
 VERSION_MINOR="$(sed -n -e 's/\#define CASTOR_VERSION_MINOR \([0-9]*\)/\1/p' "$version_file")"
 VERSION_PATCH="$(sed -n -e 's/\#define CASTOR_VERSION_PATCH \([0-9]*\)/\1/p' "$version_file")"
@@ -17,7 +17,7 @@ echo "Version: $VERSION"
 rm -rf "$PACKAGE_DIR"
 mkdir -p "$PACKAGE_DIR"
 
-cp -r README.md "$TARGET" lvl launch libcastor.* CHANGELOG.md deps assets levels "$PACKAGE_DIR"
+cp -r engine/README.md demo/"$TARGET" builder/lvl launcher/launch CHANGELOG.md deps assets levels "$PACKAGE_DIR"
 
 tar -czvf "$DIST_DIR/$PACKAGE_NAME.tar.gz" -C "$DIST_DIR" "$PACKAGE_NAME"
 

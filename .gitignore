@@ -5,7 +5,6 @@ compile_commands.json
 *.o
 
 eidolon
-libcastor.*
 .changelog
 lvl
 temp.lvl

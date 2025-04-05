@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Iinclude -I../include -I../deps/include
-LDFLAGS = -L../deps/lib -L.. -l:libcastor.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm -lSDL2_mixer
+CFLAGS = -Wall -Iinclude -I../engine/include -I../deps/include
+LDFLAGS = -L../deps/lib -l:libcastor.a -lSDL2 -lSDL2_ttf -lSDL2_image -lm -lSDL2_mixer
 
 # Directories
 SRC_DIR = src
