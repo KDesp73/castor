@@ -105,13 +105,13 @@ floor_tile.png
 - Fonts auto-scaled at runtime
 - Sprite metadata includes animation info
 
----
-
-## 📄 Documentation
-
-- [`docs/Architecture.md`](docs/Architecture.md): Engine internals
-- [`docs/UI.md`](docs/UI.md): Using the UI layer
-- [`CHANGELOG.md`](CHANGELOG.md): Feature log
+<!-- --- -->
+<!---->
+<!-- ## 📄 Documentation -->
+<!---->
+<!-- - [`docs/Architecture.md`](docs/Architecture.md): Engine internals -->
+<!-- - [`docs/UI.md`](docs/UI.md): Using the UI layer -->
+<!-- - [`CHANGELOG.md`](CHANGELOG.md): Feature log -->
 
 ---
 
