@@ -16,10 +16,13 @@ clean: ## Clean every project
 		$(MAKE) -C $$dir clean || exit 1; \
 	done
 
+.PHONY: compile_commands.json
 compile_commands.json: ## Generate compile_commands.json for every project
 	@for dir in $(SUBDIRS); do \
-		echo "Cleaning $$dir..."; \
-		$(MAKE) -C $$dir compile_commands.json || exit 1; \
+		echo "Generating compile_commands.json for $$dir..."; \
+		rm -f "$$dir/compile_commands.json"; \
+		$(MAKE) -C "$$dir" compile_commands.json || exit 1; \
+		echo "Done with $$dir."; \
 	done
 
 .PHONY: help

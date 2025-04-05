@@ -1,5 +1,5 @@
 #include "ui.h"
-#include "context.h"
+#include "core.h"
 
 void UIOpen(UI* ui, UIFont* font)
 {

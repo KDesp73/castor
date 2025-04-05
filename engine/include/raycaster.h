@@ -1,7 +1,7 @@
 #ifndef RAYCASTER_H
 #define RAYCASTER_H
 
-#include "context.h"
+#include "core.h"
 #include <SDL2/SDL_render.h>
 
 #define TILE_EMPTY 0

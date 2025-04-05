@@ -52,8 +52,10 @@ $(BUILD_DIR): ## Create the build directory if it doesn't exist
 	@echo "[INFO] Creating build directory"
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/ui
-	mkdir -p $(BUILD_DIR)/entity
-	mkdir -p $(BUILD_DIR)/context
+	mkdir -p $(BUILD_DIR)/asset
+	mkdir -p $(BUILD_DIR)/core
+	mkdir -p $(BUILD_DIR)/world/entity
+	mkdir -p $(BUILD_DIR)/player
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
 	$(eval counter=$(shell echo $$(($(counter)+1))))

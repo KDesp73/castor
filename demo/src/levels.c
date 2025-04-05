@@ -1,27 +1,22 @@
-#include "levels.h"
-#include "context.h"
-#include "entity.h"
-#include "event.h"
+#include "core.h"
 #include "events.h"
 #include "game_player.h"
 #include "inventory.h"
-#include "map.h"
 #include "player.h"
-#include "sprite.h"
+#include "world.h"
 #include "objects.h"
 #include <string.h>
 
 static void GivePaths(castor_Context* ctx)
 {
-    int** map = castor_ExportSearchMap(ctx);
+    castor_Map* map = castor_ExportSearchMap(ctx);
     for (size_t i = 0; i < ctx->level.entity_count; i++) {
         if(ctx->level.entities[i]->default_path.length == 0) {
             ctx->level.entities[i]->default_path = 
-                castor_GenerateRandomLoopPath(map, ctx->level.map_width, ctx->level.map_height, 12, ctx->level.entities[i]->sprite->x, ctx->level.entities[i]->sprite->y);
+                castor_GenerateRandomLoopPath(map->grid, ctx->level.map->w, ctx->level.map->h, 12, ctx->level.entities[i]->sprite->x, ctx->level.entities[i]->sprite->y);
         }
     }
-    castor_MapFree(map, ctx->level.map_height);
-
+    castor_MapFree(&map);
 }
 
 #define LEVEL_HEADER(path) \

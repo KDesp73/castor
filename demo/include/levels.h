@@ -1,8 +1,7 @@
 #ifndef LEVELS_H
 #define LEVELS_H
 
-#include "context.h"
-#include "level.h"
+#include "core.h"
 
 void Level0(castor_Context* ctx);
 void Level1(castor_Context* ctx);
@@ -13,7 +12,8 @@ void Level5(castor_Context* ctx); // Credits
 
 static inline castor_LevelLoader Level(int index)
 {
-#define LVL(x) case x: return Level##x
+    #define LVL(x) case x: return Level##x;
+    
     switch (index) {
         LVL(0);
         LVL(1);
@@ -21,8 +21,8 @@ static inline castor_LevelLoader Level(int index)
         LVL(3);
         LVL(4);
         LVL(5);
+        default: return NULL;
     }
-    return NULL;
 }
 
 #endif // LEVELS_H

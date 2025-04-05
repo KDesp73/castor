@@ -1,6 +1,6 @@
 #include "raycaster.h"
-#include "context.h"
-#include "sprite.h"
+#include "core.h"
+#include "world.h"
 #include "ui.h"
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_render.h>
@@ -72,12 +72,12 @@ void castor_CastWalls(SDL_Renderer *renderer, castor_Context* ctx)
             int mapX = (int)floor(hitX);
             int mapY = (int)floor(hitY);
 
-            if (mapX < 0 || mapX >= ctx->level.map_width || mapY < 0 || mapY >= ctx->level.map_height) {
+            if (mapX < 0 || mapX >= ctx->level.map->w || mapY < 0 || mapY >= ctx->level.map->h) {
                 hitWall = true;
                 break;
             }
 
-            tile = ctx->level.map[mapY][mapX];
+            tile = ctx->level.map->grid[mapY][mapX];
             if (tile > 0) {
                 hitWall = true;
                 break;

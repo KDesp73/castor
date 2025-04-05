@@ -1,13 +1,12 @@
 #include "events.h"
-#include "context.h"
-#include "entity.h"
+#include "core.h"
 #include "game_player.h"
 #include "ingame-ui.h"
 #include "inventory.h"
 #include "player.h"
-#include "sprite.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include "world.h"
 
 #define ATTACK_RANGE 3.0f
 #define FACE_THRESHOLD 0.8f

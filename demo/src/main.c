@@ -1,18 +1,12 @@
 #define TARGET_FPS 60
 
-#include "animation.h"
+#include "asset.h"
 #include "cli.h"
-#include "context.h"
-#include "engine.h"
+#include "core.h"
 #include "game_player.h"
-#include "image.h"
 #include "ingame-ui.h"
 #include "inventory.h"
-#include "level.h"
 #include "levels.h"
-#include "map.h"
-#include "movement.h"
-#include "paths.h"
 #include "player.h"
 #include "raycaster.h"
 #include "screens.h"
@@ -46,7 +40,7 @@ static castor_Image glassesImg;
 static castor_Image swordImg;
 static castor_Image invSquareImg;
 
-static int** mapStored;
+static castor_Map* mapStored;
 
 static CliArgs args;
 bool GlitchActivated = false;
@@ -74,8 +68,8 @@ void setup(castor_Context* ctx)
         castor_LoadLevelMap(ctx, args.level);
     } else {
         castor_LoadLevel(ctx, Level(ctx->level.index));
-        mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
-        castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+        mapStored = castor_MapCreate(ctx->level.map->h, ctx->level.map->w);
+        castor_MapCpy(ctx->level.map, mapStored);
     }
 
     castor_SetFullscreen(ctx, args.fullscreen);
@@ -241,7 +235,7 @@ void RenderFrame(castor_Context* ctx)
     if(INV.glasses && glitch) {
         RenderGlassesCooldown(ctx->sdl.renderer, 10, ctx->sdl.screen_height - 85, 150, 30, SDL_GetTicks() - glitch->last_processed, glitch->cooldown);
         if(SDL_GetTicks() - glitch->last_processed >= 10000) {
-            castor_MapCpy(mapStored, ctx->level.map, ctx->level.map_width, ctx->level.map_height);
+            castor_MapCpy(mapStored, ctx->level.map);
 
             GlitchActivated = false;
         }
@@ -329,7 +323,7 @@ void HandleEvent(castor_Context* ctx, SDL_Event* event, bool* paused)
 
 void HandleLevelTransition(castor_Context* ctx, SDL_Event* event)
 {
-    castor_MapFree(mapStored, ctx->level.map_height);
+    castor_MapFree(&mapStored);
 
     castor_LevelLoader level = Level(ctx->level.index+1);
     if(!level) {
@@ -340,8 +334,8 @@ void HandleLevelTransition(castor_Context* ctx, SDL_Event* event)
     ctx->level.index++;
     castor_LoadLevel(ctx, level);
 
-    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
-    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    mapStored = castor_MapCreate(ctx->level.map->h, ctx->level.map->w);
+    castor_MapCpy(ctx->level.map, mapStored);
 
 
     if(UI_POLL_SCREEN(LoadingScreen, ctx, event) == -1) 
@@ -352,14 +346,14 @@ void HandleLevelTransition(castor_Context* ctx, SDL_Event* event)
 
 void HandleLevelFail(castor_Context* ctx, SDL_Event* event)
 {
-    castor_MapFree(mapStored, ctx->level.map_height);
+    castor_MapFree(&mapStored);
 
     castor_FreeLevel(ctx);
     castor_LoadLevel(ctx, Level(0));
     ctx->level.index = 0;
 
-    mapStored = castor_MapCreate(ctx->level.map_height, ctx->level.map_width);
-    castor_MapCpy(ctx->level.map, mapStored, ctx->level.map_width, ctx->level.map_height);
+    mapStored = castor_MapCreate(ctx->level.map->h, ctx->level.map->h);
+    castor_MapCpy(ctx->level.map, mapStored);
 
     if(UI_POLL_SCREEN(FailScreen, ctx, event))
         ctx->engine.running = false;

@@ -1,6 +1,6 @@
 #ifndef IN_GAME_UI_H
 #define IN_GAME_UI_H
-#include "context.h"
+#include "core.h"
 #include <SDL2/SDL_render.h>
 
 #define UI_GLOBAL_FONT "assets/fonts/Karla-Bold.ttf"

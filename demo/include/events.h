@@ -1,7 +1,7 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include "context.h"
+#include "core.h"
 #include "event.h"
 #include "ingame-ui.h"
 #include "inventory.h"
@@ -27,44 +27,44 @@ bool GlitchTrigger(castor_Event* evt);
     }
 
 DECLARE_GLITCH_ACTION(0, {
-    ctx->level.map[5][13] = 0;
-    ctx->level.map[13][9] = 0;
+    ctx->level.map->grid[5][13] = 0;
+    ctx->level.map->grid[13][9] = 0;
 })
 
 DECLARE_GLITCH_ACTION(1, {
-    ctx->level.map[17][11] = 0;
-    ctx->level.map[17][12] = 0;
+    ctx->level.map->grid[17][11] = 0;
+    ctx->level.map->grid[17][12] = 0;
 })
 
 DECLARE_GLITCH_ACTION(2, {
-    ctx->level.map[5][1] = 0;
-    ctx->level.map[6][1] = 0;
-    ctx->level.map[7][1] = 0;
-    ctx->level.map[8][1] = 0;
-    ctx->level.map[9][1] = 0;
-    ctx->level.map[10][1] = 0;
-    ctx->level.map[11][1] = 0;
-    ctx->level.map[5][2] = 0;
-    ctx->level.map[6][2] = 0;
-    ctx->level.map[7][2] = 0;
-    ctx->level.map[8][2] = 0;
-    ctx->level.map[9][2] = 0;
-    ctx->level.map[10][2] = 0;
-    ctx->level.map[11][2] = 0;
+    ctx->level.map->grid[5][1] = 0;
+    ctx->level.map->grid[6][1] = 0;
+    ctx->level.map->grid[7][1] = 0;
+    ctx->level.map->grid[8][1] = 0;
+    ctx->level.map->grid[9][1] = 0;
+    ctx->level.map->grid[10][1] = 0;
+    ctx->level.map->grid[11][1] = 0;
+    ctx->level.map->grid[5][2] = 0;
+    ctx->level.map->grid[6][2] = 0;
+    ctx->level.map->grid[7][2] = 0;
+    ctx->level.map->grid[8][2] = 0;
+    ctx->level.map->grid[9][2] = 0;
+    ctx->level.map->grid[10][2] = 0;
+    ctx->level.map->grid[11][2] = 0;
 })
 
 DECLARE_GLITCH_ACTION(4, {
-    ctx->level.map[2][2] = 0;
-    ctx->level.map[3][2] = 0;
-    ctx->level.map[27][2] = 0;
-    ctx->level.map[28][2] = 0;
+    ctx->level.map->grid[2][2] = 0;
+    ctx->level.map->grid[3][2] = 0;
+    ctx->level.map->grid[27][2] = 0;
+    ctx->level.map->grid[28][2] = 0;
 })
 
 DECLARE_GLITCH_ACTION(5, {
-    ctx->level.map[11][17] = 0;
-    ctx->level.map[11][18] = 0;
-    ctx->level.map[12][17] = 0;
-    ctx->level.map[12][18] = 0;
+    ctx->level.map->grid[11][17] = 0;
+    ctx->level.map->grid[11][18] = 0;
+    ctx->level.map->grid[12][17] = 0;
+    ctx->level.map->grid[12][18] = 0;
 })
 
 #define DECLARE_DOOR_TRIGGER(num, _x, _y)                      \

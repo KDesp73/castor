@@ -1,7 +1,7 @@
-#ifndef UI_H
-#define UI_H
+#ifndef CASTOR_UI_H
+#define CASTOR_UI_H
 
-#include "entity.h"
+#include "world.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
@@ -129,4 +129,4 @@ static inline int UIPollScreen(UIScreen screen, void* ctx, SDL_Event* event)
 }
 #define UI_POLL_SCREEN UIPollScreen
 
-#endif // UI_H
+#endif // CASTOR_UI_H
