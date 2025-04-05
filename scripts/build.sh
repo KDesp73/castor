@@ -3,7 +3,7 @@
 build() {
     cd "$1" || exit 1
     make clean
-    make type=RELEASE all
+    make all
     cd .. || exit 1
     mv "$1/$2" .
 }

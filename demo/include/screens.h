@@ -7,6 +7,7 @@
 int StartScreen(void* ctx, SDL_Event* evt);
 int PauseScreen(void* ctx, SDL_Event* evt);
 int SettingsScreen(void* ctx, SDL_Event* evt);
+int ControlsScreen(void* ctx, SDL_Event* evt);
 int LoadingScreen(void* ctx, SDL_Event* evt);
 int FailScreen(void* ctx, SDL_Event* evt);
 

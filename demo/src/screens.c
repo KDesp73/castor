@@ -1,4 +1,5 @@
 #include "screens.h"
+#include "SDL2/SDL_ttf.h"
 #include "ingame-ui.h"
 #include "settings.h"
 #include "ui.h"
@@ -115,6 +116,15 @@ int PauseScreen(void* context, SDL_Event* evt)
     UIButtonOnHover(evt, &settingsButton);
     UIButtonRender(ctx->sdl.renderer, &settingsButton);
 
+    UIButton contorlsButton = {
+        BUTTON_DEFAULTS(ctx),
+        .x = centerX,
+        .y = NEXT_BUTTON_Y(screen_height, buttonsHeight, padding, btn_index++),
+        .label = "Controls"
+    };
+    UIButtonOnHover(evt, &contorlsButton);
+    UIButtonRender(ctx->sdl.renderer, &contorlsButton);
+
     UIButton exitButton = {
         BUTTON_DEFAULTS(ctx),
         .x = centerX,
@@ -136,9 +146,90 @@ int PauseScreen(void* context, SDL_Event* evt)
             int code = UIPollScreen(SettingsScreen, ctx, evt);
             if(code == -1) return -1;
         }
+        if(UIButtonIsPressed(evt, &contorlsButton)) {
+            int code = UIPollScreen(ControlsScreen, ctx, evt);
+            if(code == -1) return -1;
+        }
     }
 
     return 69;
+}
+
+int ControlsScreen(void* context, SDL_Event* evt)
+{
+    castor_Context* ctx = context;
+    SCREEN_HEADER(ctx);
+    SDL_Renderer* renderer = ctx->sdl.renderer;
+    UIFont* font = ctx->ui.font;
+
+    const char* title = "Controls";
+    UIFont title_font = {0};
+    UIFontOpen(&title_font, UI_GLOBAL_FONT, 60, UI_COLOR_WHITE);
+
+    const char* controls[] = {
+        "[WASD] - Move",
+        "[Shift] - Run",
+        "[E] - Interact",
+        "[ESC] - Pause",
+        "[X] - Activate Glasses",
+        "[Arrow Keys / Mouse] - Camera",
+    };
+
+    int result = 69;
+    while (SDL_PollEvent(evt)) {
+        if (evt->type == SDL_QUIT) {
+            result = -1;
+            break;
+        }
+
+        if (evt->type == SDL_KEYDOWN && evt->key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+            return 0;
+    }
+
+    const int num_controls = sizeof(controls) / sizeof(controls[0]);
+    int screen_width, screen_height;
+    SDL_GetRendererOutputSize(renderer, &screen_width, &screen_height);
+
+    // Button style
+    const int button_width = 300;
+    const int button_height = 50;
+    const int padding = 20;
+    const int start_y = screen_height * 0.2 + 120;
+
+    int title_w, title_h;
+    TTF_SizeText(title_font.ttf, title, &title_w, &title_h);
+    UITextRender(renderer, title, (screen_width - title_w) / 2, screen_height * 0.2, &title_font);
+
+    for (int i = 0; i < num_controls; ++i) {
+        int box_x = (screen_width - button_width) / 2;
+        int box_y = start_y + i * (button_height + padding);
+
+        // Shadow
+        SDL_Rect shadow = { box_x + 3, box_y + 3, button_width, button_height };
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 100);
+        SDL_RenderFillRect(renderer, &shadow);
+
+        // Background
+        SDL_Rect box = { box_x, box_y, button_width, button_height };
+        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+        SDL_RenderFillRect(renderer, &box);
+
+        // Border
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDrawRect(renderer, &box);
+
+        // Render text centered in the box
+        int text_w, text_h;
+        TTF_SizeText(font->ttf, controls[i], &text_w, &text_h);
+        int text_x = box.x + (box.w - text_w) / 2;
+        int text_y = box.y + (box.h - text_h) / 2;
+
+        UITextRender(renderer, controls[i], text_x, text_y, font);
+    }
+
+    SDL_RenderPresent(renderer);
+    UIFontClose(&title_font);
+    return result;
 }
 
 int SettingsScreen(void* context, SDL_Event* evt)

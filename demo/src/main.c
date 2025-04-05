@@ -65,8 +65,8 @@ void setup(castor_Context* ctx)
     ctx->raycaster.floor_texture_index = 30;
     ctx->raycaster.ceiling_texture_index = 29;
     ctx->settings.fullscreen = false;
-    ctx->settings.mouse_sensitivity = 0.25;
-    ctx->settings.render_distance = 30.0f;
+    ctx->settings.mouse_sensitivity = 0.35;
+    ctx->settings.render_distance = 40.0f;
     ctx->level.index = 0;
     ctx->sound.volume = 100;
 
