@@ -3,12 +3,13 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "player.h"
 #include <SDL2/SDL_stdinc.h>
+#include "player.h"
 
-// SPRITE
+// ================= SPRITE =================
 #define SPRITE_UP 0.5
 #define SPRITE_MIDDLE 0
 #define SPRITE_DOWN -0.5
@@ -31,21 +32,10 @@ typedef struct {
 
 castor_Sprite* castor_SpriteNew(float x, float y, float z, size_t textureId, float scale, bool collision, const char* id);
 void castor_SpriteFree(castor_Sprite** s);
-
 int castor_SpriteCmp(const void* a, const void* b);
 
-// ENTITY
+// ================= ENTITY =================
 #define MAX_PATH_LENGTH 200
-
-typedef struct {
-    float path[MAX_PATH_LENGTH][2];
-    size_t length;
-    int index;
-} castor_Path;
-castor_Path castor_GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY);
-void castor_PathPrint(const castor_Path path);
-
-
 #define MIN_STOP_DISTANCE 1.5f
 
 #define MOVEMENT_DEFINITION \
@@ -53,19 +43,29 @@ void castor_PathPrint(const castor_Path path);
 #define DECLARE_MOVEMENT(x) \
     void x(MOVEMENT_DEFINITION)
 
+typedef struct {
+    float path[MAX_PATH_LENGTH][2];
+    size_t length;
+    int index;
+} castor_Path;
+
+castor_Path castor_GenerateRandomLoopPath(int** map, size_t mapW, size_t mapH, size_t targetLength, float startX, float startY);
+void castor_PathPrint(const castor_Path path);
+
 typedef struct castor_Entity {
     castor_Sprite* sprite;
     float speed;
     int health;
-    float strength; // 0..1
-    float toughness; // 0..1
-    size_t detection_range; // number of tiles
+    float strength;
+    float toughness;
+    size_t detection_range;
     float hitbox;
     void (*move)(MOVEMENT_DEFINITION);
     castor_Path default_path;
     size_t index;
     char id[16];
 } castor_Entity;
+
 typedef void (*castor_EntityMovement)(MOVEMENT_DEFINITION);
 
 castor_Entity* castor_EntityNew(
@@ -79,12 +79,18 @@ castor_Entity* castor_EntityNew(
     castor_EntityMovement move,
     const char* id
 );
+
 void castor_EntityFree(castor_Entity** e);
 void castor_EntityFollowDefaultPath(castor_Entity* entity, float deltaTime);
-
 float castor_EntityTakeDamage(castor_Entity* e, size_t damage);
 float castor_EntityDealDamage(const castor_Entity* e);
 
+// Movement functions
+DECLARE_MOVEMENT(castor_MoveChase);
+DECLARE_MOVEMENT(castor_MoveAStar);
+DECLARE_MOVEMENT(castor_MoveSmoothAStar);
+
+// ================= PATHFINDING =================
 #define MAX_PATH 256
 #define INF 1e9
 
@@ -101,35 +107,26 @@ typedef struct {
     castor_AStarNode nodes[MAX_PATH];
     size_t size;
 } castor_PriorityQueue;
+
 castor_Node castor_AStar(castor_Entity* entity, const castor_Player* player, const int** map, size_t mapW, size_t mapH);
 
-
-// Move functions
-DECLARE_MOVEMENT(castor_MoveChase);
-DECLARE_MOVEMENT(castor_MoveAStar);
-DECLARE_MOVEMENT(castor_MoveSmoothAStar);
-
+// ================= DAMAGE NUMBERS =================
 typedef struct {
-    float x, y;          // Position on screen
-    float vx, vy;        // Velocity for floating effect
-    int damage;          // Damage amount
-    float angle;         // Random angle
-    float scale;         // Random size
-    Uint32 spawn_time;   // Time when spawned
-    Uint32 lifetime;     // Duration in ms
+    float x, y;
+    float vx, vy;
+    int damage;
+    float angle;
+    float scale;
+    Uint32 spawn_time;
+    Uint32 lifetime;
 } castor_DamageNumber;
 
-// EVENT
-#include <SDL2/SDL_stdinc.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
+// ================= EVENT =================
 typedef struct castor_Event{
     bool (*trigger)(struct castor_Event* self);
     void (*action)(struct castor_Event* self);
-    void* ctx; // Reference to the global context
-    void* state; // Reference to a user-defined context
+    void* ctx;
+    void* state;
     bool trigger_once;
     bool triggered;
     bool first_run;
@@ -142,12 +139,11 @@ typedef struct castor_Event{
 typedef bool (*EventTrigger)(struct castor_Event* self);
 typedef void (*EventAction)(struct castor_Event* self);
 
-
 castor_Event* castor_EventNew(void* ctx, bool trigger_once, Uint32 cooldown, EventTrigger trigger, EventAction action);
 void castor_EventFree(castor_Event** evt);
 void castor_EventProcess(castor_Event* evt);
 
-// ITEM
+// ================= ITEM =================
 typedef struct {
     char id[16];
     castor_Sprite* sprite;
@@ -158,11 +154,11 @@ typedef struct {
 castor_Item* castor_ItemNew(castor_Sprite* sprite, const char* id);
 void castor_ItemFree(castor_Item** e);
 
-// LEVEL
+// ================= LEVEL =================
 #define castor_LoadLevel(ctx, loader) \
     loader(ctx)
 
-// MAP
+// ================= MAP =================
 typedef struct {
     int** grid;
     size_t w, h;

@@ -355,6 +355,7 @@ void HandleLevelFail(castor_Context* ctx, SDL_Event* event)
     mapStored = castor_MapCreate(ctx->level.map->h, ctx->level.map->h);
     castor_MapCpy(ctx->level.map, mapStored);
 
+    GlitchActivated = false;
     if(UI_POLL_SCREEN(FailScreen, ctx, event))
         ctx->engine.running = false;
     ctx->level.fail = false;
