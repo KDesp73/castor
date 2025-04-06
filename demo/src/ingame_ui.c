@@ -1,6 +1,6 @@
 #include "core.h"
 #include <time.h>
-#include "ingame-ui.h"
+#include "ingame_ui.h"
 
 void AddDamageNumber(castor_Context* ctx, float enemy_x, float enemy_y, int damage)
 {

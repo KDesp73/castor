@@ -1,7 +1,7 @@
 #include "events.h"
 #include "core.h"
 #include "game_player.h"
-#include "ingame-ui.h"
+#include "ingame_ui.h"
 #include "inventory.h"
 #include "player.h"
 #include <stdbool.h>

@@ -2,8 +2,7 @@
 #define EVENTS_H
 
 #include "core.h"
-#include "event.h"
-#include "ingame-ui.h"
+#include "ingame_ui.h"
 #include "inventory.h"
 #include <stdbool.h>
 

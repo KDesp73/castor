@@ -1,6 +1,6 @@
 #include "screens.h"
 #include "SDL2/SDL_ttf.h"
-#include "ingame-ui.h"
+#include "ingame_ui.h"
 #include "settings.h"
 #include "ui.h"
 #include <SDL2/SDL_events.h>
