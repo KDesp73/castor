@@ -349,8 +349,10 @@ void HandleLevelFail(castor_Context* ctx, SDL_Event* event)
     castor_MapFree(&mapStored);
 
     castor_FreeLevel(ctx);
-    castor_LoadLevel(ctx, Level(0));
-    ctx->level.index = 0;
+    ctx->level.index = (ctx->level.index > 0) 
+        ? (ctx->level.index == 5) ? 0 : ctx->level.index - 1 
+        : 0;
+    castor_LoadLevel(ctx, Level(ctx->level.index));
 
     mapStored = castor_MapCreate(ctx->level.map->h, ctx->level.map->h);
     castor_MapCpy(ctx->level.map, mapStored);

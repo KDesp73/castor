@@ -18,5 +18,7 @@ echo "// $NAME module" >> engine/include/"$NAME".h
 echo "" >> engine/include/"$NAME".h
 echo "#endif" >> engine/include/"$NAME".h
 
+echo "mkdir -p \$(BUILD_DIR)/$NAME" >> engine/Makefile
+
 echo "[Castor] 🧱 Module '$NAME' created"
 

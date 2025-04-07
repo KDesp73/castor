@@ -48,15 +48,6 @@ counter = 0
 all: $(BUILD_DIR) static shared ## Build the project
 	@echo "Build complete."
 
-$(BUILD_DIR): ## Create the build directory if it doesn't exist
-	@echo "[INFO] Creating build directory"
-	mkdir -p $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)/ui
-	mkdir -p $(BUILD_DIR)/asset
-	mkdir -p $(BUILD_DIR)/core
-	mkdir -p $(BUILD_DIR)/world/entity
-	mkdir -p $(BUILD_DIR)/player
-
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c ## Compile source files with progress
 	$(eval counter=$(shell echo $$(($(counter)+1))))
 	@echo "[$(counter)/$(TOTAL_FILES)] Compiling $< -> $@"
@@ -117,3 +108,13 @@ uninstall: ## Uninstall castor from the machine
 help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+$(BUILD_DIR): ## Create the build directory if it doesn't exist
+	@echo "[INFO] Creating build directory"
+	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/ui
+	mkdir -p $(BUILD_DIR)/asset
+	mkdir -p $(BUILD_DIR)/core
+	mkdir -p $(BUILD_DIR)/world/entity
+	mkdir -p $(BUILD_DIR)/player
+	mkdir -p $(BUILD_DIR)/renderer
