@@ -20,8 +20,6 @@ Features:
 
 ### Built with:
 - **SDL2**, SDL_image, SDL_ttf, SDL_mixer
-- **Raylib** (optional UI elements)
-- No scripting language yet — game logic is written in C
 
 ---
 
@@ -77,8 +75,8 @@ make all
 Located in: `builder/`
 
 This CLI tool:
-- Converts `.lvl` text files into binary levels
-- Packs and indexes assets from `.list` files
+- Creates new level files
+- Edits existing level files
 
 ```bash
 cd builder
