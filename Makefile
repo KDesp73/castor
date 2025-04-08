@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-SUBDIRS := engine builder demo launcher
+SUBDIRS := engine demo launcher builder
 
 .PHONY: all
 all: ## Build every project

@@ -3,6 +3,7 @@
 #include "world.h"
 #include "ui.h"
 #include <SDL2/SDL_hints.h>
+#include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
 
 #include <math.h>
@@ -10,11 +11,11 @@
 #include <stdio.h>
 #include <string.h>
 
-void castor_ApplyDarkenFilter(SDL_Renderer *renderer, int screen_width, int screen_height, Uint8 opacity)
+void castor_ApplyFilter(SDL_Renderer *renderer, int screen_width, int screen_height, SDL_Color color)
 {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, opacity);
+    SDL_SetRenderDrawColor(renderer, UI_COLOR_PARAMS(color));
 
     SDL_Rect overlay = { 0, 0, screen_width, screen_height };
     SDL_RenderFillRect(renderer, &overlay);
