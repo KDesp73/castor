@@ -1,6 +1,6 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Iinclude -fPIC -Ideps/include
+CFLAGS = -Wall -Werror -Iinclude -fPIC -I../deps/include
 LDFLAGS = -L../deps/lib -Wl,rpath=../deps/lib -lSDL2 -lSDL2_ttf -lSDL2_image -lm
 
 # Directories
