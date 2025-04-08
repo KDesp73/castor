@@ -17,7 +17,7 @@ echo "Version: $VERSION"
 rm -rf "$PACKAGE_DIR"
 mkdir -p "$PACKAGE_DIR"
 
-cp -r engine/README.md demo/"$TARGET" builder/lvl launcher/launch CHANGELOG.md deps assets levels "$PACKAGE_DIR"
+cp -r engine/README.md demo/"$TARGET" builder/lvl launcher/launch CHANGELOG.md deps assets levels scripts/installer.sh "$PACKAGE_DIR"
 
 tar -czvf "$DIST_DIR/$PACKAGE_NAME.tar.gz" -C "$DIST_DIR" "$PACKAGE_NAME"
 
