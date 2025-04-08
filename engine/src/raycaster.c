@@ -10,6 +10,15 @@
 #include <stdio.h>
 #include <string.h>
 
+void castor_ApplyDarkenFilter(SDL_Renderer *renderer, int screen_width, int screen_height, Uint8 opacity)
+{
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, opacity);
+
+    SDL_Rect overlay = { 0, 0, screen_width, screen_height };
+    SDL_RenderFillRect(renderer, &overlay);
+}
 
 static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, float rayY)
 {

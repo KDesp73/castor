@@ -216,6 +216,8 @@ void RenderFrame(castor_Context* ctx)
     castor_CastFloorAndCeiling(ctx->sdl.renderer, ctx);
     castor_CastWalls(ctx->sdl.renderer, ctx);
     castor_CastSprites(ctx->sdl.renderer, ctx);
+
+    castor_ApplyDarkenFilter(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height, 50);
     
     if(INV.sword) {
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
