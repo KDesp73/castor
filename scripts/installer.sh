@@ -2,4 +2,4 @@
 
 DEST="/usr/lib"
 
-sudo cp ./deps/libs/* $DEST
+sudo cp ./deps/lib/* $DEST
