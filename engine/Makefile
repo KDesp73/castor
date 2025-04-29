@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Werror -Iinclude -fPIC -I../deps/include
+CFLAGS = -Wall -Werror -Iinclude -I../deps/include -fPIC
+CFLAGS  += $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
 LDFLAGS = 
 
 # Directories
@@ -61,7 +62,7 @@ A_FULL_PATH  := $(DEPS_DIR)/$(A_NAME)
 shared: $(BUILD_DIR) $(OBJ_FILES) ## Build shared library
 	@echo "[INFO] Building shared library: $(SO_NAME)"
 	@$(CC) -shared $(CFLAGS) -o $(SO_NAME) $(OBJ_FILES)
-	@rm $(DEPS_DIR)/lib$(LIBRARY_NAME).so*
+	@rm -f $(DEPS_DIR)/lib$(LIBRARY_NAME).so*
 	@mkdir -p $(DEPS_DIR)
 	@mv -f $(SO_NAME) $(SO_FULL_PATH)
 	@ln -sf $(notdir $(SO_FULL_PATH)) $(DEPS_DIR)/lib$(LIBRARY_NAME).so
@@ -70,7 +71,7 @@ shared: $(BUILD_DIR) $(OBJ_FILES) ## Build shared library
 static: $(BUILD_DIR) $(OBJ_FILES) ## Build static library
 	@echo "[INFO] Building static library: $(A_NAME)"
 	@$(AR) rcs $(A_NAME) $(OBJ_FILES)
-	@rm $(DEPS_DIR)/lib$(LIBRARY_NAME).a*
+	@rm -f $(DEPS_DIR)/lib$(LIBRARY_NAME).a*
 	@mkdir -p $(DEPS_DIR)
 	@mv -f $(A_NAME) $(A_FULL_PATH)
 	@ln -sf $(notdir $(A_FULL_PATH)) $(DEPS_DIR)/lib$(LIBRARY_NAME).a

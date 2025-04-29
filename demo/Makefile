@@ -1,7 +1,10 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Iinclude -I../engine/include -I../deps/include
-LDFLAGS = -L../deps/lib -Wl,-rpath=../deps/lib -l:libcastor.a -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -lm
+CFLAGS = -Wall -Iinclude -I../engine/include -I../deps/include 
+CFLAGS  += $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
+LDFLAGS = -L../deps/lib -lcastor -lm
+LDFLAGS += $(shell pkg-config --libs sdl2 SDL2_ttf SDL2_image SDL2_mixer)
+LDFLAGS +=-Wl,-rpath,./deps/lib
 
 # Directories
 SRC_DIR = src
