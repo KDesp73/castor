@@ -116,6 +116,7 @@ typedef void (*castor_LevelLoader)(castor_Context*);
 bool castor_ConstructRenderer(castor_Context* ctx);
 
 //=== Raycaster ===//
+// FIXME: not clear where this belongs
 void castor_FreeTextures(castor_Context* ctx);
 void castor_FreeSprites(castor_Context* ctx);
 void castor_LoadTextures(castor_Context* ctx);
@@ -124,6 +125,7 @@ void castor_AppendSprite(castor_Context* ctx, castor_Sprite* sprite);
 void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite);
 
 //=== Level ===//
+// Move to world module
 void castor_FreeEntities(castor_Context* ctx);
 void castor_FreeItems(castor_Context* ctx);
 void castor_FreeEvents(castor_Context* ctx);
@@ -143,6 +145,7 @@ void castor_RemoveItem(castor_Context* ctx, const castor_Item* item);
 void castor_ItemsIdle(castor_Context* ctx, float elapsedTime);
 
 //=== Movement & Collision ===//
+// TODO: Move to player module
 bool castor_CheckCollision(float newX, float newY, const castor_Context* ctx);
 void castor_MoveFront(castor_Context* ctx, float deltaTime);
 void castor_MoveBack(castor_Context* ctx, float deltaTime);
@@ -152,6 +155,7 @@ void castor_RotateX(castor_Context* ctx, double delta, float deltaTime);
 void castor_RotateY(castor_Context* ctx, double delta, float deltaTime);
 
 //=== Sound ===//
+// TODO: move to asset module
 int castor_PlaySound(castor_Context* ctx, const char* file, int volume, Uint32 duration_ms);
 void castor_CleanupThreads(castor_Context* ctx);
 
@@ -161,7 +165,7 @@ void castor_ContextFree(castor_Context* ctx);
 bool castor_EngineInit(castor_Context* ctx);
 void castor_EngineClose(castor_Context* ctx);
 
-//=== Defined by Developer ===//
+//=== Defined by the developer ===//
 extern void presetup(castor_Context* ctx);
 extern void setup(castor_Context* ctx);
 extern void loop(castor_Context* ctx);
