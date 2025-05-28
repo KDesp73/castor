@@ -2,9 +2,9 @@
 CC = gcc
 CFLAGS = -Wall -Iinclude -I../engine/include -I../deps/include 
 CFLAGS  += $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
-LDFLAGS = -L../deps/lib -lcastor -lm
+LDFLAGS = -L../deps/lib -l:libcastor.a -lm
 LDFLAGS += $(shell pkg-config --libs sdl2 SDL2_ttf SDL2_image SDL2_mixer)
-LDFLAGS +=-Wl,-rpath,./deps/lib
+# LDFLAGS +=-Wl,-rpath,\$$ORIGIN/deps/lib
 
 # Directories
 SRC_DIR = src
@@ -14,11 +14,6 @@ DIST_DIR = dist
 
 # Target and version info
 TARGET = eidolon
-version_file = include/version.h
-VERSION_MAJOR = $(shell sed -n -e 's/\#define VERSION_MAJOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_MINOR = $(shell sed -n -e 's/\#define VERSION_MINOR \([0-9]*\)/\1/p' $(version_file))
-VERSION_PATCH = $(shell sed -n -e 's/\#define VERSION_PATCH \([0-9]*\)/\1/p' $(version_file))
-VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 
 # Determine the build type
 ifeq ($(type), RELEASE)
@@ -82,17 +77,6 @@ uninstall: ## Remove the executable from /usr/bin/
 clean: ## Remove all build files and the executable
 	@echo "[INFO] Cleaning up build directory and executable."
 	rm -rf $(BUILD_DIR) $(TARGET)
-
-.PHONY: distclean
-distclean: clean ## Perform a full clean, including backup and temporary files
-	@echo "[INFO] Performing full clean, removing build directory, dist files, and editor backups."
-	rm -f *~ core $(SRC_DIR)/*~ $(DIST_DIR)/*.tar.gz
-
-.PHONY: dist
-dist: $(SRC_FILES) ## Create a tarball of the project
-	@echo "[INFO] Creating a tarball for version $(VERSION)"
-	mkdir -p $(DIST_DIR)
-	tar -czvf $(DIST_DIR)/$(TARGET)-$(VERSION).tar.gz $(SRC_DIR) $(INCLUDE_DIR) Makefile README.md
 
 ## Generate compile_commands.json
 .PHONY: compile_commands.json
