@@ -52,13 +52,16 @@ Type=Application
 Categories=Game;
 EOF
 
-# Create fake icon if none exists
 ICON_PATH="${APPDIR}/${TARGET}.png"
-if command -v magick &> /dev/null; then
-  magick -size 256x256 xc:purple "$ICON_PATH"
-else
-  echo "Warning: 'magick' not found. Creating empty icon."
-  touch "$ICON_PATH"
+# Try to copy the icon first
+if ! cp "$TARGET.png" "$ICON_PATH" 2>/dev/null; then
+  # Fallback logic if copy fails
+  if command -v magick &> /dev/null; then
+    magick -size 256x256 xc:purple "$ICON_PATH"
+  else
+    echo "Warning: 'magick' not found. Creating empty icon."
+    touch "$ICON_PATH"
+  fi
 fi
 
 # Build AppImage
