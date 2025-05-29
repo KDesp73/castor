@@ -29,6 +29,7 @@ cp "demo/${TARGET}" "$APPDIR/usr/bin/"
 cp -r assets levels "$APPDIR/"
 cp -r deps/lib "$APPDIR/usr/"
 bash ./scripts/fetch_deps.sh $APPDIR
+sudo cp /usr/lib/libSDL3.so* "$APPDIR/usr/lib"
 
 # Create AppRun
 cat > "$APPDIR/AppRun" <<EOF
