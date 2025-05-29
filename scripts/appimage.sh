@@ -27,7 +27,8 @@ mkdir -p "$APPDIR/usr/lib"
 # Copy necessary files
 cp "demo/${TARGET}" "$APPDIR/usr/bin/"
 cp -r assets levels "$APPDIR/"
-cp -r deps/lib "$APPDIR/usr/lib"
+cp -r deps/lib "$APPDIR/usr/"
+bash ./scripts/fetch_deps.sh $APPDIR
 
 # Create AppRun
 cat > "$APPDIR/AppRun" <<EOF
