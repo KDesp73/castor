@@ -1,5 +1,5 @@
 # Compiler and flags
-CC = gcc
+include ../common.mk
 CFLAGS = -Wall -Werror -Iinclude -I../deps/include -fPIC
 CFLAGS  += $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
 LDFLAGS = 

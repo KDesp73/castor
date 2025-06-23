@@ -1,5 +1,5 @@
 # Compiler and flags
-CC = gcc
+include ../common.mk
 CFLAGS = -Wall -Iinclude -I../engine/include -I../deps/include 
 CFLAGS  += $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
 LDFLAGS = -L../deps/lib -l:libcastor.a -lm

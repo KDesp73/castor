@@ -1,5 +1,5 @@
 # Compiler and flags
-CC = gcc
+include ../common.mk
 CFLAGS = -Wall -Iinclude -I../deps/include/raylib
 LDFLAGS = -L../deps/lib -l:libraylib.a -lm -lGL -lpthread -ldl -lrt -lX11
 
