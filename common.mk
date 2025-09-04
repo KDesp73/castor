@@ -1,1 +1,1 @@
-CC := musl-gcc
+CC := gcc
