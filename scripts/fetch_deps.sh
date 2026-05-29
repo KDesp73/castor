@@ -3,7 +3,7 @@
 set -e
 
 if [ -z "$1" ]; then
-    echo "Usage: $0 <path-to-.so-file-or-directory>"
+    echo "Usage: $0 <path-to-binary-or-directory>"
     exit 1
 fi
 
@@ -16,26 +16,34 @@ copy_deps() {
 
     echo "Processing $file"
 
-    ldd "$file" | awk '/=>/ { print $3 }' | while read -r dep; do
-        if [ -f "$dep" ]; then
-            echo "Copying $dep to $dir"
-            cp -u "$dep" "$dir/"
-        else
-            echo "Skipping missing dependency: $dep"
-        fi
-    done
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        otool -L "$file" | awk '/^\t\// { print $1 }' | while read -r dep; do
+            if [ -f "$dep" ]; then
+                echo "Copying $dep to $dir"
+                cp -u "$dep" "$dir/"
+            else
+                echo "Skipping missing dependency: $dep"
+            fi
+        done
+    else
+        ldd "$file" | awk '/=>/ { print $3 }' | while read -r dep; do
+            if [ -f "$dep" ]; then
+                echo "Copying $dep to $dir"
+                cp -u "$dep" "$dir/"
+            else
+                echo "Skipping missing dependency: $dep"
+            fi
+        done
+    fi
 }
 
 if [ -f "$TARGET" ]; then
-    # Single .so file
     copy_deps "$TARGET"
 elif [ -d "$TARGET" ]; then
-    # Directory: find .so files
-    find "$TARGET" -type f -name "*.so" | while read -r sofile; do
-        copy_deps "$sofile"
+    find "$TARGET" -type f \( -name "*.so" -o -name "*.dylib" -o -perm -111 \) | while read -r bin; do
+        copy_deps "$bin"
     done
 else
     echo "Error: '$TARGET' is not a valid file or directory."
     exit 1
 fi
-

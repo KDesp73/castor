@@ -39,16 +39,40 @@ Features:
 
 ---
 
-## 🛠️ Building the Engine
+## 🛠️ Building
+
+### Linux
 
 ```bash
-cd engine
+sudo apt install build-essential pkg-config libsdl2-dev libsdl2-image-dev \
+  libsdl2-ttf-dev libsdl2-mixer-dev
+make deps   # builds Raylib into deps/lib
 make all
 ```
 
-- Produces a `build/castor` binary
-- Requires a C compiler and SDL2 development headers
-- SDL dependencies can be pulled from `deps/` if needed
+### macOS
+
+```bash
+brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer pkg-config
+export PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig"
+make deps
+make all
+```
+
+Run the demo from the **repository root** so relative `assets/` and `levels/` paths resolve:
+
+```bash
+cd demo && ./eidolon
+```
+
+Set `BUILD_TOOLS=0` to build only the engine and demo (skip builder/launcher).
+
+### Engine only
+
+```bash
+cd engine
+make static
+```
 
 ---
 
@@ -115,4 +139,4 @@ floor_tile.png
 
 ## 📜 License
 
-Currently closed-source for private development and research. For collaboration or licensing inquiries, contact the author.
+This project is licensed under the [MIT License](LICENSE).

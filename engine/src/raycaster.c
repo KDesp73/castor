@@ -59,9 +59,11 @@ static float CalculateTextureCoordinate(float hitX, float hitY, float rayX, floa
 
 void castor_CastWalls(SDL_Renderer *renderer, castor_Context* ctx)
 {
-    // Ensure the Z-buffer is allocated
-    if (ctx->raycaster.z_buffer == NULL) {
-        ctx->raycaster.z_buffer = (float*)malloc(ctx->sdl.screen_width * sizeof(float));
+    size_t width = (size_t)ctx->sdl.screen_width;
+    if (ctx->raycaster.z_buffer == NULL || ctx->raycaster.z_buffer_capacity != width) {
+        free(ctx->raycaster.z_buffer);
+        ctx->raycaster.z_buffer = (float*)malloc(width * sizeof(float));
+        ctx->raycaster.z_buffer_capacity = width;
     }
 
     for (int x = 0; x < ctx->sdl.screen_width; x++) {

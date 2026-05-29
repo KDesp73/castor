@@ -70,6 +70,7 @@ typedef struct {
     // Raycasting
     struct {
         float* z_buffer;
+        size_t z_buffer_capacity;
         SDL_Texture* textures[MAX_TEXTURES];
         bool textures_loaded;
         size_t floor_texture_index;
@@ -88,6 +89,8 @@ typedef struct {
 
         castor_Player* player;
         castor_Map* map;
+        castor_Map* nav_map;
+        bool nav_map_dirty;
         castor_Sprite* sprites[MAX_SPRITES];
         size_t sprite_count;
         castor_Entity* entities[MAX_ENTITIES];
@@ -136,6 +139,8 @@ void castor_AppendEvent(castor_Context* ctx, castor_Event* evt);
 void castor_FreeLevel(castor_Context* ctx);
 
 castor_Map* castor_ExportSearchMap(castor_Context* ctx);
+void castor_InvalidateNavMap(castor_Context* ctx);
+const castor_Map* castor_GetNavMap(castor_Context* ctx);
 void castor_UpdateEntities(castor_Context* ctx, float deltaTime);
 void castor_ProcessEvents(castor_Context* ctx);
 castor_Event* castor_SearchEvent(castor_Context* ctx, const char* id);

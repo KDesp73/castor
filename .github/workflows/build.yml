@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config \
+            libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+
+      - name: Build
+        run: make all
+
+      - name: Test
+        run: make -C engine test
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer pkg-config
+          echo "PKG_CONFIG_PATH=$(brew --prefix)/lib/pkgconfig" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: make all
+
+      - name: Test
+        run: make -C engine test

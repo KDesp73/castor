@@ -24,6 +24,7 @@ void castor_ContextInit(castor_Context* ctx)
     ctx->settings.fog_distance = 10;
 
     ctx->sound.volume = 50;
+    ctx->level.nav_map_dirty = true;
 }
 
 void castor_ContextFree(castor_Context* ctx)
@@ -36,7 +37,11 @@ void castor_ContextFree(castor_Context* ctx)
        castor_FreeItems(ctx);
        castor_FreeEvents(ctx);
        UIClose(&ctx->ui);
+       castor_InvalidateNavMap(ctx);
        castor_MapFree(&ctx->level.map);
+       free(ctx->raycaster.z_buffer);
+       ctx->raycaster.z_buffer = NULL;
+       ctx->raycaster.z_buffer_capacity = 0;
        castor_CleanupThreads(ctx);
 
         if (ctx->sdl.renderer) {

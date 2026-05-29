@@ -28,7 +28,7 @@ bool castor_EngineInit(castor_Context* ctx)
 
     if (!castor_ConstructRenderer(ctx)) {
         fprintf(stderr, "Renderer initialization failed\n");
-        return 1;
+        return false;
     }
 
     return true;

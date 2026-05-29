@@ -7,12 +7,20 @@ Castor is built to be a simple yet powerful engine for creating classic-style 3D
 ## Get started
 
 ```bash
-# 1. Clone the repo
 git clone https://github.com/KDesp73/castor
 cd castor
 
-# 2. Build castor and the demo
+# Linux
+sudo apt install build-essential pkg-config libsdl2-dev libsdl2-image-dev \
+  libsdl2-ttf-dev libsdl2-mixer-dev
+
+# macOS
+brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer pkg-config
+export PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig"
+
+make deps
 make all
+make -C engine test
 ```
 
 ## Roadmap

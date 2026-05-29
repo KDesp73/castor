@@ -8,6 +8,7 @@ void castor_AppendSprite(castor_Context* ctx, castor_Sprite* sprite)
 
     sprite->index = ctx->level.sprite_count;
     ctx->level.sprites[ctx->level.sprite_count++] = sprite;
+    castor_InvalidateNavMap(ctx);
 }
 
 void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite)
@@ -31,6 +32,7 @@ void castor_RemoveSprite(castor_Context* ctx, const castor_Sprite* sprite)
 
     ctx->level.sprites[ctx->level.sprite_count - 1] = NULL;
     ctx->level.sprite_count--;
+    castor_InvalidateNavMap(ctx);
 }
 
 

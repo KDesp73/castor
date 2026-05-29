@@ -14,23 +14,27 @@ void castor_AppendEntity(castor_Context* ctx, castor_Entity* entity)
 
 void castor_UpdateEntities(castor_Context* ctx, float deltaTime)
 {
-    castor_Map* map = castor_ExportSearchMap(ctx);
-    
-    for (size_t i = 0; i < ctx->level.entity_count; i++) {
+    const castor_Map* map = castor_GetNavMap(ctx);
+    if (!map) {
+        return;
+    }
+
+    for (size_t i = 0; i < ctx->level.entity_count; ) {
         castor_Entity* e = ctx->level.entities[i];
-        if(!e) continue;
-        if(e->health <= 0) {
-            // TODO: Proper death method
+        if (!e) {
+            i++;
+            continue;
+        }
+        if (e->health <= 0) {
             castor_RemoveEntity(ctx, e);
             continue;
         }
 
         if (e->move) {
-            e->move(e, (const int**) map->grid, ctx->level.map->w, ctx->level.map->h, ctx->level.player, deltaTime);
+            e->move(e, (const int**)map->grid, ctx->level.map->w, ctx->level.map->h, ctx->level.player, deltaTime);
         }
+        i++;
     }
-
-    castor_MapFree(&map);
 }
 
 void castor_RemoveEntity(castor_Context* ctx, const castor_Entity* entity)
@@ -44,13 +48,11 @@ void castor_RemoveEntity(castor_Context* ctx, const castor_Entity* entity)
         return;
     }
 
-    // Remove associated sprite if available
     if (entity->sprite) {
         castor_RemoveSprite(ctx, entity->sprite);
     }
     castor_EntityFree(&ctx->level.entities[index]);
 
-    // Shift entities left
     for (size_t i = index; i < ctx->level.entity_count - 1; i++) {
         ctx->level.entities[i] = ctx->level.entities[i + 1];
         ctx->level.entities[i]->index = i;
@@ -69,4 +71,3 @@ void castor_FreeEntities(castor_Context* ctx)
     }
     ctx->level.entity_count = 0;
 }
-

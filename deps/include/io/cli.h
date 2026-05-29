@@ -203,6 +203,7 @@ CLIAPI void cli_generate_format_string(char* buffer, cli_args_t args)
             length += 1;
         }
     }
+    (void)length;
 
     buffer[0] = '\0';
 

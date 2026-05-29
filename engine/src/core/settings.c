@@ -3,6 +3,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 void castor_SetFullscreen(castor_Context* ctx, bool fullscreen)
 {
@@ -44,6 +45,10 @@ void castor_SetFullscreen(castor_Context* ctx, bool fullscreen)
     }
 
     SDL_RenderSetLogicalSize(ctx->sdl.renderer, ctx->sdl.screen_width, ctx->sdl.screen_height);
+
+    free(ctx->raycaster.z_buffer);
+    ctx->raycaster.z_buffer = NULL;
+    ctx->raycaster.z_buffer_capacity = 0;
 
     ctx->settings.fullscreen = fullscreen;
 

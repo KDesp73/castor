@@ -9,14 +9,16 @@
 
 static void GivePaths(castor_Context* ctx)
 {
-    castor_Map* map = castor_ExportSearchMap(ctx);
+    const castor_Map* map = castor_GetNavMap(ctx);
+    if (!map) {
+        return;
+    }
     for (size_t i = 0; i < ctx->level.entity_count; i++) {
         if(ctx->level.entities[i]->default_path.length == 0) {
             ctx->level.entities[i]->default_path = 
-                castor_GenerateRandomLoopPath(map->grid, ctx->level.map->w, ctx->level.map->h, 12, ctx->level.entities[i]->sprite->x, ctx->level.entities[i]->sprite->y);
+                castor_GenerateRandomLoopPath((int**)map->grid, ctx->level.map->w, ctx->level.map->h, 12, ctx->level.entities[i]->sprite->x, ctx->level.entities[i]->sprite->y);
         }
     }
-    castor_MapFree(&map);
 }
 
 #define LEVEL_HEADER(path) \

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.1.7] - 2025-05-29
+
+### Added
+
+- macOS build support via `platform.mk` and `scripts/build_raylib.sh`
+- Cached navigation map for entity pathfinding
+- Engine unit tests (`make -C engine test`) and GitHub Actions CI
+- MIT `LICENSE` at repository root
+
+### Fixed
+
+- `castor_EngineInit` returning success when renderer creation fails
+- Entity removal skipping remaining entities in the same frame
+- Z-buffer leak and incorrect size after fullscreen toggle
+- UI toast deactivation when iterating by value
+
+### Changed
+
+- Root `make all` builds Raylib dependencies via `make deps`
+- Portable dependency scripts for Linux and macOS
+
 ## [1.1.6] - 2025-05-29 
 
 ### Added
